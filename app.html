@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ACAI Coach — Premium</title>
+<style>
+  :root{
+    --bg: #0b0e13;
+    --card: #11151c;
+    --ink: #e6e9ef;
+    --muted:#9aa3af;
+    --accent:#5eead4; /* will be overridden by JS */
+    --ring:#5eead480;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font:16px/1.5 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, Apple Color Emoji, Segoe UI Emoji;
+    color:var(--ink);
+    background: radial-gradient(1200px 800px at 80% -10%, color-mix(in oklab, var(--accent) 20%, #000), transparent 60%),
+                radial-gradient(900px 500px at -10% 90%, color-mix(in oklab, var(--accent) 12%, #000), transparent 55%),
+                var(--bg);
+    transition: background 900ms ease, color 300ms ease;
+    overflow: hidden;
+  }
+
+  .bar{
+    height:64px;
+    padding:0 16px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    border-bottom:1px solid color-mix(in oklab, var(--accent) 18%, transparent);
+    background: linear-gradient(180deg, color-mix(in oklab, var(--accent) 8%, #000) 0%, transparent 100%);
+    position:sticky; top:0; z-index:5;
+    backdrop-filter: blur(6px);
+  }
+  .orb{
+    width:28px;height:28px;border-radius:999px;
+    box-shadow:0 0 24px var(--ring), inset 0 0 18px color-mix(in oklab, var(--accent) 40%, #000);
+    background: radial-gradient(75% 75% at 35% 30%, #fff8, transparent 60%), var(--accent);
+    animation: breathe 5s ease-in-out infinite;
+  }
+  @keyframes breathe{
+    0%,100%{ transform:scale(1); box-shadow:0 0 18px var(--ring), inset 0 0 16px color-mix(in oklab, var(--accent) 40%, #000); }
+    50%{ transform:scale(1.06); box-shadow:0 0 32px var(--ring), inset 0 0 28px color-mix(in oklab, var(--accent) 55%, #000); }
+  }
+  .title{ font-weight:600; letter-spacing:.2px; }
+  .tone{
+    margin-left:auto;
+    padding:6px 12px;
+    border-radius:999px;
+    background: color-mix(in oklab, var(--accent) 18%, #000);
+    color: color-mix(in oklab, var(--ink) 78%, var(--accent));
+    border:1px solid color-mix(in oklab, var(--accent) 40%, transparent);
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.16em;
+    opacity:.85;
+  }
+
+  .wrap{ height:calc(100% - 64px); display:grid; grid-template-rows: 1fr auto; }
+  .feed{
+    overflow:auto; padding:24px 16px 8px 16px; scroll-behavior:smooth;
+  }
+  .bubble{
+    max-width:min(800px, 92vw);
+    margin:8px 0;
+    padding:14px 16px;
+    border:1px solid color-mix(in oklab, var(--accent) 16%, #222);
+    background: linear-gradient(180deg, #0c111a 0%, #0a0f15 100%);
+    border-radius:14px;
+    box-shadow: 0 1px 0 #0008, inset 0 0 0 999px #ffffff03;
+    white-space:pre-wrap;
+  }
+  .me{ margin-left:auto; background: linear-gradient(180deg, color-mix(in oklab, var(--accent) 22%, #0c111a), #0a0f15); }
+  .acai{ border-color: color-mix(in oklab, var(--accent) 25%, #222); }
+
+  .composer{
+    padding:12px 16px 18px;
+    display:flex; gap:10px;
+    border-top: 1px solid #0a0d12;
+    background: linear-gradient(180deg, #0b0f16, #070a0f);
+  }
+  .in{
+    flex:1; background:#0e131a; border:1px solid #161c25; color:var(--ink);
+    border-radius:12px; padding:12px 14px; outline:none;
+    transition:border-color .2s ease, box-shadow .2s ease;
+    resize:none; min-height:46px; max-height:180px; line-height:1.4;
+  }
+  .in:focus{ border-color: color-mix(in oklab, var(--accent) 35%, #222);
+             box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 20%, transparent); }
+  .btn{
+    background: var(--accent);
+    color:#051014; border:none; border-radius:12px;
+    padding:0 16px; font-weight:600; cursor:pointer;
+    transition: transform .05s ease, filter .2s ease, box-shadow .2s ease;
+    box-shadow: 0 8px 18px color-mix(in oklab, var(--accent) 30%, transparent);
+  }
+  .btn:active{ transform: translateY(1px); }
+  .muted{ color:var(--muted); }
+
+  .grid{
+    position:fixed; inset:0; pointer-events:none; opacity:.06;
+    background-image: radial-gradient(#fff 1px, transparent 1px);
+    background-size: 26px 26px;
+    mix-blend-mode: soft-light;
+  }
+</style>
+</head>
+<body>
+  <div class="grid"></div>
+  <header class="bar">
+    <div class="orb" id="orb" aria-hidden="true"></div>
+    <div class="title">ACAI Coach</div>
+    <div class="tone" id="tone">…</div>
+  </header>
+
+  <section class="wrap">
+    <div class="feed" id="feed">
+      <div class="bubble acai">Hi! I’m ACAI — a calm, focused coach. What would you like to work on today?</div>
+    </div>
+
+    <form class="composer" id="form">
+      <textarea id="msg" class="in" placeholder="Type a message…" rows="1"></textarea>
+      <button class="btn" id="send" type="submit">Send</button>
+    </form>
+  </section>
+
+<script>
+const API = (localStorage.getItem('ACAI_API') || 'https://acai-backend.onrender.com').replace(/\/$/,'');
+const feed = document.getElementById('feed');
+const tone = document.getElementById('tone');
+const orb  = document.getElementById('orb');
+const form = document.getElementById('form');
+const msg  = document.getElementById('msg');
+
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const map = (v, inMin, inMax, outMin, outMax) => outMin + (clamp(v,inMin,inMax)-inMin)*(outMax-outMin)/(inMax-inMin);
+
+// Theme mapping by valence & impulse
+function themeFromState(s){
+  const v = Number(s?.valence ?? 0);
+  const x = Number(s?.impulse_x_ema ?? 0);
+  const hue = (v >= 0) ? map(v, 0, 1, 210, 150) : map(v, -1, 0, 10, 210);
+  const sat = map(Math.abs(x), 0, 0.5, 55, 92);
+  const lig = 52;
+  const accent = `oklch(${lig}% ${sat/100} ${hue})`;
+
+  let mode = 'neutral';
+  if (v > 0.28) mode = 'ground';
+  else if (v < -0.22) mode = 'stabilize';
+  else if (v < -0.08) mode = 'uplift';
+
+  const dur = clamp(5 - Math.abs(x)*6, 2.2, 6.5);
+  orb.style.animationDuration = dur + 's';
+
+  document.documentElement.style.setProperty('--accent', accent);
+  document.documentElement.style.setProperty('--bg', '#0b0e13');
+
+  tone.textContent = mode;
+  return {hue, sat, lig, accent, mode};
+}
+
+// Pull /state and refresh theme
+async function refreshState(){
+  try{
+    const r = await fetch(API + '/state');
+    if(!r.ok) return;
+    const j = await r.json();
+    const last = j?.last || {};
+    themeFromState(last);
+  }catch(e){}
+}
+setInterval(refreshState, 1500);
+refreshState();
+
+// Auto-resize textarea
+msg.addEventListener('input', () => {
+  msg.style.height = 'auto';
+  msg.style.height = Math.min(msg.scrollHeight, 180) + 'px';
+});
+
+// Send message
+form.addEventListener('submit', async (ev)=>{
+  ev.preventDefault();
+  const text = msg.value.trim();
+  if(!text) return;
+  addBubble(text, true);
+  msg.value=''; msg.style.height='46px';
+
+  try{
+    const res = await fetch(API + '/chat', {
+      method:'POST',
+      headers: {'content-type':'text/plain;charset=utf-8'},
+      body: text
+    });
+    const j = await res.json();
+    addBubble(j.reply || '(no reply)', false);
+    if (j.state && j.state.valence !== undefined) themeFromState(j.state);
+  }catch(e){
+    addBubble('Error: cannot reach ACAI backend.', false);
+  }
+});
+
+function addBubble(text, isMe=false){
+  const el = document.createElement('div');
+  el.className = 'bubble ' + (isMe ? 'me' : 'acai');
+  el.textContent = (isMe? 'You: ' : '') + text;
+  feed.appendChild(el);
+  feed.scrollTop = feed.scrollHeight;
+}
+</script>
+</body>
+</html>
