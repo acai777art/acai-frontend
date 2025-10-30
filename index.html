@@ -5,8 +5,8 @@
   <script>
   (function () {
     try {
-      const qs   = new URLSearchParams(location.search);
-      let token  = qs.get("token") || localStorage.getItem("acai_jwt") || "";
+      const qs = new URLSearchParams(location.search);
+      let token = qs.get("token") || localStorage.getItem("acai_jwt") || "";
 
       // Если токен прилетел через URL — сохраним и почистим адрес
       if (qs.get("token")) {
@@ -129,8 +129,8 @@ setLang(localStorage.getItem("acai_lang") || "en");
 <script>
 (function(){
   // 1) читаем токен из URL или localStorage
-  const qs  = new URLSearchParams(location.search);
-  let jwt   = qs.get("token") || localStorage.getItem("acai_jwt") || "";
+  const qs = new URLSearchParams(location.search);
+  let jwt = qs.get("token") || localStorage.getItem("acai_jwt") || "";
 
   // если пришёл через URL — сохраняем и чистим адресную строку
   if (qs.get("token")) {
