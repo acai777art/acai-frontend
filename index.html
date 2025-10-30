@@ -6,7 +6,7 @@
   (function () {
     try {
       const qs   = new URLSearchParams(location.search);
-      let token  = qs.get("token")  localStorage.getItem("acai_jwt")  "";
+      let token  = qs.get("token") || localStorage.getItem("acai_jwt") || "";
 
       // Если токен прилетел через URL — сохраним и почистим адрес
       if (qs.get("token")) {
