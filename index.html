@@ -85,5 +85,34 @@ function setLang(l){const t=strings[l]||strings.en;document.getElementById("titl
 document.querySelectorAll(".lang button").forEach(btn=>btn.addEventListener("click",()=>setLang(btn.dataset.lang)));
 setLang(localStorage.getItem("acai_lang")||"en");
 </script>
+<script>
+(function () {
+  // === 1. Читаем токен из URL или localStorage ===
+  const qs  = new URLSearchParams(location.search);
+  let token = qs.get("token")  localStorage.getItem("acai_jwt")  "";
+
+  // Если токен пришёл в URL — сохраняем и очищаем строку
+  if (qs.get("token")) {
+    localStorage.setItem("acai_jwt", token);
+    history.replaceState({}, "", location.pathname + location.hash);
+  }
+
+  // === 2. Автоматически добавляем токен к ссылкам на app.html ===
+  ["ctaTop", "ctaMain"].forEach(id => {
+    const a = document.getElementById(id);
+    if (!a) return;
+    const url = new URL(a.getAttribute("href"), location.href);
+    if (token && token.length > 10) {
+      url.searchParams.set("token", token);
+    }
+    a.setAttribute("href", url.toString());
+  });
+
+  // === 3. Если токена нет — редиректим на главную ===
+  if (!token || token.length < 10) {
+    window.location.replace("https://affectivecybernetics.onrender.com");
+  }
+})();
+</script>
 </body>
 </html>
