@@ -1,6 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+   <!-- 🔐 HARD GUARD: блокируем страницу без токена -->
+  <script>
+  (function () {
+    try {
+      const qs = new URLSearchParams(location.search);
+      let token = qs.get("token") || localStorage.getItem("acai_jwt") || "";
+
+      // Если токен прилетел через URL — сохраним и почистим адрес
+      if (qs.get("token")) {
+        localStorage.setItem("acai_jwt", token);
+        history.replaceState({}, "", location.pathname + location.hash);
+      }
+
+      // Нет токена? Немедленно уходим на страницу логина
+      if (!token || token.length < 10) {
+        window.location.replace("https://affectivecybernetics.onrender.com");
+        // На случай блокировки redirect покажем заглушку
+        document.write('<div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#0b0d17;color:#ffd700;font:16px/1.5 system-ui;z-index:999999">Access denied — login via Telegram…</div>');
+      }
+    } catch(e) {
+      // Если даже тут ошибка — тоже уходим
+      window.location.replace("https://affectivecybernetics.onrender.com");
+    }
+  })();
+  </script>
+  <noscript>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ACAI Coach — Premium</title>
