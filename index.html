@@ -81,19 +81,19 @@ const strings = {
   uk:{title:"Емоційний ШІ — спокійний супровід у вашій кишені.",lead:" Природний тон, маленькі кроки, мультимовність. Ти можеш відкрити застосунок щоб спробувати чат.",cta:"Відкрити застосунок",bubbles:["ACAI: Привіт! Я поруч. Чим допомогти?","Хочу спокою та фокусу.","Маленький крок: 2 хвилини дихання «4–4». Потім записуємо один пріоритет ✍️"],footer:"© 2025 ACAI Coach • by Artem Teteria, AI System Architect"},
   de:{title:"Emotional-KI – ruhige Begleitung in deiner Tasche.",lead:" Natürlicher Ton, kleine Schritte, Mehrsprachigkeit. Du kannst die App öffnen, um den Chat zu testen.",cta:"App öffnen",bubbles:["ACAI: Hi! Ich bin da. Wobei soll ich helfen?","Ich möchte Ruhe und Fokus.","Mini-Schritt: 2 Minuten 4–4-Atmung. Danach notieren wir eine Priorität ✍️"],footer:"© 2025 ACAI Coach • by Artem Teteria, AI System Architect"}
 };
-function setLang(l){const t=strings[l]||strings.en;document.getElementById("title").innerText=t.title;document.getElementById("lead").innerHTML=t.lead;document.getElementById("ctaTop").innerText=t.cta;document.getElementById("ctaMain").innerText=t.cta;document.getElementById("b1").innerText=t.bubbles[0];document.getElementById("b2").innerText=t.bubbles[1];document.getElementById("b3").innerText=t.bubbles[2];document.getElementById("footer").innerText=t.footer;document.querySelectorAll(".lang button").forEach(b=>b.classList.toggle("active",b.dataset.lang===l));localStorage.setItem("acai_lang",l)}
+function setLang(l){const t=strings[l] || strings.en;document.getElementById("title").innerText=t.title;document.getElementById("lead").innerHTML=t.lead;document.getElementById("ctaTop").innerText=t.cta;document.getElementById("ctaMain").innerText=t.cta;document.getElementById("b1").innerText=t.bubbles[0];document.getElementById("b2").innerText=t.bubbles[1];document.getElementById("b3").innerText=t.bubbles[2];document.getElementById("footer").innerText=t.footer;document.querySelectorAll(".lang button").forEach(b=>b.classList.toggle("active",b.dataset.lang===l));localStorage.setItem("acai_lang",l)}
 document.querySelectorAll(".lang button").forEach(btn=>btn.addEventListener("click",()=>setLang(btn.dataset.lang)));
-setLang(localStorage.getItem("acai_lang")||"en");
+setLang(localStorage.getItem("acai_lang") || "en");
 </script>
 <script>
 (function () {
   // === 1. Читаем токен из URL или localStorage ===
   const qs  = new URLSearchParams(location.search);
-  let token = qs.get("token")  localStorage.getItem("acai_jwt")  "";
+  let token = qs.get("token") || localStorage.getItem("acai_jwt")  "";
 
   // Если токен пришёл в URL — сохраняем и очищаем строку
   if (qs.get("token")) {
-    localStorage.setItem("acai_jwt", token);
+    localStorage.setItem("acai_jwt", token); //
     history.replaceState({}, "", location.pathname + location.hash);
   }
 
@@ -109,6 +109,21 @@ setLang(localStorage.getItem("acai_lang")||"en");
   });
 
   // === 3. Если токена нет — редиректим на главную ===
+  if (!token || token.length < 10) {
+    window.location.replace("https://affectivecybernetics.onrender.com");
+  }
+})();
+</script>
+<!-- 🔐 Guard for app.html -->
+<script>
+(function(){
+  const qs = new URLSearchParams(location.search);
+  let token = qs.get("token")  localStorage.getItem("acai_jwt")  "";
+  if (qs.get("token")) {
+    localStorage.setItem("acai_jwt", qs.get("token"));
+    token = qs.get("token");
+    history.replaceState({}, "", location.pathname + location.hash);
+  }
   if (!token || token.length < 10) {
     window.location.replace("https://affectivecybernetics.onrender.com");
   }
