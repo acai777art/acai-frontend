@@ -117,8 +117,40 @@ const canvas = document.getElementById('faceCanvas');
 const ctx = canvas.getContext('2d', { alpha: true });
 const tone = document.getElementById('tone');
 
-const defaultFace = { x: 0.355, y: 0.23, w: 0.33, h: 0.235 };
-let face = JSON.parse(localStorage.getItem('ACAI_FACE_RECT') || 'null') || defaultFace;
+// мобильный / десктоп дефолты
+const defaultFaceDesktop = { x: 0.355, y: 0.23, w: 0.33, h: 0.235 };
+const defaultFaceMobile  = { x: 0.355, y: 0.26, w: 0.36, h: 0.26 };
+const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+const defaultFace = isMobile ? defaultFaceMobile : defaultFaceDesktop;
+
+// версия схемы, чтобы сбросить старые кривые координаты
+const FACE_VERSION = 2;
+const savedFace = JSON.parse(localStorage.getItem('ACAI_FACE_RECT') || 'null');
+const savedVer  = Number(localStorage.getItem('ACAI_FACE_VER') || '0');
+
+// ?reset=1 в URL сбрасывает позицию
+if (new URLSearchParams(location.search).get('reset') === '1') {
+  face = defaultFace;
+  localStorage.setItem('ACAI_FACE_RECT', JSON.stringify(face));
+}
+
+// берём сохранённое ТОЛЬКО если версия совпадает
+let face = (savedFace && savedVer === FACE_VERSION) ? savedFace : defaultFace;
+localStorage.setItem('ACAI_FACE_VER', FACE_VERSION);
+
+// если что-то поехало (слишком маленькая/вне рамок) — чинить автоматически
+function sanitizeFaceRect() {
+  face.x = clamp(face.x, 0, 1 - face.w);
+  face.y = clamp(face.y, 0, 1 - face.h);
+  face.w = clamp(face.w, 0.10, 0.90);
+  face.h = clamp(face.h, 0.10, 0.90);
+
+  // хард-сброс если улетело в угол
+  if ((face.x < 0.05 && face.y < 0.05)  (face.w < 0.12  face.h < 0.12)) {
+    face = defaultFace;
+  }
+}
+sanitizeFaceRect();
 
 let S = { valence:0.0, impulse_x_ema:0.0, E:0.3, M:0.0, C:0.0, t:0, blink:0.0, pupils:{x:0,y:0} };
 function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
@@ -362,6 +394,24 @@ function tick(now){
   const sp = 0.0006;
   S.pupils.x = clamp( lerp(S.pupils.x, (Math.random()*2-1)*0.6, dt*sp), -1, 1 );
   S.pupils.y = clamp( lerp(S.pupils.y, (Math.random()*2-1)*0.6, dt*sp), -1, 1 );
+
+function resizeCanvas(){
+  const b = box.getBoundingClientRect();
+  const x = b.width * face.x;
+  const y = b.height * face.y;
+  const w = b.width * face.w;
+  const h = b.height * face.h;
+
+  canvas.style.left = x + 'px';
+  canvas.style.top  = y + 'px';
+  canvas.width  = Math.round(w);
+  canvas.height = Math.round(h);
+  canvas.style.width  = w + 'px';
+  canvas.style.height = h + 'px';
+
+  sanitizeFaceRect();   // <= добавить эту строку
+  drawFace(0);
+}
 
   drawFace(dt);
   requestAnimationFrame(tick);
