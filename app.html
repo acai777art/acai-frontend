@@ -168,6 +168,7 @@ function themeFromState(s){
   return {hue, sat, lig, accent, mode};
 }
 
+// 🔄 периодически подтягиваем текущее состояние (для темы)
 async function refreshState(){
   try{
     const r = await fetch(API + '/state');
@@ -179,6 +180,31 @@ async function refreshState(){
 }
 setInterval(refreshState, 1500);
 refreshState();
+
+// ⚙️ fire-and-forget симуляция после каждого сообщения
+async function runSim(message){
+  try{
+    await fetch(API + '/simulate', {
+      method: 'POST',
+      headers: {'content-type':'application/json'},
+      body: JSON.stringify({
+        message,
+        duration: 4, fps: 60,
+        until_equilibrium: true,
+        eps: 0.003, min_frames: 120, max_frames: 120,
+        inputs: {}
+      }),
+      keepalive: true
+    });
+    // слегка подождать и обновить ссылки (если открыты в новой вкладке)
+    setTimeout(()=>{
+      lnJson.href = API + '/last_sim';
+      lnCsv.href  = API + '/last_sim.csv';
+    }, 100);
+  } catch(e){
+    console.warn('[simulate warn]', e);
+  }
+}
 
 msg.addEventListener('input', () => {
   msg.style.height = 'auto';
@@ -203,6 +229,10 @@ form.addEventListener('submit', async (ev)=>{
     const j = await res.json();
     addBubble(j.reply || '(no reply)', false);
     if (j.last && j.last.valence !== undefined) themeFromState(j.last);
+
+    // 🚀 запустить симуляцию для обновления /last_sim
+    runSim(text);
+
     lnJson.href = API + '/last_sim';
     lnCsv.href  = API + '/last_sim.csv';
   }catch(e){
