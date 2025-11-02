@@ -128,11 +128,11 @@ const FACE_VERSION = 2;
 const savedFace = JSON.parse(localStorage.getItem('ACAI_FACE_RECT') || 'null');
 const savedVer  = Number(localStorage.getItem('ACAI_FACE_VER') || '0');
 
-// ?reset=1 в URL сбрасывает позицию
-if (new URLSearchParams(location.search).get('reset') === '1') {
-  face = defaultFace;
-  localStorage.setItem('ACAI_FACE_RECT', JSON.stringify(face));
-}
+  // ?reset=1 в URL сбрасывает позицию
+  if (new URLSearchParams(location.search).get('reset') === '1') {
+    face = defaultFace;
+    localStorage.setItem('ACAI_FACE_RECT', JSON.stringify(face));
+  }
 
 // берём сохранённое ТОЛЬКО если версия совпадает
 let face = (savedFace && savedVer === FACE_VERSION) ? savedFace : defaultFace;
