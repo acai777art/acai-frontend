@@ -50,8 +50,22 @@
   }
   .robot-box{ position:relative; width:min(720px, 94vw); }
   .robot-image{ width:100%; height:auto; display:block; border-radius:12px; }
-  canvas.face{ position:absolute; pointer-events:none; image-rendering: auto; }
-
+  canvas.face{
+    position:absolute;
+    top:0;
+    left:0;
+    z-index:2;               /* поверх картинки */
+    pointer-events:auto;     /* ← теперь тапы ловятся */
+    touch-action:none;       /* ← запрещаем скролл */
+    image-rendering:auto;
+  }
+  .robot-image{
+    position:relative;
+    z-index:1;
+  }
+  .robot-box{
+    position:relative;
+  }
   .feed{ padding:8px 14px; overflow:auto; }
   .bubble{ max-width:min(820px, 96vw); margin:8px 0; padding:12px 14px; border-radius:14px;
            background:#0d121a; border:1px solid #152033; box-shadow: inset 0 0 0 999px #ffffff04; }
