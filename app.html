@@ -206,7 +206,7 @@ window.addEventListener('mouseup', ()=>{
   calibrating = false; drag=null;
 });
 // ===== MOBILE TOUCH DRAG/PINCH (iOS SAFE) =====
-const boxEl = box;
+const boxEl = document.getElementById('faceCanvas');
 
 function normXY(t, el){
   const b = el.getBoundingClientRect();
