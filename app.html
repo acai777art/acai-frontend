@@ -195,26 +195,45 @@ window.addEventListener('mouseup', ()=>{
 const boxEl = box; // уже объявлен выше
 function dist(t0, t1){ const dx=t0.clientX-t1.clientX, dy=t0.clientY-t1.clientY; return Math.hypot(dx,dy); }
 
-// DRAG одним пальцем (без Alt)
+// DRAG одним пальцем (без Alt) — нормированные координаты, как в Alt+Drag
 let tDrag = null;
+
 boxEl.addEventListener('pointerdown', (e)=>{
-  if (e.pointerType !== 'touch') return;              // только тач
+  if (e.pointerType !== 'touch') return; // только для тачей
   e.preventDefault();
+
   const b = boxEl.getBoundingClientRect();
+  const px = (e.clientX - b.left) / b.width;
+  const py = (e.clientY - b.top) / b.height;
+
   tDrag = {
-    start:{ x:e.clientX, y:e.clientY },
-    faceStart:{ ...face },
-    bw:b.width, bh:b.height
+    start: { px, py },
+    faceStart: { ...face }
   };
+
   boxEl.setPointerCapture(e.pointerId);
 });
+
 boxEl.addEventListener('pointermove', (e)=>{
   if (!tDrag) return;
-  const dx = (e.clientX - tDrag.start.x) / tDrag.bw;
-  const dy = (e.clientY - tDrag.start.y) / tDrag.bh;
+
+  const b = boxEl.getBoundingClientRect();
+  const px = (e.clientX - b.left) / b.width;
+  const py = (e.clientY - b.top) / b.height;
+
+  const dx = px - tDrag.start.px;
+  const dy = py - tDrag.start.py;
+
   face.x = clamp(tDrag.faceStart.x + dx, 0, 1 - face.w);
   face.y = clamp(tDrag.faceStart.y + dy, 0, 1 - face.h);
+
   drawFace(0);
+});
+
+boxEl.addEventListener('pointerup', ()=>{
+  if (!tDrag) return;
+  tDrag = null;
+  localStorage.setItem('ACAI_FACE_RECT', JSON.stringify(face));
 });
 boxEl.addEventListener('pointerup', ()=>{
   if (!tDrag) return;
