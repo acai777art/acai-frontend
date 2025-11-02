@@ -50,7 +50,7 @@
   }
   .robot-box{ position:relative; width:min(720px, 94vw); }
   .robot-image{ width:100%; height:auto; display:block; border-radius:12px; }
-  canvas.face{ position:absolute; pointer-events:none; image-rendering: auto; }
+  canvas.face{ position:absolute; z-index:2; pointer-events:auto; touch-action:none; image-rendering:auto; }
 
   .feed{ padding:8px 14px; overflow:auto; }
   .bubble{ max-width:min(820px, 96vw); margin:8px 0; padding:12px 14px; border-radius:14px;
@@ -191,76 +191,101 @@ window.addEventListener('mouseup', ()=>{
   if(calibrating){ localStorage.setItem('ACAI_FACE_RECT', JSON.stringify(face)); }
   calibrating = false; drag=null;
 });
-// --- Мобильные жесты: drag одним пальцем, pinch двумя (масштаб)
-const boxEl = box; // уже объявлен выше
-function dist(t0, t1){ const dx=t0.clientX-t1.clientX, dy=t0.clientY-t1.clientY; return Math.hypot(dx,dy); }
-
-// DRAG одним пальцем (без Alt)
-let tDrag = null;
-boxEl.addEventListener('pointerdown', (e)=>{
-  if (e.pointerType !== 'touch') return;              // только тач
-  e.preventDefault();
-  const b = boxEl.getBoundingClientRect();
-  tDrag = {
-    start:{ x:e.clientX, y:e.clientY },
-    faceStart:{ ...face },
-    bw:b.width, bh:b.height
-  };
-  boxEl.setPointerCapture(e.pointerId);
-});
-boxEl.addEventListener('pointermove', (e)=>{
-  if (!tDrag) return;
-  const dx = (e.clientX - tDrag.start.x) / tDrag.bw;
-  const dy = (e.clientY - tDrag.start.y) / tDrag.bh;
-  face.x = clamp(tDrag.faceStart.x + dx, 0, 1 - face.w);
-  face.y = clamp(tDrag.faceStart.y + dy, 0, 1 - face.h);
-  drawFace(0);
-});
-boxEl.addEventListener('pointerup', ()=>{
-  if (!tDrag) return;
-  tDrag = null;
-  localStorage.setItem('ACAI_FACE_RECT', JSON.stringify(face));
-});
-
-// PINCH двумя пальцами (масштаб w/h)
-let pinch = null;
-boxEl.addEventListener('touchstart', (e)=>{
-  if (e.touches.length === 2){
-    pinch = {
-      d0: dist(e.touches[0], e.touches[1]),
-      w0: face.w, h0: face.h
-    };
+// ===== MOBILE: drag одним пальцем, pinch двумя =====
+(function(){
+  const el = canvas;            // перетаскиваем саму "маску" лица
+  function normXY(t, el){
+    const b = box.getBoundingClientRect();
+    return { px:(t.clientX - b.left)/b.width, py:(t.clientY - b.top)/b.height };
   }
-}, { passive:false });
+  // Drag
+  let drag = null;
+  el.addEventListener('touchstart', (e)=>{
+    if (e.touches.length !== 1) return;
+    e.preventDefault();
+    const {px,py} = normXY(e.touches[0], el);
+    drag = { start:{px,py}, faceStart:{...face} };
+  }, {passive:false});
 
-boxEl.addEventListener('touchmove', (e)=>{
-  if (!pinch) return;
-  e.preventDefault();
-  const s = dist(e.touches[0], e.touches[1]) / pinch.d0;
-  face.w = clamp(pinch.w0 * s, 0.10, 1.00);
-  face.h = clamp(pinch.h0 * s, 0.10, 1.00);
-  drawFace(0);
-}, { passive:false });
-
-boxEl.addEventListener('touchend', (e)=>{
-  if (pinch && e.touches.length < 2){
-    pinch = null;
-    localStorage.setItem('ACAI_FACE_RECT', JSON.stringify(face));
-  }
-});
-
-// Двойной тап — сброс к дефолту
-let lastTap = 0;
-boxEl.addEventListener('touchend', ()=>{
-  const now = Date.now();
-  if (now - lastTap < 300){
-    face = { x: 0.355, y: 0.16, w: 0.33, h: 0.235 }; // как в defaultFace
-    localStorage.setItem('ACAI_FACE_RECT', JSON.stringify(face));
+  el.addEventListener('touchmove', (e)=>{
+    if (!drag || e.touches.length !== 1) return;
+    e.preventDefault();
+    const {px,py} = normXY(e.touches[0], el);
+    const dx = px - drag.start.px;
+    const dy = py - drag.start.py;
+    face.x = clamp(drag.faceStart.x + dx, 0, 1 - face.w);
+    face.y = clamp(drag.faceStart.y + dy, 0, 1 - face.h);
+    // обновляем размеры/позицию канваса и перерисовываем
+    const b = box.getBoundingClientRect();
+    canvas.style.left = (b.width*face.x) + 'px';
+    canvas.style.top  = (b.height*face.y) + 'px';
     drawFace(0);
-  }
-  lastTap = now;
-});
+  }, {passive:false});
 
+  el.addEventListener('touchend', (e)=>{
+    if (drag && e.touches.length === 0){
+      localStorage.setItem('ACAI_FACE_RECT', JSON.stringify(face));
+    }
+    drag = null;
+  }, {passive:false});
+
+  // Pinch (масштаб)
+  let pinch = null;
+  function dist(t0,t1){ const dx=t0.clientX-t1.clientX, dy=t0.clientY-t1.clientY; return Math.hypot(dx,dy); }
+
+  el.addEventListener('touchstart', (e)=>{
+    if (e.touches.length === 2){
+      e.preventDefault();
+      pinch = { d0: dist(e.touches[0], e.touches[1]), w0: face.w, h0: face.h };
+    }
+  }, {passive:false});
+
+  el.addEventListener('touchmove', (e)=>{
+    if (!pinch || e.touches.length !== 2) return;
+    e.preventDefault();
+    const s = dist(e.touches[0], e.touches[1]) / pinch.d0;
+    face.w = clamp(pinch.w0 * s, 0.10, 0.90);
+    face.h = clamp(pinch.h0 * s, 0.10, 0.90);
+    face.x = clamp(face.x, 0, 1 - face.w);
+    face.y = clamp(face.y, 0, 1 - face.h);
+    // пересчитать рамку
+    const b = box.getBoundingClientRect();
+    canvas.style.left = (b.width*face.x) + 'px';
+    canvas.style.top  = (b.height*face.y) + 'px';
+    canvas.style.width  = (b.width*face.w) + 'px';
+    canvas.style.height = (b.height*face.h) + 'px';
+    canvas.width  = Math.round(b.width*face.w);
+    canvas.height = Math.round(b.height*face.h);
+    drawFace(0);
+  }, {passive:false});
+
+  el.addEventListener('touchend', (e)=>{
+    if (pinch && e.touches.length < 2){
+      pinch = null;
+      localStorage.setItem('ACAI_FACE_RECT', JSON.stringify(face));
+    }
+  }, {passive:false});
+
+  // Двойной тап — сброс к дефолту
+  let lastTap = 0;
+  el.addEventListener('touchend', ()=>{
+    const now = Date.now();
+    if (now - lastTap < 300){
+      face = { x: 0.355, y: 0.16, w: 0.33, h: 0.235 };
+      localStorage.setItem('ACAI_FACE_RECT', JSON.stringify(face));
+      // применяем сразу
+      const b = box.getBoundingClientRect();
+      canvas.style.left = (b.width*face.x) + 'px';
+      canvas.style.top  = (b.height*face.y) + 'px';
+      canvas.style.width  = (b.width*face.w) + 'px';
+      canvas.style.height = (b.height*face.h) + 'px';
+      canvas.width  = Math.round(b.width*face.w);
+      canvas.height = Math.round(b.height*face.h);
+      drawFace(0);
+    }
+    lastTap = now;
+  }, {passive:false});
+})();
 function drawFace(dt){
   const W = canvas.width, H = canvas.height;
   const cx = W/2, cy = H*0.47;
