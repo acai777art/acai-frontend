@@ -6,7 +6,7 @@
   (function () {
     try {
       const qs = new URLSearchParams(location.search);
-      let token = qs.get("token") || localStorage.getItem("acai_jwt") || "";
+      let token = qs.get("token")  localStorage.getItem("acai_jwt")  "";
 
       // Если токен прилетел через URL — сохраним и почистим адрес
       if (qs.get("token")) {
@@ -29,123 +29,218 @@
   <noscript>
     <meta http-equiv="refresh" content="0;url=https://affectivecybernetics.onrender.com">
   </noscript>
+
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ACAI Coach — Premium (Multilingual)</title>
+<title>Affective Realms: LUMINA — an ACAI Experience</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0a0b10; --text:#e9eef8; --muted:#9aa3b2;
-  --brand:#6aa4ff; --brand2:#62d3ff; --frame:#c9d3df; --frame-dark:#5f6a78;
+  --bg:#080a10; --text:#e9eef8; --muted:#a4aec1;
+  --aqua:#7AE6FF; --violet:#B37AFF; --amber:#FFB76B;
+  --brand:#7AE6FF; --brand2:#FFB76B;
+  --glass:#0f1320; --glass-stroke:#3a4352;
 }
 *{box-sizing:border-box} html,body{height:100%}
 body{
   margin:0; font-family:Inter,system-ui; color:var(--text);
   background:
-    radial-gradient(1200px 700px at -10% -10%, #14243e 0%, transparent 60%),
-    radial-gradient(1200px 700px at 110% 20%, #2b1b49 0%, transparent 60%),
-    linear-gradient(180deg,#0a0b10 0%,#0b0c10 100%);
+    radial-gradient(1600px 900px at 50% -10%, #0f162d 0%, transparent 60%),
+    radial-gradient(1400px 700px at 110% 20%, #1a1233 0%, transparent 60%),
+    linear-gradient(180deg,#080a10 0%,#0a0c12 100%);
 }
+
+/* Wrap & Nav */
 .wrap{max-width:1200px;margin:0 auto;padding:28px 22px 80px}
 .nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
-.brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:-.01em}
-.brand-mark{width:28px;height:28px;border-radius:8px;background:conic-gradient(from 200deg,#5b90ff,#61d2ff,#42d392,#a78bfa,#5b90ff);box-shadow:0 0 0 2px #111,0 6px 20px #5b90ff30 inset}
-.cta{display:inline-flex;gap:10px;align-items:center;background:linear-gradient(135deg,var(--brand),var(--brand2));padding:10px 16px;border-radius:12px;color:#fff;text-decoration:none;font-weight:700;box-shadow:0 10px 28px #5b90ff55}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.08em}
+.brand-mark{
+  width:28px;height:28px;border-radius:8px;
+  background:conic-gradient(from 200deg,var(--aqua),#62d3ff,#a78bfa,#ff79c6,var(--amber),var(--aqua));
+  box-shadow:0 0 0 2px #111,0 6px 20px #5b90ff30 inset;
+}
 .lang{display:flex;gap:8px;align-items:center}
-.lang button{border:1px solid #3a4352;background:#0f1320;color:#cfe5ff;padding:8px 10px;border-radius:10px;cursor:pointer;font-weight:600}
-.lang button.active{background:linear-gradient(135deg,var(--brand),var(--brand2));border-color:transparent;color:#fff}
+.lang button{
+  border:1px solid var(--glass-stroke);
+  background:var(--glass);color:#cfe5ff;padding:8px 10px;border-radius:10px;cursor:pointer;font-weight:600
+}
+.lang button.active{
+  background:linear-gradient(135deg,var(--aqua),var(--violet));
+  border-color:transparent;color:#001018
+}
+.cta{display:inline-flex;gap:10px;align-items:center;
+  background:linear-gradient(135deg,var(--aqua),var(--amber));
+  padding:10px 16px;border-radius:12px;color:#001018;text-decoration:none;font-weight:800;
+  box-shadow:0 10px 28px #5b90ff55; letter-spacing:.12em}
+
+/* Hero */
 .hero{display:grid;grid-template-columns:1.1fr 1fr;gap:42px;align-items:center}
 @media(max-width:980px){.hero{grid-template-columns:1fr}}
-.title{font-size:46px;line-height:1.12;font-weight:800;margin:0 0 10px}
-.lead{color:var(--muted);font-size:18px;margin:0 0 18px}
+.title{
+  font-size:46px;line-height:1.06;font-weight:800;margin:0 0 12px;
+  background:linear-gradient(90deg,var(--aqua),var(--violet),var(--amber));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  text-shadow:0 0 18px rgba(122,230,255,.12);
+  letter-spacing:.12em
+}
+.subtitle{color:var(--muted);font-size:18px;margin:0 0 18px}
+
+/* Stage with LUMINA */
 .stage{display:flex;justify-content:center;align-items:center;perspective:1600px}
-.phone{position:relative;width:360px;height:740px;margin:20px auto;border-radius:58px;background:linear-gradient(145deg,#e8eef5 0%,#aeb8c4 28%,#dfe7f1 38%,#9ba6b4 50%,#eef3f8 68%,#8a95a6 88%,#c7d1de 100%);box-shadow:0 60px 160px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.8)}
-.phone:before{content:"";position:absolute;inset:4px;border-radius:54px;background:linear-gradient(180deg,#0f1218 0%, #0c1016 100%);box-shadow:inset 0 0 0 1px #00000055, inset 0 0 24px rgba(0,0,0,.35)}
-.screen{position:absolute;inset:14px;border-radius:46px;overflow:hidden;background:linear-gradient(180deg,#0c121f 0%, #0a0f1a 100%)}
-.island{position:absolute;top:20px;left:50%;transform:translateX(-50%);width:148px;height:36px;border-radius:18px;background:linear-gradient(180deg,#0a0c12,#0b0e15);box-shadow:0 2px 10px rgba(0,0,0,.5)}
-.chat{position:absolute;inset:76px 18px 18px 18px;overflow:auto}
-.bubble{max-width:78%;padding:12px 14px;border-radius:14px;margin:8px 0;line-height:1.45;font-size:14px;border:1px solid #ffffff14}
-.b-ai{color:#ecf2ff;background:#101a2d}
-.b-user{margin-left:auto;color:#eaf1ff;background:#1b2a45}
+.card{
+  position:relative;width:420px;max-width:92vw;height:560px;margin:10px auto;border-radius:26px;
+  background: radial-gradient(120% 90% at 50% 8%, #0f1426 0%, #0b1020 60%, #080b16 100%);
+  box-shadow:0 60px 160px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.06);
+  overflow:hidden;
+}
+.card:before{
+  content:""; position:absolute; inset:1px; border-radius:25px;
+  background: radial-gradient(900px 700px at 50% 5%, rgba(122,230,255,.08), transparent 40%),
+              radial-gradient(800px 600px at 60% 15%, rgba(179,122,255,.08), transparent 50%),
+              radial-gradient(600px 500px at 40% 20%, rgba(255,183,107,.06), transparent 60%);
+  pointer-events:none;
+}
+.halo{
+  position:absolute; inset:0; background:
+    radial-gradient(500px 380px at 50% 32%, rgba(122,230,255,.28), transparent 70%),
+    radial-gradient(540px 400px at 50% 36%, rgba(179,122,255,.20), transparent 72%),
+    radial-gradient(600px 480px at 50% 36%, rgba(255,183,107,.16), transparent 74%);
+  filter: blur(6px);
+  opacity:.75;
+}
+
+/* CTA */
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
 footer{margin-top:56px;color:#a9b3c7;font-size:13px;opacity:.75;text-align:center}
+
+/* LUMINA SVG sizing */
+.lumina{position:absolute; left:0; right:0; top:0; bottom:0; display:flex; align-items:center; justify-content:center}
+.lumina svg{width:78%; max-width:560px; height:auto; filter: drop-shadow(0 0 28px rgba(122,230,255,.22))}
+
+/* Small helper chip */
+.chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.chip{background: rgba(255,255,255,.06); border:1px solid rgba(200,210,255,.18); color:#dfe8ff;
+  font-size:12px; padding:6px 10px; border-radius:12px; letter-spacing:.12em}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="nav">
-    <div class="brand"><div class="brand-mark"></div>ACAI Coach</div>
+    <div class="brand"><div class="brand-mark"></div>AFFECTIVE REALMS</div>
     <div class="lang">
       <button data-lang="en" class="active">EN</button>
       <button data-lang="uk">УКР</button>
       <button data-lang="de">DE</button>
-      <a id="ctaTop"  class="cta protected" href="app.html">Open the app</a>
+      <a id="ctaTop"  class="cta protected" href="app.html">PLAY PROLOGUE</a>
     </div>
   </div>
+
   <div class="hero">
     <div>
-      <h1 id="title" class="title">Premium emotional AI — calm guidance in your pocket.</h1>
-      <p id="lead" class="lead"> Natural tone, tiny steps, multilingual. You can open app to try the live chat.</p>
-      <a id="ctaMain" class="cta protected" href="app.html">Open the app</a>
+      <h1 id="title" class="title">Affective Realms: LUMINA</h1>
+      <p id="lead" class="subtitle">Enter the mirror between emotion and thought. Breathe, answer, align — and open the gate.</p>
+      <div class="actions">
+        <a id="ctaMain" class="cta protected" href="app.html">PLAY PROLOGUE</a>
+        <div class="chips">
+          <span class="chip">Neon Minimal</span>
+          <span class="chip">EMC Resonance</span>
+          <span class="chip">Multilingual</span>
+        </div>
+      </div>
     </div>
+
+    <!-- LUMINA card -->
     <div class="stage">
-      <div class="phone">
-        <div class="screen">
-          <div class="island"></div>
-          <div class="chat">
-            <div class="bubble b-ai" id="b1">ACAI: Hi! I’m here. How can I help?</div>
-            <div class="bubble b-user" id="b2">I want calm and focus.</div>
-            <div class="bubble b-ai" id="b3">Tiny step: 2 minutes of 4–4 breathing. Then we jot one priority ✍️</div>
-          </div>
+      <div class="card">
+        <div class="halo"></div>
+        <div class="lumina">
+          <!-- Inline LUMINA (filled glow + rim, breathing) -->
+          <svg viewBox="0 0 1200 1000" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-label="Lumina">
+            <defs>
+              <radialGradient id="innerGrad" cx="600" cy="340" r="560" gradientUnits="userSpaceOnUse">
+                <stop offset="0%"   stop-color="#5ACBFF" stop-opacity="0.95"/>
+                <stop offset="52%"  stop-color="#7E79FF" stop-opacity="0.60"/>
+                <stop offset="92%"  stop-color="#FF6EBC" stop-opacity="0.30"/>
+                <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+              </radialGradient>
+              <linearGradient id="rimLR" x1="140" y1="0" x2="1060" y2="0" gradientUnits="userSpaceOnUse">
+                <stop offset="0%"   stop-color="#59CCFF"/>
+                <stop offset="55%"  stop-color="#8B7CFF"/>
+                <stop offset="100%" stop-color="#FF6EBC"/>
+              </linearGradient>
+              <filter id="breathe">
+                <feGaussianBlur stdDeviation="0">
+                  <animate attributeName="stdDeviation" values="0;1.1;0" dur="6s" repeatCount="indefinite"/>
+                </feGaussianBlur>
+              </filter>
+            </defs>
+            <path d="M 260 760 Q 330 520 600 500 Q 870 520 940 760 Q 840 860 600 860 Q 360 860 260 760 Z"
+                  fill="url(#innerGrad)" stroke="url(#rimLR)" stroke-width="4" filter="url(#breathe)"/>
+            <path d="M 600 205 C 660 205 715 262 715 330 C 715 392 673 448 600 458 C 527 448 485 392 485 330 C 485 262 540 205 600 205 Z"
+                  fill="url(#innerGrad)" stroke="url(#rimLR)" stroke-width="4" filter="url(#breathe)"/>
+          </svg>
         </div>
       </div>
     </div>
   </div>
-  <footer id="footer">© 2025 ACAI Coach • by Artem Teteria, AI System Architect</footer>
+
+  <footer id="footer">© 2025 Affective Cybernetics • an ACAI Experience by Artem Teteria</footer>
 </div>
 
 <script>
+/* i18n */
 const strings = {
-  en:{title:"Emotional AI — calm guidance in your pocket.",lead:" Natural tone, tiny steps, multilingual. You can open app to try the live chat.",cta:"Open the app",bubbles:["ACAI: Hi! I’m here. How can I help?","I want calm and focus.","Tiny step: 2 minutes of 4–4 breathing. Then we jot one priority ✍️"],footer:"© 2025 ACAI Coach • by Artem Teteria, AI System Architect"},
-  uk:{title:"Емоційний ШІ — спокійний супровід у вашій кишені.",lead:" Природний тон, маленькі кроки, мультимовність. Ти можеш відкрити застосунок щоб спробувати чат.",cta:"Відкрити застосунок",bubbles:["ACAI: Привіт! Я поруч. Чим допомогти?","Хочу спокою та фокусу.","Маленький крок: 2 хвилини дихання «4–4». Потім записуємо один пріоритет ✍️"],footer:"© 2025 ACAI Coach • by Artem Teteria, AI System Architect"},
-  de:{title:"Emotional-KI – ruhige Begleitung in deiner Tasche.",lead:" Natürlicher Ton, kleine Schritte, Mehrsprachigkeit. Du kannst die App öffnen, um den Chat zu testen.",cta:"App öffnen",bubbles:["ACAI: Hi! Ich bin da. Wobei soll ich helfen?","Ich möchte Ruhe und Fokus.","Mini-Schritt: 2 Minuten 4–4-Atmung. Danach notieren wir eine Priorität ✍️"],footer:"© 2025 ACAI Coach • by Artem Teteria, AI System Architect"}
+  en:{
+    title:"Affective Realms: LUMINA",
+    lead:"Enter the mirror between emotion and thought. Breathe, answer, align — and open the gate.",
+    cta:"PLAY PROLOGUE",
+    footer:"© 2025 Affective Cybernetics • an ACAI Experience by Artem Teteria"
+  },
+  uk:{
+    title:"Affective Realms: LUMINA",
+    lead:"Увійди в дзеркало між емоцією та думкою. Дихай, відповідай, вирівнюй — і відкрий браму.",
+    cta:"ПОЧАТИ ПРОЛОГ",
+    footer:"© 2025 Affective Cybernetics • досвід ACAI від Artem Teteria"
+  },
+  de:{
+    title:"Affective Realms: LUMINA",
+    lead:"Tritt in den Spiegel zwischen Emotion und Gedanke. Atme, antworte, richte aus – und öffne das Tor.",
+    cta:"PROLOG SPIELEN",
+    footer:"© 2025 Affective Cybernetics • ein ACAI-Erlebnis von Artem Teteria"
+  }
 };
 function setLang(l){
   const t = strings[l] || strings.en;
   document.getElementById("title").innerText = t.title;
-  document.getElementById("lead").innerHTML = t.lead;
-  document.getElementById("ctaTop").innerText = t.cta;
+  document.getElementById("lead").innerText  = t.lead;
+  document.getElementById("ctaTop").innerText  = t.cta;
   document.getElementById("ctaMain").innerText = t.cta;
-  document.getElementById("b1").innerText = t.bubbles[0];
-  document.getElementById("b2").innerText = t.bubbles[1];
-  document.getElementById("b3").innerText = t.bubbles[2];
-  document.getElementById("footer").innerText = t.footer;
+  document.getElementById("footer").innerText  = t.footer;
   document.querySelectorAll(".lang button").forEach(b=>b.classList.toggle("active",b.dataset.lang===l));
   localStorage.setItem("acai_lang",l);
 }
 document.querySelectorAll(".lang button").forEach(btn=>btn.addEventListener("click",()=>setLang(btn.dataset.lang)));
 setLang(localStorage.getItem("acai_lang") || "en");
 </script>
-<script>
-(function(){
-  // 1) читаем токен из URL или localStorage
-  const qs = new URLSearchParams(location.search);
-  let jwt = qs.get("token") || localStorage.getItem("acai_jwt") || "";
 
-  // если пришёл через URL — сохраняем и чистим адресную строку
+<script>
+/* проклейка токена к защищённым ссылкам */
+(function(){
+  const qs = new URLSearchParams(location.search);
+  let jwt = qs.get("token")  localStorage.getItem("acai_jwt")  "";
+
   if (qs.get("token")) {
     localStorage.setItem("acai_jwt", jwt);
     history.replaceState({}, "", location.pathname + location.hash);
   }
 
-  // 2) приклеиваем токен ко всем защищённым ссылкам
   document.querySelectorAll("a.protected").forEach(a => {
     const url = new URL(a.getAttribute("href"), location.href);
     if (jwt && jwt.length > 10) {
       url.searchParams.set("token", jwt);
       a.setAttribute("href", url.toString());
     } else {
-      // без токена — блокируем клик и ведём на главную с Telegram-входом
       a.addEventListener("click", (e) => {
         e.preventDefault();
         window.location.href = "https://affectivecybernetics.onrender.com";
