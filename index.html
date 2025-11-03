@@ -1,128 +1,174 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- 🔐 HARD GUARD: блокируем страницу без токена -->
+  <!-- 🔐 Guard: блокируем страницу без токена -->
   <script>
   (function () {
     try {
       const qs = new URLSearchParams(location.search);
       let token = qs.get("token")  localStorage.getItem("acai_jwt")  "";
-
-      // Если токен прилетел через URL — сохраним и почистим адрес
       if (qs.get("token")) {
         localStorage.setItem("acai_jwt", token);
         history.replaceState({}, "", location.pathname + location.hash);
       }
-
-      // Нет токена? Немедленно уходим на страницу логина
       if (!token || token.length < 10) {
         window.location.replace("https://affectivecybernetics.onrender.com");
-        // На случай блокировки redirect покажем заглушку
         document.write('<div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#0b0d17;color:#ffd700;font:16px/1.5 system-ui;z-index:999999">Access denied — login via Telegram…</div>');
       }
     } catch(e) {
-      // Если даже тут ошибка — тоже уходим
       window.location.replace("https://affectivecybernetics.onrender.com");
     }
   })();
   </script>
-  <noscript>
-    <meta http-equiv="refresh" content="0;url=https://affectivecybernetics.onrender.com">
-  </noscript>
+  <noscript><meta http-equiv="refresh" content="0;url=https://affectivecybernetics.onrender.com"></noscript>
 
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Affective Realms: LUMINA — an ACAI Experience</title>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#080a10; --text:#e9eef8; --muted:#a4aec1;
-  --aqua:#7AE6FF; --violet:#B37AFF; --amber:#FFB76B;
-  --brand:#7AE6FF; --brand2:#FFB76B;
-  --glass:#0f1320; --glass-stroke:#3a4352;
-}
-*{box-sizing:border-box} html,body{height:100%}
-body{
-  margin:0; font-family:Inter,system-ui; color:var(--text);
-  background:
-    radial-gradient(1600px 900px at 50% -10%, #0f162d 0%, transparent 60%),
-    radial-gradient(1400px 700px at 110% 20%, #1a1233 0%, transparent 60%),
-    linear-gradient(180deg,#080a10 0%,#0a0c12 100%);
-}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Affective Realms: LUMINA — an ACAI Experience</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
-/* Wrap & Nav */
-.wrap{max-width:1200px;margin:0 auto;padding:28px 22px 80px}
-.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
-.brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.08em}
-.brand-mark{
-  width:28px;height:28px;border-radius:8px;
-  background:conic-gradient(from 200deg,var(--aqua),#62d3ff,#a78bfa,#ff79c6,var(--amber),var(--aqua));
-  box-shadow:0 0 0 2px #111,0 6px 20px #5b90ff30 inset;
-}
-.lang{display:flex;gap:8px;align-items:center}
-.lang button{
-  border:1px solid var(--glass-stroke);
-  background:var(--glass);color:#cfe5ff;padding:8px 10px;border-radius:10px;cursor:pointer;font-weight:600
-}
-.lang button.active{
-  background:linear-gradient(135deg,var(--aqua),var(--violet));
-  border-color:transparent;color:#001018
-}
-.cta{display:inline-flex;gap:10px;align-items:center;
-  background:linear-gradient(135deg,var(--aqua),var(--amber));
-  padding:10px 16px;border-radius:12px;color:#001018;text-decoration:none;font-weight:800;
-  box-shadow:0 10px 28px #5b90ff55; letter-spacing:.12em}
+  <style>
+    :root{
+      --bg:#080a10; --text:#e9eef8; --muted:#a4aec1;
+      --aqua:#7AE6FF; --violet:#B37AFF; --amber:#FFB76B;
+      --glass:#0f1320; --glass-stroke:#3a4352;
+    }
+    *{box-sizing:border-box} html,body{height:100%}
+    body{
+      margin:0; font-family:Inter,system-ui; color:var(--text);
+      background:
+        radial-gradient(1600px 900px at 50% -10%, #0f162d 0%, transparent 60%),
+        radial-gradient(1400px 700px at 110% 20%, #1a1233 0%, transparent 60%),
+        linear-gradient(180deg,#080a10 0%,#0a0c12 100%);
+    }
 
-/* Hero */
-.hero{display:grid;grid-template-columns:1.1fr 1fr;gap:42px;align-items:center}
-@media(max-width:980px){.hero{grid-template-columns:1fr}}
-.title{
-  font-size:46px;line-height:1.06;font-weight:800;margin:0 0 12px;
-  background:linear-gradient(90deg,var(--aqua),var(--violet),var(--amber));
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  text-shadow:0 0 18px rgba(122,230,255,.12);
-  letter-spacing:.12em
-}
-.subtitle{color:var(--muted);font-size:18px;margin:0 0 18px}
+    .wrap{max-width:1200px;margin:0 auto;padding:28px 22px 80px}
+    .nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.08em}
+    .brand-mark{
+      width:28px;height:28px;border-radius:8px;
+      background:conic-gradient(from 200deg,var(--aqua),#62d3ff,#a78bfa,#ff79c6,var(--amber),var(--aqua));
+      box-shadow:0 0 0 2px #111,0 6px 20px #5b90ff30 inset
+    }
 
-/* Stage with LUMINA */
-.stage{display:flex;justify-content:center;align-items:center;perspective:1600px}
-.card{
-  position:relative;width:420px;max-width:92vw;height:560px;margin:10px auto;border-radius:26px;
-  background: radial-gradient(120% 90% at 50% 8%, #0f1426 0%, #0b1020 60%, #080b16 100%);
-  box-shadow:0 60px 160px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.06);
-  overflow:hidden;
-}
-.card:before{
-  content:""; position:absolute; inset:1px; border-radius:25px;
-  background: radial-gradient(900px 700px at 50% 5%, rgba(122,230,255,.08), transparent 40%),
-              radial-gradient(800px 600px at 60% 15%, rgba(179,122,255,.08), transparent 50%),
-              radial-gradient(600px 500px at 40% 20%, rgba(255,183,107,.06), transparent 60%);
-  pointer-events:none;
-}
-.halo{
-  position:absolute; inset:0; background:
-    radial-gradient(500px 380px at 50% 32%, rgba(122,230,255,.28), transparent 70%),
-    radial-gradient(540px 400px at 50% 36%, rgba(179,122,255,.20), transparent 72%),
-    radial-gradient(600px 480px at 50% 36%, rgba(255,183,107,.16), transparent 74%);
-  filter: blur(6px);
-  opacity:.75;
-}
+    .lang{display:flex;gap:8px;align-items:center}
+    .lang button{
+      border:1px solid var(--glass-stroke); background:var(--glass); color:#cfe5ff;
+      padding:8px 10px; border-radius:10px; cursor:pointer; font-weight:600
+    }
+    .lang button.active{
+      background:linear-gradient(135deg,var(--aqua),var(--amber));
+      border-color:transparent; color:#001018
+    }
 
-/* CTA */
-.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
-footer{margin-top:56px;color:#a9b3c7;font-size:13px;opacity:.75;text-align:center}
+    /* Перелив заголовка */
+    .title{
+      font-size:46px; line-height:1.06; font-weight:800; margin:0 0 12px;
+      background:linear-gradient(90deg,var(--aqua),var(--violet),var(--amber));
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+      text-shadow:0 0 18px rgba(122,230,255,.12);
+      letter-spacing:.12em;
+      background-size:200% 100%;
+      animation:hueSlide 8s linear infinite;
+    }
+    @keyframes hueSlide{from{background-position:0% 50%}to{background-position:200% 50%}}
 
-/* LUMINA SVG sizing */
-.lumina{position:absolute; left:0; right:0; top:0; bottom:0; display:flex; align-items:center; justify-content:center}
-.lumina svg{width:78%; max-width:560px; height:auto; filter: drop-shadow(0 0 28px rgba(122,230,255,.22))}
+    .subtitle{color:var(--muted);font-size:18px;margin:0 0 18px}
 
-/* Small helper chip */
-.chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-.chip{background: rgba(255,255,255,.06); border:1px solid rgba(200,210,255,.18); color:#dfe8ff;
-  font-size:12px; padding:6px 10px; border-radius:12px; letter-spacing:.12em}
-</style>
+    .hero{display:grid;grid-template-columns:1.1fr 1fr;gap:42px;align-items:center}
+    @media(max-width:980px){.hero{grid-template-columns:1fr}}
+
+    /* Премиум-кнопка */
+    .cta{
+      position:relative; display:inline-flex; align-items:center; justify-content:center;
+      gap:10px; padding:12px 18px; border-radius:14px; overflow:hidden; cursor:pointer;
+      background:linear-gradient(135deg,var(--aqua),var(--amber));
+      box-shadow: 0 12px 28px rgba(122,230,255,.35), 0 2px 8px rgba(0,0,0,.45);
+      transform-style:preserve-3d;
+      transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
+      --mx:50%; --my:50%;
+      will-change:transform;
+      text-decoration:none;
+    }
+    /* Перелив текста в кнопке */
+    .cta .label{
+      position:relative; z-index:2; font-weight:900; letter-spacing:.14em;
+      background:linear-gradient(90deg,#ffffff,#d8f7ff,#ffffff);
+      background-size:200% 100%;
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+      animation:shineText 3.2s linear infinite;
+    }
+    @keyframes shineText{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+
+    /* Блик за курсором */
+    .cta::after{
+      content:""; position:absolute; inset:-1px; pointer-events:none;
+      background:radial-gradient(140px 140px at var(--mx) var(--my),
+        rgba(255,255,255,.18), rgba(255,255,255,0) 60%);
+      opacity:0; transition:opacity .18s ease;
+    }
+    /* Диагональный шейн */
+    .cta::before{
+      content:""; position:absolute; left:-40%; top:-200%;
+      width:180%; height:400%; transform:rotate(22deg);
+      background:linear-gradient(to right, transparent 46%, rgba(255,255,255,.18) 50%, transparent 54%);
+      mix-blend-mode:screen; opacity:0; transition:opacity .25s ease;
+    }
+    .cta:hover{ box-shadow:0 18px 42px rgba(122,230,255,.45), 0 6px 18px rgba(0,0,0,.55) }
+    .cta:hover::after{ opacity:1 }
+    .cta:hover::before{ opacity:1; animation:sweep 1.6s ease }
+    @keyframes sweep{ from{left:-40%} to{left:60%} }
+    .cta:active{ transform:perspective(700px) translateZ(0) scale(.985) }
+
+    .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+    .chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .chip{
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(200,210,255,.22);
+      color:#dfe8ff; font-size:12px; padding:6px 10px; border-radius:12px; letter-spacing:.12em;
+      transition:transform .15s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    .chip:hover{
+      transform:translateY(-1px);
+      border-color:rgba(122,230,255,.45);
+      box-shadow:0 6px 16px rgba(122,230,255,.18);
+    }
+
+    /* Карточка с LUMINA */
+    .stage{display:flex;justify-content:center;align-items:center;perspective:1600px}
+    .card{
+      position:relative;width:420px;max-width:92vw;height:560px;margin:10px auto;border-radius:26px;
+      background: radial-gradient(120% 90% at 50% 8%, #0f1426 0%, #0b1020 60%, #080b16 100%);
+      box-shadow:0 60px 160px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.06);
+      overflow:hidden;
+    }
+    .card:before{
+      content:""; position:absolute; inset:1px; border-radius:25px;
+      background: radial-gradient(900px 700px at 50% 5%, rgba(122,230,255,.08), transparent 40%),
+                  radial-gradient(800px 600px at 60% 15%, rgba(179,122,255,.08), transparent 50%),
+                  radial-gradient(600px 500px at 40% 20%, rgba(255,183,107,.06), transparent 60%);
+      pointer-events:none;
+    }
+
+    /* LUMINA с фото */
+    .lumina{position:absolute;left:0;right:0;top:0;bottom:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .lumina-img{
+      width:78%;max-width:540px;height:auto;border-radius:20px;
+      filter: drop-shadow(0 0 40px rgba(122,230,255,0.25)) drop-shadow(0 0 80px rgba(179,122,255,0.15));
+      animation:pulse 6s ease-in-out infinite;
+      user-select:none;-webkit-user-drag:none
+    }
+    .lumina-glow{
+      position:absolute;inset:0;
+      background:radial-gradient(circle at 50% 40%, rgba(122,230,255,0.25), rgba(179,122,255,0.18), rgba(255,183,107,0.1), transparent 70%);
+      filter: blur(40px); animation:halo 8s ease-in-out infinite;
+    }
+    @keyframes pulse{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.03);filter:brightness(1.15)}}
+    @keyframes halo{0%,100%{opacity:.8}50%{opacity:.4}}
+
+    footer{margin-top:56px;color:#a9b3c7;font-size:13px;opacity:.75;text-align:center}
+  </style>
 </head>
 <body>
 <div class="wrap">
@@ -132,7 +178,7 @@ footer{margin-top:56px;color:#a9b3c7;font-size:13px;opacity:.75;text-align:cente
       <button data-lang="en" class="active">EN</button>
       <button data-lang="uk">УКР</button>
       <button data-lang="de">DE</button>
-      <a id="ctaTop"  class="cta protected" href="app.html">PLAY PROLOGUE</a>
+      <a id="ctaTop" class="cta protected" href="app.html"><span class="label" id="ctaTopLabel">PLAY PROLOGUE</span></a>
     </div>
   </div>
 
@@ -141,7 +187,7 @@ footer{margin-top:56px;color:#a9b3c7;font-size:13px;opacity:.75;text-align:cente
       <h1 id="title" class="title">Affective Realms: LUMINA</h1>
       <p id="lead" class="subtitle">Enter the mirror between emotion and thought. Breathe, answer, align — and open the gate.</p>
       <div class="actions">
-        <a id="ctaMain" class="cta protected" href="app.html">PLAY PROLOGUE</a>
+        <a id="ctaMain" class="cta protected" href="app.html"><span class="label" id="ctaMainLabel">PLAY PROLOGUE</span></a>
         <div class="chips">
           <span class="chip">Neon Minimal</span>
           <span class="chip">EMC Resonance</span>
@@ -150,36 +196,12 @@ footer{margin-top:56px;color:#a9b3c7;font-size:13px;opacity:.75;text-align:cente
       </div>
     </div>
 
-    <!-- LUMINA card -->
     <div class="stage">
       <div class="card">
-        <div class="halo"></div>
         <div class="lumina">
-          <!-- Inline LUMINA (filled glow + rim, breathing) -->
-          <svg viewBox="0 0 1200 1000" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-label="Lumina">
-            <defs>
-              <radialGradient id="innerGrad" cx="600" cy="340" r="560" gradientUnits="userSpaceOnUse">
-                <stop offset="0%"   stop-color="#5ACBFF" stop-opacity="0.95"/>
-                <stop offset="52%"  stop-color="#7E79FF" stop-opacity="0.60"/>
-                <stop offset="92%"  stop-color="#FF6EBC" stop-opacity="0.30"/>
-                <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
-              </radialGradient>
-              <linearGradient id="rimLR" x1="140" y1="0" x2="1060" y2="0" gradientUnits="userSpaceOnUse">
-                <stop offset="0%"   stop-color="#59CCFF"/>
-                <stop offset="55%"  stop-color="#8B7CFF"/>
-                <stop offset="100%" stop-color="#FF6EBC"/>
-              </linearGradient>
-              <filter id="breathe">
-                <feGaussianBlur stdDeviation="0">
-                  <animate attributeName="stdDeviation" values="0;1.1;0" dur="6s" repeatCount="indefinite"/>
-                </feGaussianBlur>
-              </filter>
-            </defs>
-            <path d="M 260 760 Q 330 520 600 500 Q 870 520 940 760 Q 840 860 600 860 Q 360 860 260 760 Z"
-                  fill="url(#innerGrad)" stroke="url(#rimLR)" stroke-width="4" filter="url(#breathe)"/>
-            <path d="M 600 205 C 660 205 715 262 715 330 C 715 392 673 448 600 458 C 527 448 485 392 485 330 C 485 262 540 205 600 205 Z"
-                  fill="url(#innerGrad)" stroke="url(#rimLR)" stroke-width="4" filter="url(#breathe)"/>
-          </svg>
+          <div class="lumina-glow"></div>
+          <!-- 👇 подставь свой файл или data:uri -->
+          <img src="lumina-bg.jpg" alt="LUMINA" class="lumina-img">
         </div>
       </div>
     </div>
@@ -188,66 +210,81 @@ footer{margin-top:56px;color:#a9b3c7;font-size:13px;opacity:.75;text-align:cente
   <footer id="footer">© 2025 Affective Cybernetics • an ACAI Experience by Artem Teteria</footer>
 </div>
 
+<!-- i18n -->
 <script>
-/* i18n */
-const strings = {
-  en:{
-    title:"Affective Realms: LUMINA",
-    lead:"Enter the mirror between emotion and thought. Breathe, answer, align — and open the gate.",
-    cta:"PLAY PROLOGUE",
-    footer:"© 2025 Affective Cybernetics • an ACAI Experience by Artem Teteria"
-  },
-  uk:{
-    title:"Affective Realms: LUMINA",
-    lead:"Увійди в дзеркало між емоцією та думкою. Дихай, відповідай, вирівнюй — і відкрий браму.",
-    cta:"ПОЧАТИ ПРОЛОГ",
-    footer:"© 2025 Affective Cybernetics • досвід ACAI від Artem Teteria"
-  },
-  de:{
-    title:"Affective Realms: LUMINA",
-    lead:"Tritt in den Spiegel zwischen Emotion und Gedanke. Atme, antworte, richte aus – und öffne das Tor.",
-    cta:"PROLOG SPIELEN",
-    footer:"© 2025 Affective Cybernetics • ein ACAI-Erlebnis von Artem Teteria"
+  const strings = {
+    en:{title:"Affective Realms: LUMINA",lead:"Enter the mirror between emotion and thought. Breathe, answer, align — and open the gate.",cta:"PLAY PROLOGUE",footer:"© 2025 Affective Cybernetics • an ACAI Experience by Artem Teteria"},
+    uk:{title:"Affective Realms: LUMINA",lead:"Увійди в дзеркало між емоцією та думкою. Дихай, відповідай, вирівнюй — і відкрий браму.",cta:"ПОЧАТИ ПРОЛОГ",footer:"© 2025 Affective Cybernetics • досвід ACAI від Artem Teteria"},
+    de:{title:"Affective Realms: LUMINA",lead:"Tritt in den Spiegel zwischen Emotion und Gedanke. Atme, antworte, richte aus – und öffne das Tor.",cta:"PROLOG SPIELEN",footer:"© 2025 Affective Cybernetics • ein ACAI-Erlebnis von Artem Teteria"}
+  };
+  function setLang(l){
+    const t = strings[l] || strings.en;
+    document.getElementById("title").innerText  = t.title;
+    document.getElementById("lead").innerText   = t.lead;
+    document.getElementById("ctaTopLabel").innerText  = t.cta;
+    document.getElementById("ctaMainLabel").innerText = t.cta;
+    document.getElementById("footer").innerText = t.footer;
+    document.querySelectorAll(".lang button").forEach(b=>b.classList.toggle("active",b.dataset.lang===l));
+    localStorage.setItem("acai_lang",l);
   }
-};
-function setLang(l){
-  const t = strings[l] || strings.en;
-  document.getElementById("title").innerText = t.title;
-  document.getElementById("lead").innerText  = t.lead;
-  document.getElementById("ctaTop").innerText  = t.cta;
-  document.getElementById("ctaMain").innerText = t.cta;
-  document.getElementById("footer").innerText  = t.footer;
-  document.querySelectorAll(".lang button").forEach(b=>b.classList.toggle("active",b.dataset.lang===l));
-  localStorage.setItem("acai_lang",l);
-}
-document.querySelectorAll(".lang button").forEach(btn=>btn.addEventListener("click",()=>setLang(btn.dataset.lang)));
-setLang(localStorage.getItem("acai_lang") || "en");
+  document.querySelectorAll(".lang button").forEach(btn=>btn.addEventListener("click",()=>setLang(btn.dataset.lang)));
+  setLang(localStorage.getItem("acai_lang") || "en");
 </script>
 
+<!-- Проклейка токена к защищённым ссылкам -->
 <script>
-/* проклейка токена к защищённым ссылкам */
-(function(){
-  const qs = new URLSearchParams(location.search);
-  let jwt = qs.get("token")  localStorage.getItem("acai_jwt")  "";
+  (function(){
+    const qs = new URLSearchParams(location.search);
+    let jwt = qs.get("token")  localStorage.getItem("acai_jwt")  "";
+    if (qs.get("token")) {
+      localStorage.setItem("acai_jwt", jwt);
+      history.replaceState({}, "", location.pathname + location.hash);
+    }
+    document.querySelectorAll("a.protected").forEach(a => {
+      const url = new URL(a.getAttribute("href"), location.href);
+      if (jwt && jwt.length > 10) {
+        url.searchParams.set("token", jwt);
+        a.setAttribute("href", url.toString());
+      } else {
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          window.location.href = "https://affectivecybernetics.onrender.com";
+        });
+      }
+    });
+  })();
+</script>
 
-  if (qs.get("token")) {
-    localStorage.setItem("acai_jwt", jwt);
-    history.replaceState({}, "", location.pathname + location.hash);
-  }
-
-  document.querySelectorAll("a.protected").forEach(a => {
-    const url = new URL(a.getAttribute("href"), location.href);
-    if (jwt && jwt.length > 10) {
-      url.searchParams.set("token", jwt);
-      a.setAttribute("href", url.toString());
-    } else {
-      a.addEventListener("click", (e) => {
-        e.preventDefault();
-        window.location.href = "https://affectivecybernetics.onrender.com";
+<!-- 💎 Живые премиум-кнопки: магнит + 3D-наклон и бликами -->
+<script>
+(function buttonMotion(sel){
+  const btns = document.querySelectorAll(sel);
+  btns.forEach(btn=>{
+    let raf = 0;
+    function setTilt(e){
+      const r = btn.getBoundingClientRect();
+      const x = e.clientX - r.left;
+      const y = e.clientY - r.top;
+      const nx = (x / r.width) - 0.5;
+      const ny = (y / r.height) - 0.5;
+      const rx = (-ny) * 10;  // поворот по X
+      const ry = ( nx) * 12;  // поворот по Y
+      btn.style.setProperty('--mx', x + 'px');
+      btn.style.setProperty('--my', y + 'px');
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(()=>{
+        btn.style.transform = perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(0);
       });
     }
+    btn.addEventListener('mousemove', setTilt, {passive:true});
+    btn.addEventListener('mouseleave', ()=>{ btn.style.transform = 'perspective(700px) rotateX(0) rotateY(0)'; }, {passive:true});
+    btn.addEventListener('mousedown', ()=>{ btn.style.transform += ' scale(0.985)'; });
+    btn.addEventListener('mouseup',   ()=>{ btn.style.transform = btn.style.transform.replace(' scale(0.985)',''); });
+    // touch
+    btn.addEventListener('touchstart', ()=>{ btn.style.transform='scale(0.985)'; }, {passive:true});
+    btn.addEventListener('touchend',   ()=>{ btn.style.transform=''; }, {passive:true});
   });
-})();
+})('.cta');
 </script>
 </body>
 </html>
