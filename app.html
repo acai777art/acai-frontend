@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Affective Realms: LUMINA — Prologue Chat</title>
 <style>
   :root{
@@ -10,29 +10,44 @@
     --card:#0b0f18;
     --ink:#e9eef8;
     --muted:#9aa3af;
-    --accent:#7AE6FF;   /* динамически меняется из JS через OKLCH */
+    --accent:#7AE6FF;       /* обновляется из JS (oklch) */
     --ring:#7AE6FF60;
     --violet:#B37AFF;
     --amber:#FFB76B;
-  }
 
+    /* 🎨 Укажи здесь свой фон: URL или data:image/... */
+    --bg-image: url("YOUR_BACKGROUND_IMAGE_URL_OR_DATA_URI_HERE");
+  }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
     margin:0;
     font:16px/1.5 ui-sans-serif, system-ui, -apple-system, "SF Pro Text", Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial;
     color:var(--ink);
-    background:
-      radial-gradient(1300px 800px at 80% -10%, color-mix(in oklab, var(--accent) 18%, #000), transparent 62%),
-      radial-gradient(1000px 600px at -10% 90%, color-mix(in oklab, var(--accent) 12%, #000), transparent 56%),
-      linear-gradient(180deg,#07090f 0%, #06080d 100%);
-    transition: background 900ms ease, color 300ms ease;
+    background: #000; /* реальный фон рисуем слоями ниже */
     overflow:hidden;
   }
 
-  /* STAR GRID */
+  /* 📸 Слой фоновой картинки + мягкие градиенты сверху */
+  .bg{
+    position:fixed; inset:0; z-index:-3;
+    background-image: var(--bg-image);
+    background-size:cover; background-position:center; background-repeat:no-repeat;
+    filter: saturate(1.05) brightness(.95);
+  }
+  .bg::after{
+    /* космическая дымка + виньетка, чтобы UI читался */
+    content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(1300px 800px at 80% -10%, color-mix(in oklab, var(--accent) 16%, #000) 0%, transparent 62%),
+      radial-gradient(1000px 600px at -10% 90%, color-mix(in oklab, var(--accent) 10%, #000) 0%, transparent 56%),
+      linear-gradient(180deg,#07090fbb 0%, #06080dcc 100%);
+    z-index:1;
+  }
+
+  /* лёгкая звёздная сетка */
   .grid{
-    position:fixed; inset:0; pointer-events:none; opacity:.07;
+    position:fixed; inset:0; pointer-events:none; opacity:.07; z-index:-2;
     background-image:
       radial-gradient(1px 1px at 10% 20%, #fff 50%, transparent 51%),
       radial-gradient(1px 1px at 70% 60%, #fff 50%, transparent 51%),
@@ -41,12 +56,11 @@
     mix-blend-mode:screen;
   }
 
-  /* TOP BAR — GAME LOOK */
+  /* верхняя панель */
   .bar{
     height:68px; padding:0 16px; display:flex; align-items:center; gap:12px;
     border-bottom:1px solid color-mix(in oklab, var(--accent) 18%, transparent);
-    background:
-      linear-gradient(180deg, color-mix(in oklab, var(--accent) 9%, #000) 0%, transparent 100%);
+    background: linear-gradient(180deg, color-mix(in oklab, var(--accent) 9%, #000) 0%, transparent 100%);
     position:sticky; top:0; z-index:5; backdrop-filter: blur(6px);
   }
   .spark{
@@ -55,10 +69,7 @@
     box-shadow:0 0 0 2px #0a0d14, 0 0 22px var(--ring) inset, 0 8px 22px #0008;
     animation: orbit 8s linear infinite;
   }
-  @keyframes orbit{
-    0%{ filter:hue-rotate(0deg) }
-    100%{ filter:hue-rotate(360deg) }
-  }
+  @keyframes orbit{ 0%{ filter:hue-rotate(0deg) } 100%{ filter:hue-rotate(360deg) } }
 
   .title{
     font-weight:900; letter-spacing:.18em; text-transform:uppercase;
@@ -77,23 +88,18 @@
     font-size:12px; text-transform:uppercase; letter-spacing:.16em; opacity:.9;
   }
 
-  /* LAYOUT */
+  /* лейаут */
   .wrap{ height:calc(100% - 68px); display:grid; grid-template-rows: 1fr auto; }
-  .feed{
-    overflow:auto; padding:24px 16px 8px 16px; scroll-behavior:smooth;
-  }
+  .feed{ overflow:auto; padding:24px 16px 8px 16px; scroll-behavior:smooth; }
 
-  /* BUBBLES — HOLOGRAPHIC */
+  /* пузырьки */
   .bubble{
     max-width:min(860px, 92vw);
     margin:10px 0; padding:14px 16px; white-space:pre-wrap;
     border-radius:14px; position:relative;
     background: linear-gradient(180deg, #0b0f18 0%, #0a0e15 100%);
     border:1px solid color-mix(in oklab, var(--accent) 18%, #1a2230);
-    box-shadow:
-      0 1px 0 #0008,
-      inset 0 0 0 999px #ffffff03,
-      0 8px 24px #000a;
+    box-shadow: 0 1px 0 #0008, inset 0 0 0 999px #ffffff03, 0 8px 24px #000a;
   }
   .bubble::after{
     content:""; position:absolute; inset:-1px; border-radius:inherit; pointer-events:none;
@@ -108,7 +114,23 @@
     border-color: color-mix(in oklab, var(--accent) 34%, #1a2230);
   }
 
-  /* COMPOSER + PREMIUM SEND BUTTON */
+  /* «ИИ печатает…» */
+  .typing{
+    display:inline-flex; align-items:center; gap:8px;
+    color: color-mix(in oklab, var(--ink) 75%, var(--accent));
+    font-weight:600; letter-spacing:.06em;
+  }
+  .dots{ display:inline-flex; gap:4px; }
+  .dots i{
+    width:6px;height:6px;border-radius:50%;
+    background: color-mix(in oklab, var(--accent) 90%, #fff);
+    opacity:.4; animation: blink 1.2s infinite;
+  }
+  .dots i:nth-child(2){ animation-delay:.2s }
+  .dots i:nth-child(3){ animation-delay:.4s }
+  @keyframes blink{ 0%,100%{opacity:.2; transform:translateY(0)} 50%{opacity:1; transform:translateY(-2px)} }
+
+  /* композер + кнопка */
   .composer{
     padding:12px 16px 18px; display:flex; gap:10px;
     border-top: 1px solid #0a0d12;
@@ -160,11 +182,12 @@
   @keyframes sweep{ from{left:-40%} to{ left:60% } }
   .btn:active{ transform:perspective(700px) translateZ(0) scale(.985) }
 
-  .muted{ color:var(--muted) }
+  .muted{ color:var(--muted); }
 </style>
 </head>
 <body>
-  <div class="grid"></div>
+  <div class="bg" aria-hidden="true"></div>
+  <div class="grid" aria-hidden="true"></div>
 
   <header class="bar">
     <div class="spark" aria-hidden="true"></div>
@@ -184,17 +207,21 @@
   </section>
 
 <script>
-/* ====== CORE STATE & THEME ====== */
-const API  = (localStorage.getItem('ACAI_API') || 'https://acai-backend.onrender.com').replace(/\/$/,'');
+/* ====== CORE ====== */
+const API     = (localStorage.getItem('ACAI_API') || 'https://acai-backend.onrender.com').replace(/\/$/,'');
+const USER_ID = localStorage.getItem('ACAI_USER_ID') || 'demo';
+
 const feed = document.getElementById('feed');
 const tone = document.getElementById('tone');
 const form = document.getElementById('form');
 const msg  = document.getElementById('msg');
 const btn  = document.getElementById('send');
 
+/* helper funcs */
 const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
-const map   = (v,inMin,inMax,outMin,outMax)=> outMin + (clamp(v,inMin,inMax)-inMin)*(outMax-outMin)/(inMax-inMin);
+const map   = (v,inMin,inMax,outMin,outMax)=> outMin + (Math.max(inMin,Math.min(inMax,v))-inMin)*(outMax-outMin)/(inMax-inMin);
 
+/* ====== THEME FROM STATE ====== */
 function themeFromState(s){
   const v = Number(s?.valence ?? 0);
   const x = Number(s?.impulse_x_ema ?? 0);
@@ -203,7 +230,6 @@ function themeFromState(s){
   const lig = 54;
   const accent = oklch(${lig}% ${sat/100} ${hue});
 
-  // режимы — для HUD-чипа
   let mode = 'NEUTRAL';
   if (v > 0.28)       mode = 'GROUND';
   else if (v < -0.22) mode = 'STABILIZE';
@@ -212,81 +238,160 @@ function themeFromState(s){
   document.documentElement.style.setProperty('--accent', accent);
   document.documentElement.style.setProperty('--ring',   'color-mix(in oklab, var(--accent) 60%, transparent)');
   tone.textContent = mode;
-
-  // лёгкое «дыхание кнопки» от импульса
-  const dur = clamp(5 - Math.abs(x)*6, 2.2, 6.5);
-  btn.style.animationDuration = dur + 's';
-  return {hue,sat,lig,mode};
 }
 
 async function refreshState(){
+  const uid = USER_ID;
   try{
-    const r = await fetch(API + '/state');
-    if(!r.ok) return;
-    const j = await r.json();
-    const last = j?.last || {};
-    themeFromState(last);
+    const r1 = await fetch(API + '/state?uid=' + encodeURIComponent(uid));
+    if(!r1.ok) throw new Error('state v1 ' + r1.status);
+    const j1 = await r1.json();
+    themeFromState(j1?.last || {});
+    return;
+  }catch(e){ console.warn(e); }
+  try{
+    const r2 = await fetch(API + '/state', { headers:{ 'x-user-id': uid }});
+    if(!r2.ok) return;
+    const j2 = await r2.json();
+    themeFromState(j2?.last || {});
   }catch(e){}
 }
 setInterval(refreshState, 1500);
 refreshState();
 
-/* ====== UI ENHANCEMENTS ====== */
-// авто-рост textarea
+/* ====== SEND HELPER (3 fallbacks) ====== */
+async function sendToBackend(text){
+  const uid = USER_ID;
+  const url1 = API + '/chat';
+  const url2 = API + '/chat?uid=' + encodeURIComponent(uid);
+
+  // v1: text/plain + x-user-id
+  try{
+    const r = await fetch(url1, {
+      method:'POST',
+      headers:{'content-type':'text/plain;charset=utf-8','x-user-id':uid},
+      body:text
+    });
+    if (r.ok) return await r.json();
+    console.warn('[chat v1] status', r.status, await r.text());
+  }catch(e){ console.warn('[chat v1] fail', e); }
+
+  // v2: text/plain + uid в query
+  try{
+    const r = await fetch(url2, {
+      method:'POST',
+      headers:{'content-type':'text/plain;charset=utf-8'},
+      body:text
+    });
+    if (r.ok) return await r.json();
+    console.warn('[chat v2] status', r.status, await r.text());
+  }catch(e){ console.warn('[chat v2] fail', e); }
+
+  // v3: JSON
+  try{
+    const r = await fetch(url2, {
+      method:'POST',
+      headers:{'content-type':'application/json'},
+      body: JSON.stringify({ text, user_id: uid })
+    });
+    if (r.ok) return await r.json();
+    console.warn('[chat v3] status', r.status, await r.text());
+  }catch(e){ console.warn('[chat v3] fail', e); }
+
+  throw new Error('All send variants failed');
+}
+
+/* ====== UI helpers ====== */
+function addBubble(text, me=false){
+  const el=document.createElement('div');
+  el.className='bubble ' + (me ? 'me' : 'acai');
+  el.textContent=(me ? 'You: ' : '') + text;
+  feed.appendChild(el);
+  feed.scrollTop=feed.scrollHeight;
+  return el;
+}
+
+/* «ИИ печатает…» */
+let typingEl = null;
+function showTyping(){
+  if (typingEl) return typingEl;
+  typingEl = document.createElement('div');
+  typingEl.className = 'bubble acai';
+  typingEl.innerHTML = '<span class="typing">LUMINA is typing<span class="dots"><i></i><i></i><i></i></span></span>';
+  feed.appendChild(typingEl);
+  feed.scrollTop = feed.scrollHeight;
+  return typingEl;
+}
+function hideTyping(){
+  if (typingEl){ typingEl.remove(); typingEl=null; }
+}
+
+/* ====== UX: авто-рост textarea и Enter-send ====== */
 msg.addEventListener('input', ()=>{
-  msg.style.height = 'auto';
-  msg.style.height = Math.min(msg.scrollHeight, 180) + 'px';
+  msg.style.height='auto';
+  msg.style.height=Math.min(msg.scrollHeight,180)+'px';
+});
+msg.addEventListener('keydown',(e)=>{
+  if(e.key==='Enter' && !e.shiftKey){
+    e.preventDefault();
+    form.requestSubmit();
+  }
 });
 
-// «магнит» и 3D-tilt у кнопки
+/* Премиум-анимации кнопки (магнит + подсветка) */
 (function liveButton(b){
   let raf=0;
   function tilt(e){
-    const r = b.getBoundingClientRect();
-    const x = e.clientX - r.left, y = e.clientY - r.top;
-    const nx = (x/r.width)-.5, ny = (y/r.height)-.5;
-    const rx = (-ny)*10, ry = (nx)*12;
+    const r=b.getBoundingClientRect();
+    const x=e.clientX-r.left, y=e.clientY-r.top;
+    const nx=(x/r.width)-.5, ny=(y/r.height)-.5;
+    const rx=(-ny)*10, ry=(nx)*12;
     b.style.setProperty('--mx', x+'px'); b.style.setProperty('--my', y+'px');
     cancelAnimationFrame(raf);
-    raf = requestAnimationFrame(()=>{
-      b.style.transform = perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg);
+    raf=requestAnimationFrame(()=>{
+      b.style.transform=`perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg)`;
     });
   }
-  b.addEventListener('mousemove', tilt, {passive:true});
-  b.addEventListener('mouseleave', ()=>{ b.style.transform='perspective(700px) rotateX(0) rotateY(0)'; }, {passive:true});
-  b.addEventListener('mousedown', ()=>{ b.style.transform += ' scale(.985)'; });
-  b.addEventListener('mouseup',   ()=>{ b.style.transform  =  b.style.transform.replace(' scale(.985)',''); });
+  b.addEventListener('mousemove',tilt,{passive:true});
+  b.addEventListener('mouseleave',()=>{ b.style.transform='perspective(700px) rotateX(0) rotateY(0)'; },{passive:true});
+  b.addEventListener('mousedown',()=>{ b.style.transform+=' scale(.985)'; });
+  b.addEventListener('mouseup',()=>{ b.style.transform=b.style.transform.replace(' scale(.985)',''); });
 })(btn);
 
 /* ====== CHAT LOOP ====== */
 form.addEventListener('submit', async (ev)=>{
   ev.preventDefault();
-  const text = msg.value.trim();
+  const text=msg.value.trim();
   if(!text) return;
-  addBubble(text, true);
+
+  addBubble(text,true);
   msg.value=''; msg.style.height='46px';
 
+  const old=btn.innerHTML; btn.disabled=true; btn.innerHTML='<span class="label">SENDING…</span>';
+
+  // показать, что ИИ печатает
+  showTyping();
+
   try{
-    const res = await fetch(API + '/chat', {
-      method:'POST',
-      headers:{'content-type':'text/plain;charset=utf-8'},
-      body:text
-    });
-    const j = await res.json();
-    addBubble(j.reply || '(no reply)', false);
-    if (j.state && j.state.valence !== undefined) themeFromState(j.state);
+    const j=await sendToBackend(text);
+    hideTyping();
+    addBubble(j?.reply || '(no reply)', false);
+    if (j?.state && j.state.valence !== undefined) themeFromState(j.state);
   }catch(e){
-    addBubble('Error: cannot reach ACAI backend.', false);
+    hideTyping();
+    console.error(e);
+    addBubble('Error sending: ' + (e?.message || 'network/CORS'), false);
+  }finally{
+    btn.disabled=false; btn.innerHTML=old;
   }
 });
 
-function addBubble(text, me=false){
-  const el = document.createElement('div');
-  el.className = 'bubble ' + (me ? 'me' : 'acai');
-  el.textContent = (me ? 'You: ' : '') + text;
-  feed.appendChild(el);
-  feed.scrollTop = feed.scrollHeight;
+/* ====== Установи фон программно, если нужно ====== */
+function setBg(urlOrData){
+  document.documentElement.style.setProperty('--bg-image', `url("${urlOrData}")`);
 }
+// Пример:
+// setBg('data:image/png;base64,AAAA...');  // или обычный URL
 </script>
 </body>
 </html>
