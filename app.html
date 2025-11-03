@@ -10,67 +10,49 @@
     --card:#0b0f18;
     --ink:#e9eef8;
     --muted:#9aa3af;
-    --accent:#7AE6FF;       /* обновляется из JS (oklch) */
+    --accent:#7AE6FF;
     --ring:#7AE6FF60;
     --violet:#B37AFF;
     --amber:#FFB76B;
-
-    /* 🎨 Укажи здесь свой фон: URL или data:image/... */
-    --bg-image: url("./bg_lumina.jpg");
+    /* фон (поставь свой путь/ data:) */
+    --bg-image:url("./bg_lumina.jpg");
   }
-  *{box-sizing:border-box}
-  html,body{height:100%}
+  *{box-sizing:border-box} html,body{height:100%}
   body{
-    margin:0;
-    font:16px/1.5 ui-sans-serif, system-ui, -apple-system, "SF Pro Text", Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial;
-    color:var(--ink);
-    background: #000; /* реальный фон рисуем слоями ниже */
-    overflow:hidden;
+    margin:0; color:var(--ink);
+    font:16px/1.5 ui-sans-serif,system-ui,-apple-system,"SF Pro Text",Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial;
+    background:#000; overflow:hidden;
   }
-
-  /* 📸 Слой фоновой картинки + мягкие градиенты сверху */
-  .bg{
-    position:fixed; inset:0; z-index:-3;
-    background-image: var(--bg-image);
-    background-size:cover; background-position:center; background-repeat:no-repeat;
-    filter: saturate(1.05) brightness(.95);
+  .bg{position:fixed; inset:0; z-index:-3;
+    background-image:var(--bg-image); background-size:cover; background-position:center; background-repeat:no-repeat;
+    filter:saturate(1.05) brightness(.95);
   }
-  .bg::after{
-    /* космическая дымка + виньетка, чтобы UI читался */
-    content:""; position:absolute; inset:0;
+  .bg::after{content:""; position:absolute; inset:0;
     background:
       radial-gradient(1300px 800px at 80% -10%, color-mix(in oklab, var(--accent) 16%, #000) 0%, transparent 62%),
       radial-gradient(1000px 600px at -10% 90%, color-mix(in oklab, var(--accent) 10%, #000) 0%, transparent 56%),
       linear-gradient(180deg,#07090fbb 0%, #06080dcc 100%);
-    z-index:1;
   }
-
-  /* лёгкая звёздная сетка */
-  .grid{
-    position:fixed; inset:0; pointer-events:none; opacity:.07; z-index:-2;
+  .grid{position:fixed; inset:0; pointer-events:none; opacity:.07; z-index:-2;
     background-image:
       radial-gradient(1px 1px at 10% 20%, #fff 50%, transparent 51%),
       radial-gradient(1px 1px at 70% 60%, #fff 50%, transparent 51%),
       radial-gradient(1px 1px at 30% 80%, #fff 50%, transparent 51%);
-    background-size: 26px 26px, 32px 32px, 42px 42px;
+    background-size:26px 26px, 32px 32px, 42px 42px;
     mix-blend-mode:screen;
   }
-
-  /* верхняя панель */
   .bar{
     height:68px; padding:0 16px; display:flex; align-items:center; gap:12px;
     border-bottom:1px solid color-mix(in oklab, var(--accent) 18%, transparent);
-    background: linear-gradient(180deg, color-mix(in oklab, var(--accent) 9%, #000) 0%, transparent 100%);
-    position:sticky; top:0; z-index:5; backdrop-filter: blur(6px);
+    background:linear-gradient(180deg, color-mix(in oklab, var(--accent) 9%, #000) 0%, transparent 100%);
+    position:sticky; top:0; z-index:5; backdrop-filter:blur(6px);
   }
-  .spark{
-    width:28px;height:28px;border-radius:10px;
-    background: conic-gradient(from 210deg, var(--accent), var(--violet), var(--amber), var(--accent));
+  .spark{width:28px;height:28px;border-radius:10px;
+    background:conic-gradient(from 210deg, var(--accent), var(--violet), var(--amber), var(--accent));
     box-shadow:0 0 0 2px #0a0d14, 0 0 22px var(--ring) inset, 0 8px 22px #0008;
-    animation: orbit 8s linear infinite;
+    animation:orbit 8s linear infinite;
   }
-  @keyframes orbit{ 0%{ filter:hue-rotate(0deg) } 100%{ filter:hue-rotate(360deg) } }
-
+  @keyframes orbit{from{filter:hue-rotate(0)} to{filter:hue-rotate(360deg)}}
   .title{
     font-weight:900; letter-spacing:.18em; text-transform:uppercase;
     background:linear-gradient(90deg, var(--accent), var(--violet), var(--amber));
@@ -78,111 +60,67 @@
     background-size:200% 100%; animation:titleFlow 9s linear infinite;
     text-shadow:0 0 18px #7ae6ff22;
   }
-  @keyframes titleFlow{ from{background-position:0% 50%} to{background-position:200% 50%} }
-
-  .tone{
-    margin-left:auto; padding:7px 12px; border-radius:999px;
-    background: color-mix(in oklab, var(--accent) 18%, #000);
-    color: color-mix(in oklab, var(--ink) 80%, var(--accent));
+  @keyframes titleFlow{from{background-position:0% 50%} to{background-position:200% 50%}}
+  .tone{margin-left:auto; padding:7px 12px; border-radius:999px;
+    background:color-mix(in oklab, var(--accent) 18%, #000);
+    color:color-mix(in oklab, var(--ink) 80%, var(--accent));
     border:1px solid color-mix(in oklab, var(--accent) 40%, transparent);
     font-size:12px; text-transform:uppercase; letter-spacing:.16em; opacity:.9;
   }
-
-  /* лейаут */
-  .wrap{ height:calc(100% - 68px); display:grid; grid-template-rows: 1fr auto; }
-  .feed{ overflow:auto; padding:24px 16px 8px 16px; scroll-behavior:smooth; }
-
-  /* пузырьки */
+  .wrap{height:calc(100% - 68px); display:grid; grid-template-rows:1fr auto;}
+  .feed{overflow:auto; padding:24px 16px 8px 16px; scroll-behavior:smooth;}
   .bubble{
-    max-width:min(860px, 92vw);
-    margin:10px 0; padding:14px 16px; white-space:pre-wrap;
+    max-width:min(860px, 92vw); margin:10px 0; padding:14px 16px; white-space:pre-wrap;
     border-radius:14px; position:relative;
-    background: linear-gradient(180deg, #0b0f18 0%, #0a0e15 100%);
+    background:linear-gradient(180deg, #0b0f18 0%, #0a0e15 100%);
     border:1px solid color-mix(in oklab, var(--accent) 18%, #1a2230);
-    box-shadow: 0 1px 0 #0008, inset 0 0 0 999px #ffffff03, 0 8px 24px #000a;
+    box-shadow:0 1px 0 #0008, inset 0 0 0 999px #ffffff03, 0 8px 24px #000a;
   }
-  .bubble::after{
-    content:""; position:absolute; inset:-1px; border-radius:inherit; pointer-events:none;
+  .bubble::after{content:""; position:absolute; inset:-1px; border-radius:inherit; pointer-events:none;
     background:linear-gradient(120deg, transparent 30%, rgba(255,255,255,.12) 50%, transparent 70%);
-    mix-blend-mode:screen; opacity:.0; transition:opacity .25s ease;
+    mix-blend-mode:screen; opacity:0; transition:opacity .25s ease;
   }
-  .bubble:hover::after{ opacity:.65 }
-  .acai{ border-color: color-mix(in oklab, var(--accent) 25%, #1a2230) }
-  .me{
-    margin-left:auto;
-    background: linear-gradient(180deg, color-mix(in oklab, var(--accent) 26%, #0b0f18), #0a0e15);
-    border-color: color-mix(in oklab, var(--accent) 34%, #1a2230);
+  .bubble:hover::after{opacity:.65}
+  .acai{border-color:color-mix(in oklab, var(--accent) 25%, #1a2230)}
+  .me{margin-left:auto;
+    background:linear-gradient(180deg, color-mix(in oklab, var(--accent) 26%, #0b0f18), #0a0e15);
+    border-color:color-mix(in oklab, var(--accent) 34%, #1a2230);
   }
-
-  /* «ИИ печатает…» */
-  .typing{
-    display:inline-flex; align-items:center; gap:8px;
-    color: color-mix(in oklab, var(--ink) 75%, var(--accent));
-    font-weight:600; letter-spacing:.06em;
+  .typing{display:inline-flex; align-items:center; gap:8px;
+    color:color-mix(in oklab, var(--ink) 75%, var(--accent)); font-weight:600; letter-spacing:.06em;
   }
-  .dots{ display:inline-flex; gap:4px; }
-  .dots i{
-    width:6px;height:6px;border-radius:50%;
-    background: color-mix(in oklab, var(--accent) 90%, #fff);
-    opacity:.4; animation: blink 1.2s infinite;
-  }
-  .dots i:nth-child(2){ animation-delay:.2s }
-  .dots i:nth-child(3){ animation-delay:.4s }
-  @keyframes blink{ 0%,100%{opacity:.2; transform:translateY(0)} 50%{opacity:1; transform:translateY(-2px)} }
-
-  /* композер + кнопка */
-  .composer{
-    padding:12px 16px 18px; display:flex; gap:10px;
-    border-top: 1px solid #0a0d12;
-    background: linear-gradient(180deg, #0a0f16, #080b11);
-  }
-  .in{
-    flex:1; background:#0e131b; border:1px solid #151c26; color:var(--ink);
+  .dots{display:inline-flex; gap:4px;}
+  .dots i{width:6px;height:6px;border-radius:50%; background:color-mix(in oklab, var(--accent) 90%, #fff);
+    opacity:.4; animation:blink 1.2s infinite;}
+  .dots i:nth-child(2){animation-delay:.2s} .dots i:nth-child(3){animation-delay:.4s}
+  @keyframes blink{0%,100%{opacity:.2; transform:translateY(0)} 50%{opacity:1; transform:translateY(-2px)}}
+  .composer{padding:12px 16px 18px; display:flex; gap:10px;
+    border-top:1px solid #0a0d12; background:linear-gradient(180deg, #0a0f16, #080b11);}
+  .in{flex:1; background:#0e131b; border:1px solid #151c26; color:var(--ink);
     border-radius:12px; padding:12px 14px; outline:none;
-    transition:border-color .2s ease, box-shadow .2s ease;
-    resize:none; min-height:46px; max-height:180px; line-height:1.4;
-  }
-  .in:focus{
-    border-color: color-mix(in oklab, var(--accent) 38%, #222);
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 22%, transparent);
-  }
-
-  .btn{
-    --mx:50%; --my:50%;
-    position:relative; display:inline-flex; align-items:center; justify-content:center;
+    transition:border-color .2s, box-shadow .2s; resize:none; min-height:46px; max-height:180px; line-height:1.4;}
+  .in:focus{border-color:color-mix(in oklab, var(--accent) 38%, #222);
+    box-shadow:0 0 0 3px color-mix(in oklab, var(--accent) 22%, transparent);}
+  .btn{--mx:50%; --my:50%; position:relative; display:inline-flex; align-items:center; justify-content:center;
     padding:0 18px; min-width:118px; border-radius:12px; border:none; cursor:pointer;
     background:linear-gradient(135deg, var(--accent), var(--amber));
     box-shadow:0 12px 26px rgba(122,230,255,.35), 0 2px 8px rgba(0,0,0,.45);
     color:#051014; font-weight:900; letter-spacing:.14em; text-transform:uppercase;
-    overflow:hidden; transform-style:preserve-3d;
-    transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
+    overflow:hidden; transform-style:preserve-3d; transition:transform .18s, box-shadow .18s, filter .18s;
   }
-  .btn .label{
-    position:relative; z-index:2;
-    background:linear-gradient(90deg,#ffffff,#d8f7ff,#ffffff);
-    background-size:200% 100%;
-    -webkit-background-clip:text; background-clip:text; color:transparent;
-    animation:shineText 3.2s linear infinite;
-  }
-  @keyframes shineText{0%{background-position:0% 50%}100%{background-position:200% 50%}}
-  .btn::after{
-    content:""; position:absolute; inset:-1px; pointer-events:none;
+  .btn .label{position:relative; z-index:2; background:linear-gradient(90deg,#fff,#d8f7ff,#fff);
+    background-size:200% 100%; -webkit-background-clip:text; background-clip:text; color:transparent;
+    animation:shineText 3.2s linear infinite;}
+  @keyframes shineText{from{background-position:0% 50%} to{background-position:200% 50%}}
+  .btn::after{content:""; position:absolute; inset:-1px; pointer-events:none;
     background:radial-gradient(140px 140px at var(--mx) var(--my), rgba(255,255,255,.2), rgba(255,255,255,0) 60%);
-    opacity:0; transition:opacity .18s ease;
-  }
-  .btn::before{
-    content:""; position:absolute; left:-40%; top:-220%;
-    width:180%; height:420%; transform:rotate(22deg);
+    opacity:0; transition:opacity .18s;}
+  .btn::before{content:""; position:absolute; left:-40%; top:-220%; width:180%; height:420%; transform:rotate(22deg);
     background:linear-gradient(to right, transparent 46%, rgba(255,255,255,.16) 50%, transparent 54%);
-    mix-blend-mode:screen; opacity:0; transition:opacity .25s ease;
-  }
-  .btn:hover{ box-shadow:0 18px 42px rgba(122,230,255,.45), 0 6px 18px rgba(0,0,0,.55) }
-  .btn:hover::after{ opacity:1 }
-  .btn:hover::before{ opacity:1; animation:sweep 1.4s ease }
-  @keyframes sweep{ from{left:-40%} to{ left:60% } }
-  .btn:active{ transform:perspective(700px) translateZ(0) scale(.985) }
-
-  .muted{ color:var(--muted); }
+    mix-blend-mode:screen; opacity:0; transition:opacity .25s;}
+  .btn:hover{box-shadow:0 18px 42px rgba(122,230,255,.45), 0 6px 18px rgba(0,0,0,.55)}
+  .btn:hover::after{opacity:1} .btn:hover::before{opacity:1; animation:sweep 1.4s ease}
+  @keyframes sweep{from{left:-40%} to{left:60%}} .btn:active{transform:perspective(700px) translateZ(0) scale(.985)}
 </style>
 </head>
 <body>
@@ -200,9 +138,10 @@
       <div class="bubble acai">LUMINA: Welcome, traveler. Breathe in for 4… and tell me: what are you feeling right now?</div>
     </div>
 
+    <!-- важное: type="button" -->
     <form class="composer" id="form">
       <textarea id="msg" class="in" placeholder="Type a message…" rows="1"></textarea>
-      <button class="btn" id="send" type="submit"><span class="label">SEND</span></button>
+      <button class="btn" id="send" type="button"><span class="label">SEND</span></button>
     </form>
   </section>
 
@@ -216,7 +155,17 @@ const form = document.getElementById('form');
 const msg  = document.getElementById('msg');
 const btn  = document.getElementById('send');
 
-/* ====== UTILS ====== */
+/* error overlay, чтобы видеть падения */
+window.addEventListener('error', e => {
+  const ov = document.createElement('div');
+  ov.style.position='fixed'; ov.style.right='8px'; ov.style.bottom='8px';
+  ov.style.maxWidth='520px'; ov.style.background='#260b0b'; ov.style.color='#ffd6d6';
+  ov.style.border='1px solid #ff7b7b55'; ov.style.padding='10px 12px'; ov.style.borderRadius='10px';
+  ov.style.font='12px/1.4 ui-sans-serif, system-ui';
+  ov.style.zIndex='9999'; ov.textContent = 'JS error: ' + e.message;
+  document.body.appendChild(ov);
+}, { once:true });
+
 const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
 const map   = (v,inMin,inMax,outMin,outMax)=> outMin + (Math.max(inMin,Math.min(inMax,v))-inMin)*(outMax-outMin)/(inMax-inMin);
 
@@ -230,18 +179,18 @@ function addBubble(text, me=false, id=null){
   return el;
 }
 function updateBubble(id, text){
-  const el = [...feed.querySelectorAll('.bubble')].find(b=>b.dataset.id===id);
+  const el=[...feed.querySelectorAll('.bubble')].find(b=>b.dataset.id===id);
   if(el){ el.textContent=text; feed.scrollTop=feed.scrollHeight; }
 }
 
-/* ====== THEME FROM STATE ====== */
+/* ====== THEME ====== */
 function themeFromState(s){
   const v = Number(s?.valence ?? 0);
   const x = Number(s?.impulse_x_ema ?? 0);
   const hue = (v >= 0) ? map(v, 0, 1, 210, 150) : map(v, -1, 0, 10, 210);
   const sat = map(Math.abs(x), 0, 0.5, 55, 92);
   const lig = 54;
-  const accent = oklch(${lig}% ${sat/100} ${hue})';  // ✅ фикс
+  const accent = oklch(${lig}% ${sat/100} ${hue});   // ← фиксировано
 
   let mode = 'NEUTRAL';
   if (v > 0.28)       mode = 'GROUND';
@@ -249,16 +198,16 @@ function themeFromState(s){
   else if (v < -0.08) mode = 'UPLIFT';
 
   document.documentElement.style.setProperty('--accent', accent);
-  document.documentElement.style.setProperty('--ring', 'color-mix(in oklab, var(--accent) 60%, transparent)');
+  document.documentElement.style.setProperty('--ring','color-mix(in oklab, var(--accent) 60%, transparent)');
   tone.textContent = mode;
 }
 async function refreshState(){
   const uid = USER_ID;
-  try{ // v1: без кастомных заголовков
+  try{
     const r=await fetch(API+'/state?uid='+encodeURIComponent(uid),{mode:'cors',cache:'no-store'});
     if(r.ok){ const j=await r.json(); themeFromState(j?.last||{}); return; }
   }catch{}
-  try{ // v2: с x-user-id
+  try{
     const r=await fetch(API+'/state',{headers:{'x-user-id':uid},mode:'cors',cache:'no-store'});
     if(r.ok){ const j=await r.json(); themeFromState(j?.last||{}); }
   }catch{}
@@ -266,62 +215,56 @@ async function refreshState(){
 setInterval(refreshState, 1500);
 refreshState();
 
-/* ====== TYPING INDICATOR ====== */
+/* ====== typing ====== */
 let typingId = 0;
 function showTyping(){
-  typingId++; const id='typing_'+typingId;
-  return addBubble('LUMINA is typing…', false, id), id;
+  const id = 'typing_'+(++typingId);
+  const el = addBubble('LUMINA is typing…', false, id);
+  el.innerHTML = <span class="typing">LUMINA is typing <span class="dots"><i></i><i></i><i></i></span></span>;
+  return id;
 }
 function hideTyping(id){
   const el=[...feed.querySelectorAll('.bubble')].find(b=>b.dataset.id===id);
   if(el) el.remove();
 }
 
-/* ====== ROBUST SEND (несколько вариантов) ====== */
+/* ====== SEND (несколько вариантов) ====== */
 async function sendToBackend(text){
   const uid=USER_ID;
   const u1 = API + '/chat';
   const u2 = API + '/chat?uid=' + encodeURIComponent(uid);
   const common = { mode:'cors', cache:'no-store', credentials:'omit' };
 
-  // v1: text/plain + x-user-id  (может вызвать preflight => CORS)
   try{
     const r = await fetch(u1, { ...common, method:'POST',
       headers:{ 'content-type':'text/plain;charset=utf-8', 'x-user-id': uid },
       body:text });
     if(r.ok) return await r.json();
-    console.warn('[chat v1]', r.status, await r.text());
-  }catch(e){ console.warn('[chat v1] fail', e); }
+  }catch(e){}
 
-  // v2: text/plain + uid в query (без кастомных заголовков) — S I M P L E request
   try{
     const r = await fetch(u2, { ...common, method:'POST',
       headers:{ 'content-type':'text/plain;charset=utf-8' },
       body:text });
     if(r.ok) return await r.json();
-    console.warn('[chat v2]', r.status, await r.text());
-  }catch(e){ console.warn('[chat v2] fail', e); }
+  }catch(e){}
 
-  // v3: application/json (если бэкенд так ожидает)
   try{
     const r = await fetch(u2, { ...common, method:'POST',
       headers:{ 'content-type':'application/json' },
       body: JSON.stringify({ text, user_id: uid }) });
     if(r.ok) return await r.json();
-    console.warn('[chat v3]', r.status, await r.text());
-  }catch(e){ console.warn('[chat v3] fail', e); }
+  }catch(e){}
 
-  // v4: GET-fallback (если сервер допускает ?text=)
   try{
     const r = await fetch(API + '/chat_get?uid='+encodeURIComponent(uid)+'&text='+encodeURIComponent(text), common);
     if(r.ok) return await r.json();
-    console.warn('[chat v4]', r.status, await r.text());
-  }catch(e){ console.warn('[chat v4] fail', e); }
+  }catch(e){}
 
-  throw new Error('All chat variants failed (CORS/route)');
+  throw new Error('All chat variants failed');
 }
 
-/* ====== UX: авто-рост и Enter-send ====== */
+/* ====== UX ====== */
 msg.addEventListener('input', ()=>{
   msg.style.height='auto';
   msg.style.height=Math.min(msg.scrollHeight,180)+'px';
@@ -329,13 +272,14 @@ msg.addEventListener('input', ()=>{
 msg.addEventListener('keydown',(e)=>{
   if(e.key==='Enter' && !e.shiftKey){
     e.preventDefault();
-    form.requestSubmit();
+    sendMessage();
   }
 });
 
-/* ====== CHAT LOOP ====== */
-form.addEventListener('submit', async (ev)=>{
-  ev.preventDefault();
+/* явный клик по кнопке (кнопка не submit) */
+btn.addEventListener('click', sendMessage);
+
+async function sendMessage(){
   const text = msg.value.trim();
   if(!text) return;
 
@@ -356,7 +300,7 @@ form.addEventListener('submit', async (ev)=>{
   }finally{
     btn.disabled=false; btn.innerHTML=old;
   }
-});
+}
 </script>
 </body>
 </html>
