@@ -2,26 +2,25 @@
 <html lang="en">
 <head>
    <!-- 🔐 Guard: блокируем страницу без токена -->
-  <script>
-  (function () {
-    try {
-      const qs = new URLSearchParams(location.search);
-      let token = qs.get("token")  localStorage.getItem("acai_jwt")  "";
-      if (qs.get("token")) {
-        localStorage.setItem("acai_jwt", token);
-        history.replaceState({}, "", location.pathname + location.hash);
-      }
-      if (!token || token.length < 10) {
-        window.location.replace("https://affectivecybernetics.onrender.com");
-        document.write('<div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#0b0d17;color:#ffd700;font:16px/1.5 system-ui;z-index:999999">Access denied — login via Telegram…</div>');
-      }
-    } catch(e) {
-      window.location.replace("https://affectivecybernetics.onrender.com");
-    }
+   <script>
+   (function () {
+     try {
+       const qs = new URLSearchParams(location.search);
+       let token = qs.get("token")  localStorage.getItem("acai_jwt")  "";
+       if (qs.get("token")) {
+         localStorage.setItem("acai_jwt", token);
+         history.replaceState({}, "", location.pathname + location.hash);
+       }
+       if (!token || token.length < 10) {
+         window.location.replace("https://affectivecybernetics.onrender.com");
+         document.write('<div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#0b0d17;color:#ffd700;font:16px/1.5 system-ui;z-index:999999">Access denied — login via Telegram…</div>');
+       }
+     } catch(e) {
+       window.location.replace("https://affectivecybernetics.onrender.com");
+     }
   })();
   </script>
-  <noscript><meta http-equiv="refresh" content="0;url=https://affectivecybernetics.onrender.com"></noscript>
-
+<noscript><meta http-equiv="refresh" content="0;url=https://affectivecybernetics.onrender.com"></noscript>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Affective Realms: LUMINA — Story Showcase</title>
@@ -206,7 +205,7 @@ a.inline{color:var(--ink); text-decoration:underline dotted}
         When synchrony is achieved, a being of light emerges across all devices — born of collective resonance.
       </p>
       <div class="cta-row">
-        <a class="btn protected" href="prologue.html"><span>Play the Ritual</span></a>
+        <a class="btn protected" href="app.html"><span>Play the Ritual</span></a>
         <a class="btn" href="#how"><span>How It Works</span></a>
       </div>
     </section>
