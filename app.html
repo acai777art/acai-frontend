@@ -65,7 +65,6 @@
   .btn:hover{box-shadow:0 18px 42px rgba(122,230,255,.45),0 6px 18px rgba(0,0,0,.55)}
   .btn:hover::after{opacity:1}.btn:hover::before{opacity:1;animation:sweep 1.4s ease}
   @keyframes sweep{from{left:-40%}to{left:60%}}.btn:active{transform:perspective(700px) translateZ(0) scale(.985)}
-  /* стиль вторичной кнопки CLEAN */
   .btn.ghost {
     background: linear-gradient(180deg, #0e131b, #0a0e14);
     color: var(--ink);
@@ -100,17 +99,9 @@
 
     <form class="composer" id="form" novalidate>
   <textarea id="msg" class="in" placeholder="Type a message…" rows="1"></textarea>
-
-  <!-- 🌙 кнопка очистки -->
-  <button class="btn ghost" id="clean" type="button">
-    <span class="label">CLEAN</span>
-  </button>
-
-  <!-- кнопка отправки -->
-  <button class="btn" id="send" type="submit">
-    <span class="label">SEND</span>
-  </button>
-</form>
+  <button class="btn" id="send" type="submit"><span class="label">SEND</span></button>
+  <button class="btn" id="clean" type="button"><span class="label">CLEAN</span></button>
+    </form>
   </section>
 
 <script>
