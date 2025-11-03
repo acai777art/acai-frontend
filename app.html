@@ -207,19 +207,32 @@
   </section>
 
 <script>
-/* ====== CORE ====== */
+/* ====== CONFIG ====== */
 const API     = (localStorage.getItem('ACAI_API') || 'https://acai-backend.onrender.com').replace(/\/$/,'');
 const USER_ID = localStorage.getItem('ACAI_USER_ID') || 'demo';
-
 const feed = document.getElementById('feed');
 const tone = document.getElementById('tone');
 const form = document.getElementById('form');
 const msg  = document.getElementById('msg');
 const btn  = document.getElementById('send');
 
-/* helper funcs */
+/* ====== UTILS ====== */
 const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
 const map   = (v,inMin,inMax,outMin,outMax)=> outMin + (Math.max(inMin,Math.min(inMax,v))-inMin)*(outMax-outMin)/(inMax-inMin);
+
+function addBubble(text, me=false, id=null){
+  const el=document.createElement('div');
+  el.className='bubble ' + (me?'me':'acai');
+  el.textContent=(me?'You: ':'') + text;
+  if(id) el.dataset.id=id;
+  feed.appendChild(el);
+  feed.scrollTop=feed.scrollHeight;
+  return el;
+}
+function updateBubble(id, text){
+  const el = [...feed.querySelectorAll('.bubble')].find(b=>b.dataset.id===id);
+  if(el){ el.textContent=text; feed.scrollTop=feed.scrollHeight; }
+}
 
 /* ====== THEME FROM STATE ====== */
 function themeFromState(s){
@@ -229,104 +242,84 @@ function themeFromState(s){
   const sat = map(Math.abs(x), 0, 0.5, 55, 92);
   const lig = 54;
   const accent = oklch(${lig}% ${sat/100} ${hue});
-
   let mode = 'NEUTRAL';
   if (v > 0.28)       mode = 'GROUND';
   else if (v < -0.22) mode = 'STABILIZE';
   else if (v < -0.08) mode = 'UPLIFT';
-
   document.documentElement.style.setProperty('--accent', accent);
   document.documentElement.style.setProperty('--ring',   'color-mix(in oklab, var(--accent) 60%, transparent)');
   tone.textContent = mode;
 }
-
 async function refreshState(){
   const uid = USER_ID;
-  try{
-    const r1 = await fetch(API + '/state?uid=' + encodeURIComponent(uid));
-    if(!r1.ok) throw new Error('state v1 ' + r1.status);
-    const j1 = await r1.json();
-    themeFromState(j1?.last || {});
-    return;
-  }catch(e){ console.warn(e); }
-  try{
-    const r2 = await fetch(API + '/state', { headers:{ 'x-user-id': uid }});
-    if(!r2.ok) return;
-    const j2 = await r2.json();
-    themeFromState(j2?.last || {});
-  }catch(e){}
+  try{ // v1: без кастомных заголовков
+    const r=await fetch(API+'/state?uid='+encodeURIComponent(uid),{mode:'cors',cache:'no-store'});
+    if(r.ok){ const j=await r.json(); themeFromState(j?.last||{}); return; }
+  }catch{}
+  try{ // v2: с x-user-id
+    const r=await fetch(API+'/state',{headers:{'x-user-id':uid},mode:'cors',cache:'no-store'});
+    if(r.ok){ const j=await r.json(); themeFromState(j?.last||{}); }
+  }catch{}
 }
 setInterval(refreshState, 1500);
 refreshState();
 
-/* ====== SEND HELPER (3 fallbacks) ====== */
-async function sendToBackend(text){
-  const uid = USER_ID;
-  const url1 = API + '/chat';
-  const url2 = API + '/chat?uid=' + encodeURIComponent(uid);
+/* ====== TYPING INDICATOR ====== */
+let typingId = 0;
+function showTyping(){
+  typingId++; const id='typing_'+typingId;
+  return addBubble('LUMINA is typing…', false, id), id;
+}
+function hideTyping(id){
+  const el=[...feed.querySelectorAll('.bubble')].find(b=>b.dataset.id===id);
+  if(el) el.remove();
+}
 
-  // v1: text/plain + x-user-id
+/* ====== ROBUST SEND (несколько вариантов) ====== */
+async function sendToBackend(text){
+  const uid=USER_ID;
+  const u1 = API + '/chat';
+  const u2 = API + '/chat?uid=' + encodeURIComponent(uid);
+  const common = { mode:'cors', cache:'no-store', credentials:'omit' };
+
+  // v1: text/plain + x-user-id  (может вызвать preflight => CORS)
   try{
-    const r = await fetch(url1, {
-      method:'POST',
-      headers:{'content-type':'text/plain;charset=utf-8','x-user-id':uid},
-      body:text
-    });
-    if (r.ok) return await r.json();
-    console.warn('[chat v1] status', r.status, await r.text());
+    const r = await fetch(u1, { ...common, method:'POST',
+      headers:{ 'content-type':'text/plain;charset=utf-8', 'x-user-id': uid },
+      body:text });
+    if(r.ok) return await r.json();
+    console.warn('[chat v1]', r.status, await r.text());
   }catch(e){ console.warn('[chat v1] fail', e); }
 
-  // v2: text/plain + uid в query
+  // v2: text/plain + uid в query (без кастомных заголовков) — S I M P L E request
   try{
-    const r = await fetch(url2, {
-      method:'POST',
-      headers:{'content-type':'text/plain;charset=utf-8'},
-      body:text
-    });
-    if (r.ok) return await r.json();
-    console.warn('[chat v2] status', r.status, await r.text());
+    const r = await fetch(u2, { ...common, method:'POST',
+      headers:{ 'content-type':'text/plain;charset=utf-8' },
+      body:text });
+    if(r.ok) return await r.json();
+    console.warn('[chat v2]', r.status, await r.text());
   }catch(e){ console.warn('[chat v2] fail', e); }
 
-  // v3: JSON
+  // v3: application/json (если бэкенд так ожидает)
   try{
-    const r = await fetch(url2, {
-      method:'POST',
-      headers:{'content-type':'application/json'},
-      body: JSON.stringify({ text, user_id: uid })
-    });
-    if (r.ok) return await r.json();
-    console.warn('[chat v3] status', r.status, await r.text());
+    const r = await fetch(u2, { ...common, method:'POST',
+      headers:{ 'content-type':'application/json' },
+      body: JSON.stringify({ text, user_id: uid }) });
+    if(r.ok) return await r.json();
+    console.warn('[chat v3]', r.status, await r.text());
   }catch(e){ console.warn('[chat v3] fail', e); }
 
-  throw new Error('All send variants failed');
+  // v4: GET-fallback (если сервер допускает ?text=)
+  try{
+    const r = await fetch(API + '/chat_get?uid='+encodeURIComponent(uid)+'&text='+encodeURIComponent(text), common);
+    if(r.ok) return await r.json();
+    console.warn('[chat v4]', r.status, await r.text());
+  }catch(e){ console.warn('[chat v4] fail', e); }
+
+  throw new Error('All chat variants failed (CORS/route)');
 }
 
-/* ====== UI helpers ====== */
-function addBubble(text, me=false){
-  const el=document.createElement('div');
-  el.className='bubble ' + (me ? 'me' : 'acai');
-  el.textContent=(me ? 'You: ' : '') + text;
-  feed.appendChild(el);
-  feed.scrollTop=feed.scrollHeight;
-  return el;
-}
-
-/* «ИИ печатает…» */
-let typingEl = null;
-function showTyping(){
-  if (typingEl) return typingEl;
-  typingEl = document.createElement('div');
-  typingEl.className = 'bubble acai';
-  typingEl.innerHTML = '<span class="typing">LUMINA is typing<span class="dots"><i></i><i></i><i></i></span></span>';
-  feed.appendChild(typingEl);
-  feed.scrollTop = feed.scrollHeight;
-  return typingEl;
-}
-function hideTyping(){
-  if (typingEl){ typingEl.remove(); typingEl=null; }
-}
-
-/* ====== UX: авто-рост textarea и Enter-send ====== */
+/* ====== UX: авто-рост и Enter-send ====== */
 msg.addEventListener('input', ()=>{
   msg.style.height='auto';
   msg.style.height=Math.min(msg.scrollHeight,180)+'px';
@@ -338,60 +331,30 @@ msg.addEventListener('keydown',(e)=>{
   }
 });
 
-/* Премиум-анимации кнопки (магнит + подсветка) */
-(function liveButton(b){
-  let raf=0;
-  function tilt(e){
-    const r=b.getBoundingClientRect();
-    const x=e.clientX-r.left, y=e.clientY-r.top;
-    const nx=(x/r.width)-.5, ny=(y/r.height)-.5;
-    const rx=(-ny)*10, ry=(nx)*12;
-    b.style.setProperty('--mx', x+'px'); b.style.setProperty('--my', y+'px');
-    cancelAnimationFrame(raf);
-    raf=requestAnimationFrame(()=>{
-      b.style.transform=`perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg)`;
-    });
-  }
-  b.addEventListener('mousemove',tilt,{passive:true});
-  b.addEventListener('mouseleave',()=>{ b.style.transform='perspective(700px) rotateX(0) rotateY(0)'; },{passive:true});
-  b.addEventListener('mousedown',()=>{ b.style.transform+=' scale(.985)'; });
-  b.addEventListener('mouseup',()=>{ b.style.transform=b.style.transform.replace(' scale(.985)',''); });
-})(btn);
-
 /* ====== CHAT LOOP ====== */
 form.addEventListener('submit', async (ev)=>{
   ev.preventDefault();
-  const text=msg.value.trim();
+  const text = msg.value.trim();
   if(!text) return;
 
-  addBubble(text,true);
+  addBubble(text, true);
   msg.value=''; msg.style.height='46px';
 
-  const old=btn.innerHTML; btn.disabled=true; btn.innerHTML='<span class="label">SENDING…</span>';
-
-  // показать, что ИИ печатает
-  showTyping();
+  const typing = showTyping();
+  const old = btn.innerHTML; btn.disabled=true; btn.innerHTML='<span class="label">SENDING…</span>';
 
   try{
-    const j=await sendToBackend(text);
-    hideTyping();
+    const j = await sendToBackend(text);
+    hideTyping(typing);
     addBubble(j?.reply || '(no reply)', false);
-    if (j?.state && j.state.valence !== undefined) themeFromState(j.state);
+    if(j?.state && j.state.valence!==undefined) themeFromState(j.state);
   }catch(e){
-    hideTyping();
-    console.error(e);
-    addBubble('Error sending: ' + (e?.message || 'network/CORS'), false);
+    hideTyping(typing);
+    addBubble('⚠️ Send error: ' + (e?.message || 'network/CORS'), false);
   }finally{
     btn.disabled=false; btn.innerHTML=old;
   }
 });
-
-/* ====== Установи фон программно, если нужно ====== */
-function setBg(urlOrData){
-  document.documentElement.style.setProperty('--bg-image', `url("${urlOrData}")`);
-}
-// Пример:
-// setBg('data:image/png;base64,AAAA...');  // или обычный URL
 </script>
 </body>
 </html>
