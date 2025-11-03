@@ -213,6 +213,20 @@ msg.addEventListener('keydown',(e)=>{
     form.requestSubmit();
   }
 });
+
+// === Очистка чата ===
+const cleanBtn = document.getElementById('clean');
+
+cleanBtn.addEventListener('click', () => {
+  if (confirm("Clear all messages?")) {
+    messages = [{
+      role: 'assistant',
+      text: 'LUMINA: Welcome, traveler. Breathe in for 4… and tell me: what are you feeling right now?'
+    }];
+    localStorage.setItem('lumina_chat', JSON.stringify(messages));
+    renderFeed();
+  }
+});
 </script>
 <!-- 🎵 LUMINA THEME MUSIC -->
 <audio id="luminaMusic" loop>
