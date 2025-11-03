@@ -83,6 +83,7 @@
     <form class="composer" id="form" novalidate>
       <textarea id="msg" class="in" placeholder="Type a message…" rows="1"></textarea>
       <button class="btn" id="send" type="submit"><span class="label">SEND</span></button>
+      <button class="btn" id="clean" type="button"><span class="label">CLEAN</span></button>
     </form>
   </section>
 
@@ -209,6 +210,21 @@ msg.addEventListener('keydown',(e)=>{
     form.requestSubmit();
   }
 });
+<script>
+// === Очистка чата ===
+const cleanBtn = document.getElementById('clean');
+
+cleanBtn.addEventListener('click', () => {
+  if (confirm("Clear all messages?")) {
+    messages = [{
+      role: 'assistant',
+      text: 'LUMINA: Welcome, traveler. Breathe in for 4… and tell me: what are you feeling right now?'
+    }];
+    localStorage.setItem('lumina_chat', JSON.stringify(messages));
+    renderFeed();
+  }
+});
+</script>
 </script>
 <!-- 🎵 LUMINA THEME MUSIC -->
 <audio id="luminaMusic" loop>
