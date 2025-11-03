@@ -210,5 +210,31 @@ msg.addEventListener('keydown',(e)=>{
   }
 });
 </script>
+<!-- 🎵 LUMINA THEME MUSIC -->
+<audio id="luminaMusic" loop>
+  <source src="./lumina_theme.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+// === Smooth fade-in background music ===
+const audio = document.getElementById('luminaMusic');
+
+// Активируем звук при первом клике / тапе (чтобы обойти блокировку автозвука)
+document.addEventListener('click', () => {
+  try {
+    audio.volume = 0;              // начальная громкость
+    audio.play().catch(()=>{});    // начать воспроизведение
+    let v = 0;                     // текущая громкость
+    const fade = setInterval(() => {
+      if (v < 0.35) {              // плавно увеличиваем до 35%
+        v += 0.01;
+        audio.volume = v;
+      } else {
+        clearInterval(fade);
+      }
+    }, 120); // каждые 120мс — плавный "вдох"
+  } catch(e) { console.warn('Audio error', e); }
+}, { once:true });
+</script>
 </body>
 </html>
