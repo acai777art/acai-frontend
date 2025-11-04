@@ -222,15 +222,30 @@ async function ensureConversation(){
   try{
     const res = await apiPost('/api/conversations', {});
     currentCid = res.id;
-  }catch(e){
-    if (e.message === 'AUTH') {
-      forceReauth();             // ⬅️ вместо alert+window.open
-    } else {
-      console.error(e);
-      alert('Cannot create conversation.');
-    }
-    throw e;
+  } catch (e) {
+  if (e.message === 'AUTH') {
+    const loginUrl = API + '/login?from=' + encodeURIComponent(location.href);
+
+    // 1) пробуем открыть в новой вкладке
+    let w = null;
+    try { w = window.open(loginUrl, '_blank', 'noopener'); } catch(_) {}
+
+    // 2) Fallback для iOS/блокировщиков: через 300 ms уводим ТЕКУЩУЮ вкладку
+    setTimeout(() => {
+      // если popup не открылся или закрыт — делаем жесткий редирект
+      if (!w || w.closed) {
+        location.href = loginUrl;
+      }
+    }, 300);
+
+    // показываем мягкое сообщение
+    alert('Please login via Telegram, then return here.');
+  } else {
+    console.error(e);
+    alert('Cannot create conversation.');
   }
+  throw e;
+}
   return currentCid;
 }
 
