@@ -133,6 +133,13 @@ if (messages.length === 0) {
 }
 renderFeed();
 
+/* === Черновик: восстановить и сохранять текст во время набора === */
+msg.value = localStorage.getItem('lumina_draft') || '';
+msg.addEventListener('input', ()=>{
+  localStorage.setItem('lumina_draft', msg.value);
+});
+
+/* === Рендер ленты === */
 function saveAndRender(){
   localStorage.setItem('lumina_chat', JSON.stringify(messages));
   renderFeed();
@@ -168,7 +175,7 @@ function themeFromState(s){
   const hue = (v >= 0) ? map(v, 0, 1, 210, 150) : map(v, -1, 0, 10, 210);
   const sat = map(Math.abs(x), 0, 0.5, 55, 92);
   const lig = 54;
-  const accent = `oklch(${lig}% ${sat/100} ${hue})`;
+  const accent = oklch(${lig}% ${sat/100} ${hue});
   let mode='NEUTRAL';
   if(v>0.28) mode='GROUND'; else if(v<-0.22) mode='STABILIZE'; else if(v<-0.08) mode='UPLIFT';
   document.documentElement.style.setProperty('--accent', accent);
@@ -194,8 +201,8 @@ async function ensureConversation(){
     currentCid = res.id;
   }catch(e){
     if (e.message === 'AUTH') {
-      alert('Please login via Telegram to start the chat.');
-      location.href = API + '/login';
+      alert('Please login via Telegram in the new tab, then return here.');
+      window.open(API + '/login', '_blank', 'noopener'); // не уводим текущую вкладку
     } else {
       console.error(e);
       alert('Cannot create conversation.');
@@ -211,21 +218,27 @@ form.addEventListener('submit', async (e)=>{
   const text = msg.value.trim();
   if(!text) return;
 
+  // Не очищаем поле до успеха
   messages.push({role:'user', text});
   saveAndRender();
 
-  msg.value = ''; msg.style.height = '46px';
   const typingEl = showTyping();
 
   try{
     const cid = await ensureConversation();
     const j = await apiPost(`/api/chat/${cid}`, { message: text });
     hideTyping(typingEl);
+
     messages.push({role:'assistant', text: j?.reply || '(no reply)'});
     saveAndRender();
+
+    // Теперь можно очистить поле и черновик
+    msg.value = '';
+    localStorage.removeItem('lumina_draft');
+    msg.style.height = '46px';
   }catch(err){
     hideTyping(typingEl);
-    messages.push({role:'assistant', text: (err.message==='AUTH'?'Auth required. Open /login.':'Error: cannot reach backend.')});
+    messages.push({role:'assistant', text: (err.message==='AUTH'?'Auth required. Opened login in a new tab.':'Error: cannot reach backend.')});
     saveAndRender();
   }
 });
@@ -257,6 +270,9 @@ cleanBtn.addEventListener('click', async () => {
   saveAndRender();
   location.reload();
 });
+
+/* Попробовать создать беседу сразу — если нужен логин, он откроется до ввода текста */
+ensureConversation().catch(()=>{ /* ждём логина в новой вкладке */ });
 </script>
 
 <!-- 🎵 LUMINA THEME MUSIC -->
