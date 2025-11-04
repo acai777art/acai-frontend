@@ -1,26 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <!-- 🔐 Guard: блокируем страницу без токена -->
-   <script>
-   (function () {
-     try {
-       const qs = new URLSearchParams(location.search);
-       let token = qs.get("token")  localStorage.getItem("acai_jwt")  "";
-       if (qs.get("token")) {
-         localStorage.setItem("acai_jwt", token);
-         history.replaceState({}, "", location.pathname + location.hash);
-       }
-       if (!token || token.length < 10) {
-         window.location.replace("https://affectivecybernetics.onrender.com");
-         document.write('<div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#0b0d17;color:#ffd700;font:16px/1.5 system-ui;z-index:999999">Access denied — login via Telegram…</div>');
-       }
-     } catch(e) {
-       window.location.replace("https://affectivecybernetics.onrender.com");
-     }
-  })();
-  </script>
-<noscript><meta http-equiv="refresh" content="0;url=https://affectivecybernetics.onrender.com"></noscript>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Affective Realms: LUMINA — Story Showcase</title>
@@ -362,22 +342,6 @@ a.inline{color:var(--ink); text-decoration:underline dotted}
   </main>
 
 <script>
-/* token propagation like before: read ?token= once, store, append to protected links */
-(function(){
-  try{
-    const qs = new URLSearchParams(location.search);
-    let jwt = qs.get("token") || localStorage.getItem("acai_jwt") || "";
-    if(qs.get("token")){
-      localStorage.setItem("acai_jwt", jwt);
-      history.replaceState({}, "", location.pathname + location.hash);
-    }
-    document.querySelectorAll("a.protected").forEach(a=>{
-      const url=new URL(a.getAttribute("href"), location.href);
-      if(jwt && jwt.length>10){ url.searchParams.set("token", jwt); a.setAttribute("href", url.toString()); }
-    });
-  }catch(e){}
-})();
-
 /* premium hover: slight magnetic light on buttons */
 document.querySelectorAll('.btn').forEach(b=>{
   b.addEventListener('mousemove',e=>{
