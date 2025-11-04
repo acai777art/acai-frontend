@@ -85,18 +85,36 @@
 
     <form class="composer" id="form" novalidate>
       <textarea id="msg" class="in" placeholder="Type a message…" rows="1"></textarea>
-      <button class="btn" id="send" type="button"><span class="label">SEND</span></button>
+      <!-- ВАЖНО: submit -->
+      <button class="btn" id="send" type="submit"><span class="label">SEND</span></button>
       <button class="btn ghost" id="clean" type="button"><span class="label">CLEAN</span></button>
     </form>
   </section>
 
 <script>
+/* ===== Grab ?token= once and store ===== */
+(function bootToken(){
+  const qs = new URLSearchParams(location.search);
+  const t = qs.get('token');
+  if (t && t.length > 10) {
+    try { localStorage.setItem('acai_jwt', t); } catch {}
+    history.replaceState({}, '', location.pathname + location.hash);
+  }
+})();
+
 /* ===== Backend URL ===== */
 const API = (localStorage.getItem('ACAI_API') || 'https://acai-backend.onrender.com').replace(/\/$/,'');
 
-/* ===== Fetch helpers with cookies ===== */
+/* ===== Auth header helper (Bearer + keep cookies) ===== */
+function authHeaders(){
+  let tok = null;
+  try { tok = localStorage.getItem('acai_jwt'); } catch {}
+  return tok ? { Authorization: 'Bearer ' + tok } : {};
+}
+
+/* ===== Fetch helpers ===== */
 async function apiGet(path){
-  const r = await fetch(API+path, {credentials:'include'});
+  const r = await fetch(API+path, {credentials:'include', headers: authHeaders()});
   if (r.status === 401) throw new Error('AUTH');
   if (!r.ok) throw new Error(await r.text());
   return r.json();
@@ -105,7 +123,7 @@ async function apiPost(path, data){
   const r = await fetch(API+path, {
     method:'POST',
     credentials:'include',
-    headers:{'Content-Type':'application/json'},
+    headers:{'Content-Type':'application/json', ...authHeaders()},
     body: JSON.stringify(data||{})
   });
   if (r.status === 401) throw new Error('AUTH');
@@ -113,7 +131,7 @@ async function apiPost(path, data){
   return r.json();
 }
 async function apiDelete(path){
-  const r = await fetch(API+path, {method:'DELETE', credentials:'include'});
+  const r = await fetch(API+path, {method:'DELETE', credentials:'include', headers: authHeaders()});
   if (r.status === 401) throw new Error('AUTH');
   if (!r.ok) throw new Error(await r.text());
   return r.json();
@@ -133,13 +151,13 @@ if (messages.length === 0) {
 }
 renderFeed();
 
-/* === Черновик: восстановить и сохранять текст во время набора === */
+/* Draft persistence */
 msg.value = localStorage.getItem('lumina_draft') || '';
 msg.addEventListener('input', ()=>{
   localStorage.setItem('lumina_draft', msg.value);
 });
 
-/* === Рендер ленты === */
+/* Render feed */
 function saveAndRender(){
   localStorage.setItem('lumina_chat', JSON.stringify(messages));
   renderFeed();
@@ -175,7 +193,7 @@ function themeFromState(s){
   const hue = (v >= 0) ? map(v, 0, 1, 210, 150) : map(v, -1, 0, 10, 210);
   const sat = map(Math.abs(x), 0, 0.5, 55, 92);
   const lig = 54;
-  const accent = `oklch(${lig}% ${sat/100} ${hue})`;
+  const accent = oklch(${lig}% ${sat/100} ${hue});
   let mode='NEUTRAL';
   if(v>0.28) mode='GROUND'; else if(v<-0.22) mode='STABILIZE'; else if(v<-0.08) mode='UPLIFT';
   document.documentElement.style.setProperty('--accent', accent);
@@ -184,7 +202,7 @@ function themeFromState(s){
 }
 async function refreshState(){
   try{
-    const r=await fetch(API+'/state',{cache:'no-store'}); // state можно без куки
+    const r=await fetch(API+'/state',{cache:'no-store'});
     if(!r.ok) return;
     const j=await r.json();
     themeFromState(j?.last||{});
@@ -202,7 +220,7 @@ async function ensureConversation(){
   }catch(e){
     if (e.message === 'AUTH') {
       alert('Please login via Telegram in the new tab, then return here.');
-      window.open(API + '/login', '_blank', 'noopener'); // не уводим текущую вкладку
+      window.open(API + '/login', '_blank', 'noopener');
     } else {
       console.error(e);
       alert('Cannot create conversation.');
@@ -212,13 +230,12 @@ async function ensureConversation(){
   return currentCid;
 }
 
-/* ===== Send logic (with cookies + conversation) ===== */
+/* ===== Send logic ===== */
 form.addEventListener('submit', async (e)=>{
   e.preventDefault();
   const text = msg.value.trim();
   if(!text) return;
 
-  // Не очищаем поле до успеха
   messages.push({role:'user', text});
   saveAndRender();
 
@@ -232,7 +249,6 @@ form.addEventListener('submit', async (e)=>{
     messages.push({role:'assistant', text: j?.reply || '(no reply)'});
     saveAndRender();
 
-    // Теперь можно очистить поле и черновик
     msg.value = '';
     localStorage.removeItem('lumina_draft');
     msg.style.height = '46px';
@@ -271,8 +287,8 @@ cleanBtn.addEventListener('click', async () => {
   location.reload();
 });
 
-/* Попробовать создать беседу сразу — если нужен логин, он откроется до ввода текста */
-ensureConversation().catch(()=>{ /* ждём логина в новой вкладке */ });
+/* Try creating a conversation immediately (will open login if needed) */
+ensureConversation().catch(()=>{});
 </script>
 
 <!-- 🎵 LUMINA THEME MUSIC -->
