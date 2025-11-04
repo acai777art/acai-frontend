@@ -168,7 +168,7 @@ function themeFromState(s){
   const hue = (v >= 0) ? map(v, 0, 1, 210, 150) : map(v, -1, 0, 10, 210);
   const sat = map(Math.abs(x), 0, 0.5, 55, 92);
   const lig = 54;
-  const accent = oklch(${lig}% ${sat/100} ${hue});
+  const accent = `oklch(${lig}% ${sat/100} ${hue})`;
   let mode='NEUTRAL';
   if(v>0.28) mode='GROUND'; else if(v<-0.22) mode='STABILIZE'; else if(v<-0.08) mode='UPLIFT';
   document.documentElement.style.setProperty('--accent', accent);
