@@ -92,7 +92,7 @@
   </section>
 
 <script>
-/* ===== Grab ?token= once and store ===== */
+/* ===== 1) Берём ?token= один раз и сохраняем ===== */
 (function bootToken(){
   const qs = new URLSearchParams(location.search);
   const t = qs.get('token');
@@ -102,17 +102,17 @@
   }
 })();
 
-/* ===== Backend URL ===== */
+/* ===== 2) Backend URL ===== */
 const API = (localStorage.getItem('ACAI_API') || 'https://acai-backend.onrender.com').replace(/\/$/,'');
 
-/* ===== Auth header helper (Bearer + keep cookies) ===== */
+/* ===== 3) Хелпер: подхват Bearer из localStorage + посыл куки ===== */
 function authHeaders(){
   let tok = null;
   try { tok = localStorage.getItem('acai_jwt'); } catch {}
   return tok ? { Authorization: 'Bearer ' + tok } : {};
 }
 
-/* ===== Fetch helpers ===== */
+/* ===== 4) Хелперы запросов ===== */
 async function apiGet(path){
   const r = await fetch(API+path, {credentials:'include', headers: authHeaders()});
   if (r.status === 401) throw new Error('AUTH');
@@ -137,27 +137,32 @@ async function apiDelete(path){
   return r.json();
 }
 
-/* ===== Elements ===== */
+/* ===== 5) NEW: форс-реавторизация в том же табе ===== */
+function forceReauth() {
+  location.href = API + '/auth/refresh';
+}
+
+/* ===== 6) DOM ===== */
 const feed = document.getElementById('feed');
 const tone = document.getElementById('tone');
 const form = document.getElementById('form');
 const msg  = document.getElementById('msg');
 const cleanBtn = document.getElementById('clean');
 
-/* ===== Local chat mirror (UI) ===== */
+/* ===== 7) Локальное зеркало ленты ===== */
 let messages = JSON.parse(localStorage.getItem('lumina_chat') || '[]');
 if (messages.length === 0) {
   messages.push({role:'assistant', text:'LUMINA: Welcome, traveler. Breathe in for 4… and tell me: what are you feeling right now?'});
 }
 renderFeed();
 
-/* Draft persistence */
+/* Черновик */
 msg.value = localStorage.getItem('lumina_draft') || '';
 msg.addEventListener('input', ()=>{
   localStorage.setItem('lumina_draft', msg.value);
 });
 
-/* Render feed */
+/* Рендер */
 function saveAndRender(){
   localStorage.setItem('lumina_chat', JSON.stringify(messages));
   renderFeed();
@@ -185,7 +190,7 @@ function showTyping(){
 }
 function hideTyping(el){ if(el && el.dataset.typing==='1') el.remove(); }
 
-/* ===== Theme from backend state ===== */
+/* ===== 8) Тема из /state ===== */
 const map=(v,inMin,inMax,outMin,outMax)=> outMin + (Math.max(inMin,Math.min(inMax,v))-inMin)*(outMax-outMin)/(inMax-inMin);
 function themeFromState(s){
   const v = Number(s?.valence ?? 0);
@@ -210,7 +215,7 @@ async function refreshState(){
 }
 setInterval(refreshState,1500); refreshState();
 
-/* ===== Conversation session on backend ===== */
+/* ===== 9) Сессия/диалог на бэке ===== */
 let currentCid = null;
 async function ensureConversation(){
   if (currentCid) return currentCid;
@@ -219,8 +224,7 @@ async function ensureConversation(){
     currentCid = res.id;
   }catch(e){
     if (e.message === 'AUTH') {
-      alert('Please login via Telegram in the new tab, then return here.');
-      window.open(API + '/login', '_blank', 'noopener');
+      forceReauth();             // ⬅️ вместо alert+window.open
     } else {
       console.error(e);
       alert('Cannot create conversation.');
@@ -230,7 +234,7 @@ async function ensureConversation(){
   return currentCid;
 }
 
-/* ===== Send logic ===== */
+/* ===== 10) Отправка ===== */
 form.addEventListener('submit', async (e)=>{
   e.preventDefault();
   const text = msg.value.trim();
@@ -254,12 +258,18 @@ form.addEventListener('submit', async (e)=>{
     msg.style.height = '46px';
   }catch(err){
     hideTyping(typingEl);
-    messages.push({role:'assistant', text: (err.message==='AUTH'?'Auth required. Opened login in a new tab.':'Error: cannot reach backend.')});
-    saveAndRender();
+    if (err.message === 'AUTH') {
+      messages.push({role:'assistant', text:'Reauth…'});
+      saveAndRender();
+      forceReauth();             // ⬅️ NEW
+    } else {
+      messages.push({role:'assistant', text:'Error: cannot reach backend.'});
+      saveAndRender();
+    }
   }
 });
 
-/* auto-resize and Enter submit */
+/* авто-рост и Enter=send */
 msg.addEventListener('input', ()=>{
   msg.style.height='auto';
   msg.style.height=Math.min(msg.scrollHeight,180)+'px';
@@ -271,23 +281,26 @@ msg.addEventListener('keydown',(e)=>{
   }
 });
 
-/* ===== CLEAN: wipe backend memory + local UI ===== */
+/* ===== 11) CLEAN: больше не чистим весь localStorage ===== */
 cleanBtn.addEventListener('click', async () => {
-  if (!confirm("Delete ALL your chats & memory?")) return;
+  if (!confirm("Delete local chat history? (You stay logged in)")) return;
   try { await apiDelete('/api/memory'); } catch(e){
-    if (e.message==='AUTH'){ alert('Login required to clear memory.'); return; }
+    if (e.message==='AUTH'){ return forceReauth(); }
   }
-  try { localStorage.clear(); sessionStorage.clear(); } catch {}
+  try {
+    localStorage.removeItem('lumina_chat');   // сохраняем acai_jwt
+    localStorage.removeItem('lumina_draft');  // сохраняем acai_jwt
+    sessionStorage.clear?.();
+  } catch {}
   messages = [{
     role:'assistant',
     text:'LUMINA: Welcome, traveler. Breathe in for 4… and tell me: what are you feeling right now?'
   }];
   currentCid = null;
   saveAndRender();
-  location.reload();
 });
 
-/* Try creating a conversation immediately (will open login if needed) */
+/* ===== 12) Пытаемся создать беседу сразу (если 401 — уедем на refresh) ===== */
 ensureConversation().catch(()=>{});
 </script>
 
