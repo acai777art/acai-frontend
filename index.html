@@ -10,8 +10,8 @@
   --glow:#7ae6ff;
   --accent:#b37aff;
   --text:#e9eef8;
-  --overlay1:rgba(0,0,0,.55);
-  --overlay2:rgba(0,0,0,.9);
+  --overlay1:rgba(0,0,0,.38);
+  --overlay2:rgba(0,0,0,.72);
 }
 
 /* Base */
@@ -19,44 +19,38 @@
 html,body{height:100%}
 body{
   margin:0;
-  min-height:100svh; /* safe viewport */
-  background:url("bg_lumina.jpg") center/cover no-repeat fixed;
+  min-height:100svh;
+  background:
+    image-set(url("bg_lumina.jpg") 1x, url("bg_lumina@2x.jpg") 2x) center/cover no-repeat fixed;
+  background: -webkit-image-set(url("bg_lumina.jpg") 1x, url("bg_lumina@2x.jpg") 2x) center/cover no-repeat fixed;
   display:flex; align-items:center; justify-content:center;
   color:var(--text); position:relative; overflow:hidden;
   -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
   text-align:center;
   padding:max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
-  transition: filter .35s ease, opacity .35s ease;
+  touch-action: manipulation;
+  user-select: none;
 }
 
-/* Contrast overlay */
+/* Contrast overlay (no blur -> sharp image) */
 body::before{
   content:""; position:absolute; inset:0; z-index:0;
   background: radial-gradient(120% 120% at 50% 50%, var(--overlay1) 0%, var(--overlay2) 100%);
-  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-  transition: opacity .35s ease;
-}
-/* Flash overlay for smooth leave */
-#flash{
-  position:fixed; inset:0; pointer-events:none; z-index:30;
-  background: radial-gradient(60vmax 60vmax at 50% 50%, rgba(122,230,255,.28) 0%, rgba(179,122,255,.18) 35%, transparent 70%);
-  opacity:0; transition: opacity .35s ease;
+  opacity:.95;
 }
 
-/* Layout */
 .main{ position:relative; z-index:1; width:min(100%,1200px); padding:clamp(12px,3vw,24px); }
+
+/* Breathing edge block */
 .brand{
   display:inline-block; padding: clamp(16px,2.8vw,22px) clamp(22px,3.6vw,32px);
-  border-radius:24px;
-  position:relative; isolation:isolate;
+  border-radius:24px; position:relative; isolation:isolate; cursor: pointer;
 }
-/* Breathing edge */
 .brand::before{
   content:""; position:absolute; inset:-2px; border-radius:inherit; z-index:-1;
   background: conic-gradient(from 0deg, var(--glow), var(--accent), var(--glow));
-  filter: blur(18px) saturate(120%);
-  opacity:.45;
-  animation: breathe 6s ease-in-out infinite;
+  filter: saturate(120%);
+  opacity:.55; animation: breathe 6s ease-in-out infinite;
 }
 
 /* Titles */
@@ -64,14 +58,13 @@ h1{
   margin:0; font-family:"Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   font-weight:900; letter-spacing:.06em;
   font-size:clamp(2.4rem,7vw,5rem); line-height:1.05;
-  text-shadow: 0 0 16px var(--glow), 0 0 44px var(--accent);
+  text-shadow: 0 0 16px var(--glow), 0 0 36px var(--accent);
   animation: breathe 6s ease-in-out infinite;
 }
 h2{
-  margin:clamp(10px,2.2vw,18px) 0 0 0; font-weight:300; letter-spacing:.35em;
-  font-size:clamp(.9rem,2.2vw,1.25rem); color:#a8b2c7;
-  text-shadow:0 0 8px rgba(122,230,255,.25);
-  animation: fadeIn 900ms ease forwards;
+  margin:clamp(10px,2.2vw,18px) 0 0 0; font-weight:300; letter-spacing:.32em;
+  font-size:clamp(.9rem,2.2vw,1.25rem); color:#c4cede;
+  text-shadow:0 0 6px rgba(122,230,255,.22);
 }
 
 /* Button */
@@ -83,71 +76,120 @@ h2{
   border-radius:999px; color:#fff; text-decoration:none;
   background: linear-gradient(90deg, var(--accent), var(--glow));
   box-shadow: 0 0 26px var(--glow), inset 0 0 60px rgba(255,255,255,.08);
-  transition: transform .25s ease, box-shadow .25s ease, filter .25s ease;
+  transition: transform .2s ease, box-shadow .2s ease;
   position:relative; min-height:48px;
 }
-.button::after{
-  content:""; position:absolute; inset:-2px; border-radius:inherit; pointer-events:none;
-  box-shadow: 0 0 50px rgba(122,230,255,.5), inset 0 0 36px rgba(179,122,255,.35);
-  animation: pulse 5s ease-in-out infinite;
-}
-.button:hover{ transform: translateY(-1px) scale(1.03); box-shadow: 0 0 44px var(--accent), 0 0 120px var(--glow); }
+.button:hover{ transform: translateY(-1px) scale(1.02); box-shadow: 0 0 44px var(--accent), 0 0 120px var(--glow); }
 .button:active{ transform: translateY(0) scale(.98); }
 .button:focus-visible{ outline:3px solid rgba(122,230,255,.6); outline-offset:3px; }
 
-/* Ambient orb (light) */
-#orb{
-  position:absolute; width:clamp(140px,24vw,320px); height:clamp(140px,24vw,320px);
-  border-radius:50%; background: radial-gradient(circle at 30% 30%, var(--glow), transparent 60%);
-  filter: blur(90px); opacity:.38; z-index:0; animation: float 14s ease-in-out infinite alternate;
+/* Canvas for fireworks */
+#fx{
+  position:fixed; inset:0; z-index:2; pointer-events:none;
 }
-@keyframes float{ 0%{top:18%; left:20%;} 100%{top:62%; left:72%;} }
 
-/* Anims */
-@keyframes breathe{ 0%,100%{ transform: scale(1);} 50%{ transform: scale(1.015);} }
-@keyframes fadeIn{ from{ opacity:0; transform:translateY(10px);} to{ opacity:1; transform:translateY(0);} }
-@keyframes pulse{ 0%,100%{ filter:brightness(1);} 50%{ filter:brightness(1.22);} }
+/* Animations */
+@keyframes breathe{ 0%,100%{ transform: scale(1);} 50%{ transform: scale(1.012);} }
 
-/* Leave state */
-body.leaving::before{ opacity:.98; }
-body.leaving #flash{ opacity:1; }
-body.leaving .button{ filter:brightness(1.4); }
+/* Footer */
+footer{
+  position:fixed; left:0; right:0; bottom:0; padding:10px 16px;
+  font-size:clamp(12px,1.8vw,13px); color:#8a94a7; letter-spacing:.08em;
+  text-shadow:0 0 5px rgba(255,255,255,.06); z-index:1; pointer-events:none;
+}
 
-/* Responsive tweaks */
-@media (max-width:600px){ h2{ letter-spacing:.25em; } }
-@media (max-width:400px){ h2{ letter-spacing:.18em; } }
-
-/* Reduce motion */
+/* Motion reduce */
 @media (prefers-reduced-motion:reduce){
-  #orb,.button::after,h1{ animation:none !important; }
+  #fx{ display:none !important; }
+  h1,.brand::before{ animation:none !important; }
 }
 </style>
 </head>
 <body>
-  <div id="orb" aria-hidden="true"></div>
-  <div id="flash" aria-hidden="true"></div>
+  <canvas id="fx"></canvas>
 
   <main class="main">
-    <div class="brand">
+    <div class="brand" id="brand">
       <h1>ACAI</h1>
       <h2>Affective Contextual Artificial Intelligence</h2>
     </div>
-    <a href="app.html" class="button" id="go">Experience ACAI</a>
+    <a href="app.html" class="button">Experience ACAI</a>
   </main>
-
-  <footer style="position:fixed; left:0; right:0; bottom:0; padding:10px 16px; font-size:clamp(12px,1.8vw,13px); color:#7b8597; letter-spacing:.08em; text-shadow:0 0 5px rgba(255,255,255,.07); z-index:2; pointer-events:none;">
-    © 2025 Affective Cybernetics
-  </footer>
+  <footer>© 2025 Affective Cybernetics</footer>
 
 <script>
-// Lightweight smooth transition
-const go = document.getElementById('go');
-go.addEventListener('click', (e)=>{
-  e.preventDefault();
-  document.body.classList.add('leaving');
-  const url = go.getAttribute('href');
-  setTimeout(()=>{ window.location.href = url; }, 320);
-});
+(() => {
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const canvas = document.getElementById('fx');
+  const ctx = canvas.getContext('2d');
+  const DPR = Math.min(window.devicePixelRatio || 1, 2);
+  let w, h, particles = [], raf;
+
+  function resize(){
+    w = canvas.width = Math.floor(innerWidth * DPR);
+    h = canvas.height = Math.floor(innerHeight * DPR);
+    canvas.style.width = innerWidth + 'px';
+    canvas.style.height = innerHeight + 'px';
+  }
+  addEventListener('resize', resize, {passive:true});
+  resize();
+
+  function rand(min, max){ return Math.random() * (max - min) + min; }
+
+  function spawn(x, y){
+    const baseHue1 = 200, baseHue2 = 275;
+    const count = 70;
+    for (let i = 0; i < count; i++){
+      const angle = rand(0, Math.PI * 2);
+      const speed = rand(0.8, 3.2);
+      const life = rand(700, 1400);
+      const size = rand(1, 2.6) * DPR;
+      const hue = i % 2 ? baseHue1 : baseHue2;
+      particles.push({
+        x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+        life, ttl: life, size,
+        color: hsla(${hue}, 90%, ${rand(55, 75)}%, 1),
+        glow: hsla(${hue}, 100%, 65%, .7)
+      });
+    }
+  }
+
+  function step(){
+    raf = requestAnimationFrame(step);
+    ctx.clearRect(0,0,w,h);
+    const gravity = 0.018 * DPR;
+    for (let i = particles.length - 1; i >= 0; i--){
+      const p = particles[i];
+      p.ttl -= 16;
+      if (p.ttl <= 0){ particles.splice(i,1); continue; }
+      p.x += p.vx * 2;
+      p.y += p.vy * 2;
+      p.vy += gravity;
+      const alpha = p.ttl / p.life;
+      ctx.shadowBlur = 18 * DPR;
+      ctx.shadowColor = p.glow;
+      ctx.fillStyle = p.color.replace(', 1)', `, ${Math.max(alpha,0)})`);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+      ctx.fill();
+    }
+  }
+  raf = requestAnimationFrame(step);
+
+  function canvasXY(evt){
+    const rect = canvas.getBoundingClientRect();
+    const x = (evt.clientX - rect.left) * DPR;
+    const y = (evt.clientY - rect.top) * DPR;
+    return [x,y];
+  }
+
+  const brand = document.getElementById('brand');
+  brand.addEventListener('click', (e) => {
+    if (prefersReduced) return;
+    const [x,y] = canvasXY(e);
+    spawn(x,y);
+  }, {passive:true});
+})();
 </script>
 </body>
 </html>
