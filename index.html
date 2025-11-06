@@ -17,49 +17,46 @@ html,body{height:100%}
 body{
   margin:0; min-height:100svh; color:var(--text);
   -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-  overflow:hidden; /* фикс фона под контентом */
+  overflow:hidden;
 }
 
 /* === Background layer (crisp) === */
-.bg{
-  position:fixed; inset:0; z-index:-2; overflow:hidden;
-}
+.bg{ position:fixed; inset:0; z-index:-2; overflow:hidden; }
 .bg img{
   position:absolute; width:110vw; height:110vh; object-fit:cover;
   left:50%; top:50%; transform:translate(-50%,-50%);
-  will-change: transform;
+  will-change: transform; filter:none;
   animation: kenburns 22s ease-in-out infinite alternate;
-  filter: none; /* максимально чётко */
 }
 @keyframes kenburns{
   0%   { transform: translate(-50%,-50%) scale(1)    translateX(0) translateY(0);}
   100% { transform: translate(-50%,-50%) scale(1.08) translateX(-1.2%) translateY(-1.2%);}
 }
 
-/* Contrast overlay (без blur, чтобы не «дымить») */
+/* Contrast overlay (без blur — фон остаётся резким) */
 .overlay{
   position:fixed; inset:0; z-index:-1;
-  ground: radial-gradient(120% 120% at 50% 50%, var(--overlay1) 0%, var(--overlay2) 100%);
+  background: radial-gradient(120% 120% at 50% 50%, var(--overlay1) 0%, var(--overlay2) 100%);
 }
 
 /* Explore spotlight (сканер) */
 .explore{
   position:fixed; inset:0; pointer-events:none; z-index:-1;
-  /* динамический радиальный градиент вокруг указателя */
-  --mx: 50%; --my: 50%; /* обновляется JS */
-  background:
-    radial-gradient(16vmax 16vmax at var(--mx) var(--my),
-      rgba(122,230,255,.18), rgba(179,122,255,.12) 35%, transparent 70%);
+  --mx:50%; --my:50%;
+  background: radial-gradient(16vmax 16vmax at var(--mx) var(--my),
+    rgba(122,230,255,.18), rgba(179,122,255,.12) 35%, transparent 70%);
   transition: background-position .08s linear;
 }
 
-/* Content */
+/* Content: центр по экрану */
 .main{
   position:relative; z-index:1;
   width:min(100%,1200px);
-  margin:0 auto;
+  height:100svh;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
   padding:clamp(20px,4vw,40px);
   text-align:center;
+  gap:clamp(16px,3vh,28px);
 }
 
 /* Блок с «дышащей кромкой» */
@@ -71,16 +68,17 @@ body{
 .brand::before{
   content:""; position:absolute; inset:-2px; border-radius:inherit; z-index:-1;
   background: conic-gradient(from 0deg, var(--glow), var(--accent), var(--glow));
-  filter: saturate(120%);
-  opacity:.55; animation: breathe 6s ease-in-out infinite;
+  filter: saturate(160%) blur(2px);
+  opacity:.75; animation: breathe 6s ease-in-out infinite;
 }
 
-/* Titles with slide-in */
+/* Titles */
 h1{
   margin:0; font-family:"Inter", system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
   font-weight:900; letter-spacing:.06em;
   font-size:clamp(2.4rem,7vw,5rem); line-height:1.05;
-  text-shadow: 0 0 16px var(--glow), 0 0 36px var(--accent);
+  text-shadow: 0 0 24px var(--glow), 0 0 60px var(--accent), 0 0 100px var(--glow);
+  animation: breathe 5s ease-in-out infinite;
 }
 h2{
   margin:clamp(10px,2.2vw,18px) 0 0 0; font-weight:300; letter-spacing:.32em;
@@ -88,21 +86,15 @@ h2{
   text-shadow:0 0 6px rgba(122,230,255,.22);
 }
 
-/* Reveal base */
-.reveal{opacity:0; transform:translateY(14px); will-change: transform, opacity;}
-.reveal.in{opacity:1; transform:none; transition: transform .7s ease, opacity .7s ease;}
-/* Направления */
-.from-left{transform:translateX(-24px); }
-.from-right{transform:translateX(24px); }
-/* Когда «вошли» */
-.from-left.in, .from-right.in{transform:none;}
-/* Стагер */
-.delay-1{transition-delay:.05s}
-.delay-2{transition-delay:.15s}
+/* Reveal (стартовый выезд) */
+.reveal{opacity:0; transform:translateY(14px); will-change:transform,opacity;}
+.reveal.in{opacity:1; transform:none; transition:transform .7s ease, opacity .7s ease;}
+.from-left{transform:translateX(-24px);} .from-right{transform:translateX(24px);}
+.from-left.in,.from-right.in{transform:none;}
+.delay-1{transition-delay:.05s} .delay-2{transition-delay:.15s}
 
-/* Button */
+/* Button — строго по центру, блоком ниже заголовка */
 .button{
-  margin-top:clamp(22px,5vh,44px);
   display:inline-flex; align-items:center; justify-content:center; gap:10px;
   padding:clamp(12px,2.4vw,16px) clamp(28px,5vw,44px);
   font-size:clamp(.9rem,2.2vw,1rem); letter-spacing:.15em; text-transform:uppercase; font-weight:600;
@@ -110,7 +102,7 @@ h2{
   background: linear-gradient(90deg, var(--accent), var(--glow));
   box-shadow: 0 0 26px var(--glow), inset 0 0 60px rgba(255,255,255,.08);
   transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
-  position:relative; min-height:48px;
+  min-height:48px;
 }
 .button:hover{ transform: translateY(-1px) scale(1.02); box-shadow: 0 0 44px var(--accent), 0 0 120px var(--glow); }
 .button:active{ transform: translateY(0) scale(.985); }
@@ -123,10 +115,27 @@ footer{
   text-shadow:0 0 5px rgba(255,255,255,.06); z-index:1; pointer-events:none;
 }
 
-/* Anims */
-@keyframes breathe{ 0%,100%{ transform: scale(1);} 50%{ transform: scale(1.012);} }
+/* Анимации */
+@keyframes breathe{
+  0%,100%{
+    transform: scale(1);
+    filter: brightness(1);
+    text-shadow:
+      0 0 22px var(--glow),
+      0 0 44px var(--accent),
+      0 0 88px var(--glow);
+  }
+  50%{
+    transform: scale(1.08);
+    filter: brightness(1.3);
+    text-shadow:
+      0 0 40px var(--accent),
+      0 0 90px var(--glow),
+      0 0 160px var(--accent);
+  }
+}
 
-/* Reduce motion: выключаем движения */
+/* Reduce motion */
 @media (prefers-reduced-motion:reduce){
   .bg img, .brand::before{ animation:none !important; }
   .explore{ display:none !important; }
@@ -137,18 +146,19 @@ footer{
 <body>
   <!-- BACKGROUND -->
   <div class="bg" aria-hidden="true">
-    <!-- Хочешь 2x: сделай bg_lumina@2x.jpg и увеличь width/height до 120vw/120vh -->
+    <!-- Можно сделать 2x: background@2x.jpg и увеличить ширину/высоту до 120vw/120vh -->
     <img src="bg_lumina.jpg" alt="">
   </div>
   <div class="overlay" aria-hidden="true"></div>
   <div class="explore" id="explore" aria-hidden="true"></div>
 
-  <!-- CONTENT -->
+  <!-- CONTENT (по центру экрана) -->
   <main class="main">
     <div class="brand">
       <h1 class="reveal from-left">ACAI</h1>
       <h2 class="reveal from-right delay-2">Affective Contextual Artificial Intelligence</h2>
     </div>
+
     <a href="app.html" class="button reveal delay-1">Experience ACAI</a>
   </main>
 
@@ -158,44 +168,30 @@ footer{
 /* === Reveal on load (staggered) === */
 (function(){
   const items = document.querySelectorAll('.reveal');
-  requestAnimationFrame(() => {
-    items.forEach(el => el.classList.add('in'));
-  });
+  requestAnimationFrame(() => items.forEach(el => el.classList.add('in')));
 })();
 
-/* === Spotlight/explore: курсор ведёт световое пятно; на тач — автоорбита === */
+/* === Spotlight/explore === */
 (function(){
   const el = document.getElementById('explore');
   if(!el) return;
+  const hasPointer = matchMedia('(pointer:fine)').matches;
+  let t = 0, raf;
 
-  let hasPointer = matchMedia('(pointer:fine)').matches;
-  let autoT = 0, rafId;
-
-  function setPos(x,y){
-    el.style.setProperty('--mx', x + '%');
-    el.style.setProperty('--my', y + '%');
-  }
+  const setPos = (x,y)=>{ el.style.setProperty('--mx', x+'%'); el.style.setProperty('--my', y+'%'); };
 
   if(hasPointer){
-    window.addEventListener('pointermove', (e)=>{
-      const x = (e.clientX / innerWidth) * 100;
-      const y = (e.clientY / innerHeight) * 100;
-      setPos(x,y);
+    addEventListener('pointermove', e=>{
+      setPos((e.clientX/innerWidth)*100, (e.clientY/innerHeight)*100);
     }, {passive:true});
   } else {
-    // Автоспотлайт для touch — мягкая орбита по Lissajous
     const loop = ()=>{
-      autoT += 0.008;
-      const x = 50 + Math.sin(autoT*1.3)*35;
-      const y = 50 + Math.cos(autoT*0.9)*20;
-      setPos(x,y);
-      rafId = requestAnimationFrame(loop);
+      t += 0.008;
+      setPos(50 + Math.sin(t*1.3)*35, 50 + Math.cos(t*0.9)*20);
+      raf = requestAnimationFrame(loop);
     };
-    rafId = requestAnimationFrame(loop);
-    document.addEventListener('visibilitychange', ()=>{
-      if(document.hidden) cancelAnimationFrame(rafId);
-      else rafId = requestAnimationFrame(loop);
-    });
+    raf = requestAnimationFrame(loop);
+    document.addEventListener('visibilitychange', ()=>{ if(document.hidden) cancelAnimationFrame(raf); else raf=requestAnimationFrame(loop); });
   }
 })();
 </script>
