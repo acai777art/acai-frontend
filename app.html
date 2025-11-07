@@ -156,8 +156,7 @@ const cleanBtn = document.getElementById('clean');
 /* ===== 7) Локальное зеркало ленты ===== */
 let messages = JSON.parse(localStorage.getItem('lumina_chat') || '[]');
 if (messages.length === 0) {
-  messages.push({role:'assistant', text:'ACAI: Greetings, conscious being.
-Synchronizing with your emotional field…'});
+  messages.push({role:'assistant', text:'ACAI: Greetings, conscious being. Synchronizing with your emotional field…'});
 }
 renderFeed();
 
