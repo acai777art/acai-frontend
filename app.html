@@ -77,7 +77,7 @@
 
   <header class="bar">
     <div class="spark" aria-hidden="true"></div>
-    <div class="title">AFFECTIVE REALMS · LUMINA</div>
+    <div class="title">AFFECTIVE CONTEXTUAL AI</div>
     <div class="tone" id="tone">NEUTRAL</div>
     <button class="btn ghost sm" id="logout" type="button">
       <span class="label">LOGOUT</span>
@@ -156,7 +156,8 @@ const cleanBtn = document.getElementById('clean');
 /* ===== 7) Локальное зеркало ленты ===== */
 let messages = JSON.parse(localStorage.getItem('lumina_chat') || '[]');
 if (messages.length === 0) {
-  messages.push({role:'assistant', text:'LUMINA: Welcome, traveler. Breathe in for 4… and tell me: what are you feeling right now?'});
+  messages.push({role:'assistant', text:'ACAI: Greetings, conscious being.
+Synchronizing with your emotional field…'});
 }
 renderFeed();
 
