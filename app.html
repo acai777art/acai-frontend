@@ -341,5 +341,31 @@ document.addEventListener('click', () => {
   } catch(e) { console.warn('Audio error', e); }
 }, { once:true });
 </script>
+
+<!-- 💎 NEW: Logout logic -->
+<script>
+/* === NEW: Logout === */
+async function doLogout(){
+  try {
+    await fetch(API + '/logout', { method:'POST', credentials:'include' });
+  } catch (e) {}
+  try {
+    localStorage.removeItem('acai_jwt');
+    localStorage.removeItem('lumina_chat');
+    localStorage.removeItem('lumina_draft');
+    sessionStorage.clear?.();
+  } catch(e){}
+  try {
+    const u = new URL(location.href);
+    u.searchParams.delete('token');
+    history.replaceState({}, '', u.pathname + u.hash);
+  } catch(e){}
+  location.reload();
+}
+document.getElementById('logout')?.addEventListener('click', (e)=>{
+  e.preventDefault();
+  doLogout();
+});
+</script>
 </body>
 </html>
