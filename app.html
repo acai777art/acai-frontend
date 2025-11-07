@@ -372,5 +372,26 @@ document.getElementById('logout')?.addEventListener('click', async (e)=>{
   location.href = 'https://acai-frontend.onrender.com';
 });
 </script>
+<script>
+/* ==== BOOT TOKEN (универсальный) ==== */
+(function(){
+  try{
+    const qs = new URLSearchParams(location.search);
+    const t  = qs.get('token');
+    if (t && t.length > 10) {
+      // 1) сохраним Bearer, чтобы не зависеть от кросс-сайт cookie на iOS
+      localStorage.setItem('acai_jwt', t);
+
+      // 2) подчистим URL от ?token=
+      const u = new URL(location.href);
+      u.searchParams.delete('token');
+      history.replaceState({}, '', u.pathname + u.hash);
+
+      // 3) (опционально) сразу в чат
+      // location.replace('/app.html');
+    }
+  }catch(e){}
+})();
+</script>
 </body>
 </html>
