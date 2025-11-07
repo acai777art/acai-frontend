@@ -347,19 +347,29 @@ document.addEventListener('click', () => {
 document.getElementById('logout')?.addEventListener('click', async (e)=>{
   e.preventDefault();
 
-  // Запрос на сервер для удаления сессии
-  await fetch('https://acai-backend.onrender.com/logout', {
-    method: 'POST',
-    credentials: 'include'
-  }).catch(()=>{});
+  // Показываем подтверждение
+  const ok = confirm("Вы действительно хотите выйти из аккаунта?");
+  if (!ok) return; // если нажали «Отмена» — ничего не делаем
 
-  // Удаляем локальные данные
-  localStorage.removeItem('acai_jwt');
-  localStorage.removeItem('lumina_chat');
-  localStorage.removeItem('lumina_draft');
-  sessionStorage.clear?.();
+  try {
+    // Уведомляем сервер о выходе
+    await fetch('https://acai-backend.onrender.com/logout', {
+      method: 'POST',
+      credentials: 'include'
+    });
+  } catch(e) {
+    console.warn('Logout request failed (offline?)', e);
+  }
 
-  // Обновляем страницу (теперь пользователь не авторизован)
+  // Чистим локальные данные
+  try {
+    localStorage.removeItem('acai_jwt');
+    localStorage.removeItem('lumina_chat');
+    localStorage.removeItem('lumina_draft');
+    sessionStorage.clear?.();
+  } catch(e){}
+
+  // Перезагружаем страницу (теперь гость)
   location.reload();
 });
 </script>
