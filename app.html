@@ -342,59 +342,35 @@ document.addEventListener('click', () => {
 }, { once:true });
 </script>
 
-<!-- 💎 NEW: Logout logic (robust) -->
+<!-- 💎 NEW: Logout logic -->
 <script>
-(function(){
-  const btn = document.getElementById('logout');
-  if(!btn) return;
+document.getElementById('logout')?.addEventListener('click', async (e)=>{
+  e.preventDefault();
+  e.stopPropagation();
 
-  // Локальный резолвер API на случай, если window.API недоступен в этом <script>
-  function resolveAPI(){
-    try{ if (window.API && typeof window.API === 'string') return window.API.replace(/\/$/,''); }catch{}
-    try{ const v = localStorage.getItem('ACAI_API'); if (v) return v.replace(/\/$/,''); }catch{}
-    return 'https://acai-backend.onrender.com'; // дефолт
-  }
+  if (!confirm('Вы действительно хотите выйти из аккаунта?')) return;
 
-  async function doLogoutHard(){
-    const API_BASE = resolveAPI();
+  // 1) снимаем cookie-сессию на бэке
+  try { await fetch(API + '/logout', { method:'POST', credentials:'include' }); } catch(e){}
 
-    // 1) сервер: снимаем cookie-сессию (молчаливо, даже если CORS/сеть)
-    try { await fetch(API_BASE + '/logout', {method:'POST', credentials:'include'}); } catch(_) {}
+  // 2) чистим локальные ключи
+  try {
+    localStorage.removeItem('acai_jwt');
+    localStorage.removeItem('lumina_chat');
+    localStorage.removeItem('lumina_draft');
+    sessionStorage.clear?.();
+  } catch(e){}
 
-    // 2) локально чистим всё, что может вернуть авторизацию
-    try {
-      localStorage.removeItem('acai_jwt');
-      localStorage.removeItem('lumina_chat');
-      localStorage.removeItem('lumina_draft');
-      sessionStorage.clear?.();
-    } catch(_) {}
+  // 3) уберём ?token= если вдруг остался
+  try {
+    const u = new URL(location.href);
+    u.searchParams.delete('token');
+    history.replaceState({}, '', u.pathname + u.hash);
+  } catch(e){}
 
-    // 3) убираем ?token из адресной строки (если был)
-    try {
-      const u = new URL(location.href); u.searchParams.delete('token');
-      history.replaceState({}, '', u.pathname + u.hash);
-    } catch(_) {}
-
-    // 4) ЖЁСТКИЙ редирект на логин (без возврата в историю)
-    const next = API_BASE + '/login?from=' + encodeURIComponent(location.href);
-    // пробуем несколько способов на случай странностей браузера:
-    try { window.location.replace(next); return; } catch(_){}
-    try { window.location.assign(next); return; } catch(_){}
-    window.location.href = next;
-  }
-
-  // чтобы глобальный обработчик кликов (музыка) не мешал
-  btn.addEventListener('click', (e)=>{
-    e.preventDefault();
-    e.stopPropagation();
-    e.stopImmediatePropagation();
-
-    if (!confirm('Вы действительно хотите выйти из аккаунта?')) return;
-
-    doLogoutHard();
-    return false; // на всякий случай
-  });
-})();
+  // 4) Перенаправляем обратно на фронт
+  location.href = 'https://acai-frontend.onrender.com';
+});
 </script>
 </body>
 </html>
