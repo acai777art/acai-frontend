@@ -346,22 +346,14 @@ document.addEventListener('click', () => {
 <script>
 document.getElementById('logout')?.addEventListener('click', async (e)=>{
   e.preventDefault();
+  e.stopPropagation();
 
-  // Показываем подтверждение
-  const ok = confirm("Вы действительно хотите выйти из аккаунта?");
-  if (!ok) return; // если нажали «Отмена» — ничего не делаем
+  if (!confirm('Вы действительно хотите выйти из аккаунта?')) return;
 
-  try {
-    // Уведомляем сервер о выходе
-    await fetch('https://acai-backend.onrender.com/logout', {
-      method: 'POST',
-      credentials: 'include'
-    });
-  } catch(e) {
-    console.warn('Logout request failed (offline?)', e);
-  }
+  // 1) снимаем cookie-сессию на бэке
+  try { await fetch(API + '/logout', { method:'POST', credentials:'include' }); } catch(e){}
 
-  // Чистим локальные данные
+  // 2) чистим локальные ключи
   try {
     localStorage.removeItem('acai_jwt');
     localStorage.removeItem('lumina_chat');
@@ -369,8 +361,15 @@ document.getElementById('logout')?.addEventListener('click', async (e)=>{
     sessionStorage.clear?.();
   } catch(e){}
 
-  // Перезагружаем страницу (теперь гость)
-  location.reload();
+  // 3) уберём ?token= если вдруг остался
+  try {
+    const u = new URL(location.href);
+    u.searchParams.delete('token');
+    history.replaceState({}, '', u.pathname + u.hash);
+  } catch(e){}
+
+  // 4) ВАЖНО: вместо reload — уводим на логин
+  location.href = API + '/login?from=' + encodeURIComponent(location.href);
 });
 </script>
 </body>
