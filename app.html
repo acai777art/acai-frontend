@@ -288,17 +288,13 @@ form.addEventListener('submit', async (e)=>{
   }
 });
 
-/* авто-рост и Enter=send */
-msg.addEventListener('input', ()=>{
-  msg.style.height='auto';
-  msg.style.height=Math.min(msg.scrollHeight,180)+'px';
+/* авто-рост (без Enter=send) */
+msg.addEventListener('input', () =>{
+  msg.style.height = 'auto';
+  msg.style.height = Math.min(msg.scrollHeight, 180) + 'px';
 });
-msg.addEventListener('keydown',(e)=>{
-  if(e.key==='Enter' && !e.shiftKey){
-    e.preventDefault();
-    form.requestSubmit();
-  }
-});
+
+// Enter теперь НИЧЕГО не отправляет, только перенос строки
 
 /* ===== 11) CLEAN: больше не чистим весь localStorage ===== */
 cleanBtn.addEventListener('click', async () => {
