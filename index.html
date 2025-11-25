@@ -21,7 +21,7 @@ body{
   font-family:"Inter", system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
 }
 
-/* === INTRO VIDEO OVERLAY (новое) === */
+/* === INTRO VIDEO OVERLAY === */
 .intro{
   position:fixed;
   inset:0;
@@ -43,6 +43,22 @@ body{
   pointer-events:none;
 }
 
+/* Надпись "CLICK TO BEGIN EXPERIENCE" */
+.intro-hint{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:clamp(14px,2vw,18px);
+  letter-spacing:.32em;
+  color:#fff;
+  text-shadow:0 0 20px var(--glow), 0 0 40px var(--accent);
+  cursor:pointer;
+  background:rgba(0,0,0,0.45);
+  text-transform:uppercase;
+}
+
 /* Кнопка Skip */
 .skip-btn{
   position:absolute;
@@ -60,7 +76,7 @@ body{
   box-shadow:0 0 20px rgba(0,0,0,.7);
 }
 
-/* Контейнер сайта (новое) */
+/* Контейнер сайта */
 .site{
   opacity:0;
   pointer-events:none;
@@ -84,7 +100,7 @@ body{
   100% { transform: translate(-50%,-50%) scale(1.08) translateX(-1.2%) translateY(-1.2%);}
 }
 
-/* Contrast overlay (без blur — фон остаётся резким) */
+/* Contrast overlay (фон резкий) */
 .overlay{
   position:fixed; inset:0; z-index:-1;
   background: radial-gradient(120% 120% at 50% 50%, var(--overlay1) 0%, var(--overlay2) 100%);
@@ -144,7 +160,7 @@ h2{
 .from-left.in,.from-right.in{transform:none;}
 .delay-1{transition-delay:.05s} .delay-2{transition-delay:.15s}
 
-/* Button — строго по центру, блоком ниже заголовка */
+/* Button — строго по центру */
 .button{
   display:inline-flex; align-items:center; justify-content:center; gap:10px;
   padding:clamp(12px,2.4vw,16px) clamp(28px,5vw,44px);
@@ -196,16 +212,17 @@ footer{
 </head>
 <body>
 
-  <!-- INTRO VIDEO (новое) -->
+  <!-- INTRO VIDEO -->
   <div id="intro" class="intro">
-    <video id="introVideo" playsinline muted autoplay>
+    <video id="introVideo" playsinline preload="metadata">
       <source src="intro.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
+    <div class="intro-hint">CLICK TO BEGIN EXPERIENCE</div>
     <button id="skipIntro" class="skip-btn">Skip intro</button>
   </div>
 
-  <!-- ВЕСЬ САЙТ ЗАВЕРНУТ В .site (новое) -->
+  <!-- ВЕСЬ САЙТ ЗАВЕРНУТ В .site -->
   <div id="site" class="site">
     <!-- BACKGROUND -->
     <div class="bg" aria-hidden="true">
@@ -228,44 +245,65 @@ footer{
   </div>
 
 <script>
-/* === Reveal on load (теперь вызываем функцией после интро) === */
+/* === Reveal on load (запускаем после интро) === */
 function runReveal(){
   const items = document.querySelectorAll('.reveal');
   requestAnimationFrame(() => items.forEach(el => el.classList.add('in')));
 }
 
-/* === INTRO LOGIC === */
+/* === INTRO LOGIC: клик → видео со звуком === */
 (function(){
   const intro  = document.getElementById('intro');
   const video  = document.getElementById('introVideo');
   const skip   = document.getElementById('skipIntro');
   const site   = document.getElementById('site');
+  const hint   = document.querySelector('.intro-hint');
+  let started  = false;
 
   function showSite(){
-    // показать сайт
     site.classList.add('visible');
-    // скрыть интро
     intro.classList.add('hide');
-    // запустить анимацию заголовков/кнопки
     runReveal();
   }
 
-  // когда видео закончилось — показать сайт
-  if (video){
-    video.addEventListener('ended', showSite);
+  function startIntro(){
+    if (started || !video) return;
+    started = true;
 
-    // на всякий случай пытаемся запустить (если браузер не заблокирует)
-    video.play().catch(() => {
-      // если заблокировал, пользователь сможет нажать Skip или Play в контролах
+    if (hint){
+      hint.style.opacity = '0';
+      hint.style.pointerEvents = 'none';
+    }
+
+    video.muted = false;
+    const p = video.play();
+    if (p && p.catch){
+      p.catch(()=>{ /* если что-то пошло не так — просто молча игнорим */ });
+    }
+  }
+
+  if (intro && video){
+    // Клик по интро-экрану запускает видео
+    intro.addEventListener('click', (e) => {
+      // если клик по кнопке Skip — не стартуем видео
+      if (e.target === skip) return;
+      startIntro();
+    });
+
+    // Когда видео закончилось — показываем сайт
+    video.addEventListener('ended', showSite);
+  }
+
+  if (skip){
+    skip.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showSite();
     });
   }
-
-  // кнопка Skip
-  if (skip){
-    skip.addEventListener('click', showSite);
-  }
 })();
+</script>
 
+<script>
 /* === Spotlight/explore === */
 (function(){
   const el = document.getElementById('explore');
