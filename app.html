@@ -96,7 +96,7 @@
   </section>
 
 <script>
-/* ===== 1) Берём ?token= один раз и сохраняем ===== */
+/* ===== 1) Берем ?token= один раз и сохраняем (оставляем как в старом) ===== */
 (function bootToken(){
   const qs = new URLSearchParams(location.search);
   const t = qs.get('token');
@@ -194,7 +194,7 @@ function showTyping(){
 }
 function hideTyping(el){ if(el && el.dataset.typing==='1') el.remove(); }
 
-/* ===== 8) Тема из /state ===== */
+/* ===== 8) Тема из /state/{cid} (FIX) ===== */
 const map=(v,inMin,inMax,outMin,outMax)=> outMin + (Math.max(inMin,Math.min(inMax,v))-inMin)*(outMax-outMin)/(inMax-inMin);
 function themeFromState(s){
   const v = Number(s?.valence ?? 0);
@@ -211,13 +211,17 @@ function themeFromState(s){
 }
 async function refreshState(){
   try{
-    const r=await fetch(API+'/state',{cache:'no-store'});
+    if (!currentCid) return;
+    const r = await fetch(API + `/state/${currentCid}`, {
+      cache:'no-store',
+      credentials:'include',
+      headers: authHeaders()
+    });
     if(!r.ok) return;
     const j=await r.json();
     themeFromState(j?.last||{});
   }catch{}
 }
-setInterval(refreshState,1500); refreshState();
 
 /* ===== 9) Сессия/диалог на бэке ===== */
 let currentCid = null;
@@ -226,31 +230,27 @@ async function ensureConversation(){
   try{
     const res = await apiPost('/api/conversations', {});
     currentCid = res.id;
+    return currentCid;
   } catch (e) {
-  if (e.message === 'AUTH') {
-    const loginUrl = API + '/login?from=' + encodeURIComponent(location.href);
+    if (e.message === 'AUTH') {
+      const loginUrl = API + '/login?from=' + encodeURIComponent(location.href);
 
-    // 1) пробуем открыть в новой вкладке
-    let w = null;
-    try { w = window.open(loginUrl, '_blank', 'noopener'); } catch(_) {}
+      // 1) пробуем открыть в новои вкладке
+      let w = null;
+      try { w = window.open(loginUrl, '_blank', 'noopener'); } catch(_) {}
 
-    // 2) Fallback для iOS/блокировщиков: через 300 ms уводим ТЕКУЩУЮ вкладку
-    setTimeout(() => {
-      // если popup не открылся или закрыт — делаем жесткий редирект
-      if (!w || w.closed) {
-        location.href = loginUrl;
-      }
-    }, 300);
+      // 2) Fallback для iOS/блокировщиков: через 300 ms уводим ТЕКУЩУЮ вкладку
+      setTimeout(() => {
+        if (!w || w.closed) location.href = loginUrl;
+      }, 300);
 
-    // показываем мягкое сообщение
-    alert('Please login via Telegram, then return here.');
-  } else {
-    console.error(e);
-    alert('Cannot create conversation.');
+      alert('Please login via Telegram, then return here.');
+    } else {
+      console.error(e);
+      alert('Cannot create conversation.');
+    }
+    throw e;
   }
-  throw e;
-}
-  return currentCid;
 }
 
 /* ===== 10) Отправка ===== */
@@ -275,12 +275,16 @@ form.addEventListener('submit', async (e)=>{
     msg.value = '';
     localStorage.removeItem('lumina_draft');
     msg.style.height = '46px';
+
+    // обновим тему сразу после ответа (быстрее чем ждать интервал)
+    refreshState();
+
   }catch(err){
     hideTyping(typingEl);
     if (err.message === 'AUTH') {
       messages.push({role:'assistant', text:'Reauth…'});
       saveAndRender();
-      forceReauth();             // ⬅️ NEW
+      forceReauth();
     } else {
       messages.push({role:'assistant', text:'Error: cannot reach backend.'});
       saveAndRender();
@@ -289,7 +293,7 @@ form.addEventListener('submit', async (e)=>{
 });
 
 /* авто-рост (без Enter=send) */
-msg.addEventListener('input', () =>{
+msg.addEventListener('input', ()=>{
   msg.style.height = 'auto';
   msg.style.height = Math.min(msg.scrollHeight, 180) + 'px';
 });
@@ -303,8 +307,8 @@ cleanBtn.addEventListener('click', async () => {
     if (e.message==='AUTH'){ return forceReauth(); }
   }
   try {
-    localStorage.removeItem('lumina_chat');   // сохраняем acai_jwt
-    localStorage.removeItem('lumina_draft');  // сохраняем acai_jwt
+    localStorage.removeItem('lumina_chat');
+    localStorage.removeItem('lumina_draft');
     sessionStorage.clear?.();
   } catch {}
   messages = [{
@@ -315,8 +319,12 @@ cleanBtn.addEventListener('click', async () => {
   saveAndRender();
 });
 
-/* ===== 12) Пытаемся создать беседу сразу (если 401 — уедем на refresh) ===== */
-ensureConversation().catch(()=>{});
+/* ===== 12) Пытаемся создать беседу сразу + запускаем state-poll ===== */
+(async () => {
+  try { await ensureConversation(); } catch(_) {}
+  refreshState();
+  setInterval(refreshState,1500);
+})();
 </script>
 
 <!-- 🎵 LUMINA THEME MUSIC -->
@@ -338,16 +346,16 @@ document.addEventListener('click', () => {
 }, { once:true });
 </script>
 
-<!-- 💎 NEW: Logout logic -->
+<!-- 💎 Logout logic -->
 <script>
 document.getElementById('logout')?.addEventListener('click', async (e)=>{
   e.preventDefault();
   e.stopPropagation();
 
-  if (!confirm('Вы действительно хотите выйти из аккаунта?')) return;
+  if (!confirm('Вы деиствительно хотите выити из аккаунта?')) return;
 
   // 1) снимаем cookie-сессию на бэке
-  try { await fetch(API + '/logout', { method:'POST', credentials:'include' }); } catch(e){}
+  try { await fetch(API + '/logout', { method:'POST', credentials:'include', headers: authHeaders() }); } catch(e){}
 
   // 2) чистим локальные ключи
   try {
@@ -357,7 +365,7 @@ document.getElementById('logout')?.addEventListener('click', async (e)=>{
     sessionStorage.clear?.();
   } catch(e){}
 
-  // 3) уберём ?token= если вдруг остался
+  // 3) уберем ?token= если вдруг остался
   try {
     const u = new URL(location.href);
     u.searchParams.delete('token');
@@ -368,26 +376,6 @@ document.getElementById('logout')?.addEventListener('click', async (e)=>{
   location.href = 'https://acai-frontend.onrender.com';
 });
 </script>
-<script>
-/* ==== BOOT TOKEN (универсальный) ==== */
-(function(){
-  try{
-    const qs = new URLSearchParams(location.search);
-    const t  = qs.get('token');
-    if (t && t.length > 10) {
-      // 1) сохраним Bearer, чтобы не зависеть от кросс-сайт cookie на iOS
-      localStorage.setItem('acai_jwt', t);
 
-      // 2) подчистим URL от ?token=
-      const u = new URL(location.href);
-      u.searchParams.delete('token');
-      history.replaceState({}, '', u.pathname + u.hash);
-
-      // 3) (опционально) сразу в чат
-      // location.replace('/app.html');
-    }
-  }catch(e){}
-})();
-</script>
 </body>
 </html>
