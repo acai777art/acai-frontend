@@ -4,37 +4,98 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Affective Realms: LUMINA — Prologue Chat</title>
+
 <style>
   :root{
     --bg:#07090f; --card:#0b0f18; --ink:#e9eef8; --muted:#9aa3af;
     --accent:#7AE6FF; --ring:#7AE6FF60; --violet:#B37AFF; --amber:#FFB76B;
     --bg-image:url("./bg_lumina.jpg");
   }
-  *{box-sizing:border-box} html,body{height:100%}
-  body{margin:0;color:var(--ink);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,"SF Pro Text",Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial;background:#000;overflow:hidden;}
-  .bg{position:fixed;inset:0;z-index:-3;background-image:var(--bg-image);background-size:cover;background-position:center;background-repeat:no-repeat;filter:saturate(1.05) brightness(.95);}
-  .bg::after{content:"";position:absolute;inset:0;background:
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+
+  body{
+    margin:0;
+    color:var(--ink);
+    font:16px/1.5 ui-sans-serif,system-ui,-apple-system,"SF Pro Text",Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial;
+    background:#000;
+    overflow:hidden;
+  }
+
+  .bg{
+    position:fixed; inset:0; z-index:-3;
+    background-image:var(--bg-image);
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    filter:saturate(1.05) brightness(.95);
+  }
+  .bg::after{
+    content:"";
+    position:absolute; inset:0;
+    background:
       radial-gradient(1300px 800px at 80% -10%, color-mix(in oklab, var(--accent) 16%, #000) 0%, transparent 62%),
       radial-gradient(1000px 600px at -10% 90%, color-mix(in oklab, var(--accent) 10%, #000) 0%, transparent 56%),
-      linear-gradient(180deg,#07090fbb 0%, #06080dcc 100%);}
-  .grid{position:fixed;inset:0;pointer-events:none;opacity:.07;z-index:-2;background-image:
+      linear-gradient(180deg,#07090fbb 0%, #06080dcc 100%);
+  }
+  .grid{
+    position:fixed; inset:0; pointer-events:none;
+    opacity:.07; z-index:-2;
+    background-image:
       radial-gradient(1px 1px at 10% 20%, #fff 50%, transparent 51%),
       radial-gradient(1px 1px at 70% 60%, #fff 50%, transparent 51%),
       radial-gradient(1px 1px at 30% 80%, #fff 50%, transparent 51%);
-    background-size:26px 26px,32px 32px,42px 42px;mix-blend-mode:screen;}
-  .bar{height:68px;padding:0 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid color-mix(in oklab, var(--accent) 18%, transparent);
-    background:linear-gradient(180deg, color-mix(in oklab, var(--accent) 9%, #000) 0%, transparent 100%);position:sticky;top:0;z-index:5;backdrop-filter:blur(6px);}
-  .spark{width:28px;height:28px;border-radius:10px;background:conic-gradient(from 210deg, var(--accent), var(--violet), var(--amber), var(--accent));
-    box-shadow:0 0 0 2px #0a0d14,0 0 22px var(--ring) inset,0 8px 22px #0008;animation:orbit 8s linear infinite;}
-  @keyframes orbit{from{filter:hue-rotate(0)}to{filter:hue-rotate(360deg)}}
-  .title{font-weight:900;letter-spacing:.18em;text-transform:uppercase;background:linear-gradient(90deg,var(--accent),var(--violet),var(--amber));
-    -webkit-background-clip:text;background-clip:text;color:transparent;background-size:200% 100%;animation:titleFlow 9s linear infinite;text-shadow:0 0 18px #7ae6ff22;}
-  @keyframes titleFlow{from{background-position:0% 50%}to{background-position:200% 50%}}
-  .tone{margin-left:auto;padding:7px 12px;border-radius:999px;background:color-mix(in oklab, var(--accent) 18%, #000);
-    color:color-mix(in oklab, var(--ink) 80%, var(--accent));border:1px solid color-mix(in oklab, var(--accent) 40%, transparent);
-    font-size:12px;text-transform:uppercase;letter-spacing:.16em;opacity:.9;}
+    background-size:26px 26px,32px 32px,42px 42px;
+    mix-blend-mode:screen;
+  }
 
-  /* ===== OLD kept, but extended layout for radar panel ===== */
+  .bar{
+    height:68px;
+    padding:0 16px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    border-bottom:1px solid color-mix(in oklab, var(--accent) 18%, transparent);
+    background:linear-gradient(180deg, color-mix(in oklab, var(--accent) 9%, #000) 0%, transparent 100%);
+    position:sticky; top:0; z-index:5;
+    backdrop-filter:blur(6px);
+  }
+
+  .spark{
+    width:28px;height:28px;border-radius:10px;
+    background:conic-gradient(from 210deg, var(--accent), var(--violet), var(--amber), var(--accent));
+    box-shadow:0 0 0 2px #0a0d14,0 0 22px var(--ring) inset,0 8px 22px #0008;
+    animation:orbit 8s linear infinite;
+  }
+  @keyframes orbit{from{filter:hue-rotate(0)}to{filter:hue-rotate(360deg)}}
+
+  .title{
+    font-weight:900;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    background:linear-gradient(90deg,var(--accent),var(--violet),var(--amber));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    background-size:200% 100%;
+    animation:titleFlow 9s linear infinite;
+    text-shadow:0 0 18px #7ae6ff22;
+  }
+  @keyframes titleFlow{from{background-position:0% 50%}to{background-position:200% 50%}}
+
+  .tone{
+    margin-left:auto;
+    padding:7px 12px;
+    border-radius:999px;
+    background:color-mix(in oklab, var(--accent) 18%, #000);
+    color:color-mix(in oklab, var(--ink) 80%, var(--accent));
+    border:1px solid color-mix(in oklab, var(--accent) 40%, transparent);
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.16em;
+    opacity:.9;
+  }
+
+  /* ===== Layout ===== */
   .wrap{
     height:calc(100% - 68px);
     display:grid;
@@ -45,19 +106,48 @@
       "composer composer";
     gap:14px;
     padding-right:10px;
+    min-height:0; /* IMPORTANT for grid overflow */
   }
 
-  .feed{grid-area:feed; overflow:auto;padding:24px 16px 8px 16px;scroll-behavior:smooth;}
+  .feed{
+    grid-area:feed;
+    overflow:auto;
+    padding:24px 16px 8px 16px;
+    scroll-behavior:smooth;
+    min-height:0; /* IMPORTANT for grid overflow */
+    -webkit-overflow-scrolling: touch;
+  }
 
-  .bubble{max-width:min(860px,92vw);margin:10px 0;padding:14px 16px;white-space:pre-wrap;border-radius:14px;position:relative;
-    background:linear-gradient(180deg,#0b0f18 0%,#0a0e15 100%);border:1px solid color-mix(in oklab, var(--accent) 18%, #1a2230);
-    box-shadow:0 1px 0 #0008,inset 0 0 0 999px #ffffff03,0 8px 24px #000a;}
-  .bubble::after{content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;background:
-    linear-gradient(120deg,transparent 30%,rgba(255,255,255,.12) 50%,transparent 70%);mix-blend-mode:screen;opacity:0;transition:opacity .25s;}
+  .bubble{
+    max-width:min(860px,92vw);
+    margin:10px 0;
+    padding:14px 16px;
+    white-space:pre-wrap;
+    border-radius:14px;
+    position:relative;
+    background:linear-gradient(180deg,#0b0f18 0%,#0a0e15 100%);
+    border:1px solid color-mix(in oklab, var(--accent) 18%, #1a2230);
+    box-shadow:0 1px 0 #0008,inset 0 0 0 999px #ffffff03,0 8px 24px #000a;
+  }
+  .bubble::after{
+    content:"";
+    position:absolute; inset:-1px;
+    border-radius:inherit;
+    pointer-events:none;
+    background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.12) 50%,transparent 70%);
+    mix-blend-mode:screen;
+    opacity:0;
+    transition:opacity .25s;
+  }
   .bubble:hover::after{opacity:.65}
+
   .acai{border-color:color-mix(in oklab, var(--accent) 25%, #1a2230)}
-  .me{margin-left:auto;background:linear-gradient(180deg,color-mix(in oklab, var(--accent) 26%, #0b0f18),#0a0e15);
-    border-color:color-mix(in oklab, var(--accent) 34%, #1a2230);}
+  .me{
+    margin-left:auto;
+    background:linear-gradient(180deg,color-mix(in oklab, var(--accent) 26%, #0b0f18),#0a0e15);
+    border-color:color-mix(in oklab, var(--accent) 34%, #1a2230);
+  }
+
   .typing{display:inline-flex;align-items:center;gap:8px;color:color-mix(in oklab, var(--ink) 75%, var(--accent));font-weight:600;letter-spacing:.06em;}
   .dots{display:inline-flex;gap:4px;}
   .dots i{width:6px;height:6px;border-radius:50%;background:color-mix(in oklab, var(--accent) 90%, #fff);opacity:.4;animation:blink 1.2s infinite;}
@@ -66,25 +156,99 @@
 
   .composer{
     grid-area: composer;
-    padding:12px 16px 18px;display:flex;gap:10px;border-top:1px solid #0a0d12;background:linear-gradient(180deg,#0a0f16,#080b11);
+    padding:12px 16px 18px;
+    display:flex;
+    gap:10px;
+    border-top:1px solid #0a0d12;
+    background:linear-gradient(180deg,#0a0f16,#080b11);
   }
-  .in{flex:1;background:#0e131b;border:1px solid #151c26;color:var(--ink);border-radius:12px;padding:12px 14px;outline:none;
-    transition:border-color .2s,box-shadow .2s;resize:none;min-height:46px;max-height:180px;line-height:1.4;}
-  .in:focus{border-color:color-mix(in oklab, var(--accent) 38%, #222);box-shadow:0 0 0 3px color-mix(in oklab, var(--accent) 22%, transparent);}
-  .btn{--mx:50%;--my:50%;position:relative;display:inline-flex;align-items:center;justify-content:center;padding:0 18px;min-width:118px;border-radius:12px;border:none;cursor:pointer;
-    background:linear-gradient(135deg,var(--accent),var(--amber));box-shadow:0 12px 26px rgba(122,230,255,.35),0 2px 8px rgba(0,0,0,.45);
-    color:#051014;font-weight:900;letter-spacing:.14em;text-transform:uppercase;overflow:hidden;transform-style:preserve-3d;transition:transform .18s,box-shadow .18s,filter .18s;}
-  .btn .label{position:relative;z-index:2;background:linear-gradient(90deg,#fff,#d8f7ff,#fff);background-size:200% 100%;
-    -webkit-background-clip:text;background-clip:text;color:transparent;animation:shineText 3.2s linear infinite;}
+  .in{
+    flex:1;
+    background:#0e131b;
+    border:1px solid #151c26;
+    color:var(--ink);
+    border-radius:12px;
+    padding:12px 14px;
+    outline:none;
+    transition:border-color .2s,box-shadow .2s;
+    resize:none;
+    min-height:46px;
+    max-height:180px;
+    line-height:1.4;
+  }
+  .in:focus{
+    border-color:color-mix(in oklab, var(--accent) 38%, #222);
+    box-shadow:0 0 0 3px color-mix(in oklab, var(--accent) 22%, transparent);
+  }
+
+  .btn{
+    --mx:50%;--my:50%;
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:0 18px;
+    min-width:118px;
+    border-radius:12px;
+    border:none;
+    cursor:pointer;
+    background:linear-gradient(135deg,var(--accent),var(--amber));
+    box-shadow:0 12px 26px rgba(122,230,255,.35),0 2px 8px rgba(0,0,0,.45);
+    color:#051014;
+    font-weight:900;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    overflow:hidden;
+    transform-style:preserve-3d;
+    transition:transform .18s,box-shadow .18s,filter .18s;
+  }
+  .btn .label{
+    position:relative;z-index:2;
+    background:linear-gradient(90deg,#fff,#d8f7ff,#fff);
+    background-size:200% 100%;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:shineText 3.2s linear infinite;
+  }
   @keyframes shineText{from{background-position:0% 50%}to{background-position:200% 50%}}
-  .btn::after{content:"";position:absolute;inset:-1px;pointer-events:none;background:radial-gradient(140px 140px at var(--mx) var(--my),rgba(255,255,255,.2),rgba(255,255,255,0) 60%);opacity:0;transition:opacity .18s;}
-  .btn::before{content:"";position:absolute;left:-40%;top:-220%;width:180%;height:420%;transform:rotate(22deg);background:linear-gradient(to right,transparent 46%,rgba(255,255,255,.16) 50%,transparent 54%);
-    mix-blend-mode:screen;opacity:0;transition:opacity .25s;}
+  .btn::after{
+    content:"";
+    position:absolute;inset:-1px;
+    pointer-events:none;
+    background:radial-gradient(140px 140px at var(--mx) var(--my),rgba(255,255,255,.2),rgba(255,255,255,0) 60%);
+    opacity:0;transition:opacity .18s;
+  }
+  .btn::before{
+    content:"";
+    position:absolute;
+    left:-40%;top:-220%;
+    width:180%;height:420%;
+    transform:rotate(22deg);
+    background:linear-gradient(to right,transparent 46%,rgba(255,255,255,.16) 50%,transparent 54%);
+    mix-blend-mode:screen;
+    opacity:0;
+    transition:opacity .25s;
+  }
   .btn:hover{box-shadow:0 18px 42px rgba(122,230,255,.45),0 6px 18px rgba(0,0,0,.55)}
-  .btn:hover::after{opacity:1}.btn:hover::before{opacity:1;animation:sweep 1.4s ease}
-  @keyframes sweep{from{left:-40%}to{left:60%}}.btn:active{transform:perspective(700px) translateZ(0) scale(.985)}
-  .btn.ghost{background:linear-gradient(180deg,#0e131b,#0a0e14);color:var(--ink);border:1px solid color-mix(in oklab,var(--accent)28%,#1a2230);box-shadow:0 2px 10px rgba(0,0,0,.45),inset 0 0 0 999px #ffffff08;transition:filter .2s ease,box-shadow .2s ease;}
-  .btn.ghost .label{background:none;color:var(--ink);-webkit-background-clip:initial;background-clip:initial;animation:none;opacity:.9;}
+  .btn:hover::after{opacity:1}
+  .btn:hover::before{opacity:1;animation:sweep 1.4s ease}
+  @keyframes sweep{from{left:-40%}to{left:60%}}
+  .btn:active{transform:perspective(700px) translateZ(0) scale(.985)}
+
+  .btn.ghost{
+    background:linear-gradient(180deg,#0e131b,#0a0e14);
+    color:var(--ink);
+    border:1px solid color-mix(in oklab,var(--accent)28%,#1a2230);
+    box-shadow:0 2px 10px rgba(0,0,0,.45),inset 0 0 0 999px #ffffff08;
+    transition:filter .2s ease,box-shadow .2s ease;
+  }
+  .btn.ghost .label{
+    background:none;
+    color:var(--ink);
+    -webkit-background-clip:initial;
+    background-clip:initial;
+    animation:none;
+    opacity:.9;
+  }
   .btn.ghost:hover{filter:brightness(1.08);box-shadow:0 4px 18px rgba(122,230,255,.2);}
   .btn.sm{min-width:92px;padding:8px 12px;height:36px;font-size:12px;letter-spacing:.12em;}
 
@@ -97,6 +261,7 @@
     display:flex;
     flex-direction:column;
     gap:12px;
+    min-height:0;
   }
 
   .panel{
@@ -108,20 +273,17 @@
     box-shadow: 0 1px 0 #0008, inset 0 0 0 999px #ffffff03, 0 14px 36px #000b;
     overflow:hidden;
   }
-
-  /* glow frame */
   .panel::before{
     content:"";
     position:absolute; inset:-2px;
     border-radius: inherit;
-    background: radial-gradient(420px 260px at 30% 20%, color-mix(in oklab, var(--accent) 26%, transparent) 0%, transparent 60%),
-                radial-gradient(320px 240px at 80% 30%, color-mix(in oklab, var(--violet) 18%, transparent) 0%, transparent 62%);
+    background:
+      radial-gradient(420px 260px at 30% 20%, color-mix(in oklab, var(--accent) 26%, transparent) 0%, transparent 60%),
+      radial-gradient(320px 240px at 80% 30%, color-mix(in oklab, var(--violet) 18%, transparent) 0%, transparent 62%);
     filter: blur(10px);
     opacity:.9;
     pointer-events:none;
   }
-
-  /* shimmer line */
   .panel::after{
     content:"";
     position:absolute; inset:-40% -40%;
@@ -141,7 +303,6 @@
     margin-bottom:10px;
     gap:10px;
   }
-
   .panelTitle{
     font-weight: 900;
     letter-spacing: .14em;
@@ -153,7 +314,6 @@
     align-items:center;
     gap:10px;
   }
-
   .pill{
     position:relative;
     font-size: 11px;
@@ -166,7 +326,6 @@
     white-space:nowrap;
     box-shadow: 0 8px 20px rgba(0,0,0,.35);
   }
-
   .luxDot{
     width:10px;height:10px;border-radius:50%;
     background: var(--accent);
@@ -177,7 +336,6 @@
     0%,100%{ transform: scale(.92); filter:saturate(1.0); opacity:.75; }
     50%{ transform: scale(1.14); filter:saturate(1.2); opacity:1; }
   }
-
   .miniLegend{
     position:relative;
     display:flex; flex-wrap:wrap; gap:6px;
@@ -193,21 +351,46 @@
     opacity:.92;
   }
 
+  /* ===== MOBILE FIX (chat must stay visible) ===== */
   @media (max-width: 980px){
-    body{overflow:auto;}
+    body{ overflow:hidden; }
+
     .wrap{
+      height: calc(100dvh - 68px);
       grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr auto; /* dash -> feed -> composer */
       grid-template-areas:
         "dash"
         "feed"
         "composer";
-      padding-right: 0;
+      gap: 12px;
+      padding: 0;
+      min-height: 0;
     }
-    .dash{ margin: 10px 12px 0; }
-    .bubble{max-width: 92vw;}
+
+    .dash{
+      margin: 10px 12px 0;
+      max-height: 36dvh;     /* 👈 limit dashboard height */
+      overflow: auto;        /* scroll inside dash if needed */
+      min-height: 0;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .feed{
+      min-height: 0;
+      overflow: auto;        /* chat scroll */
+      padding: 14px 14px 8px 14px;
+    }
+
+    .composer{
+      padding: 10px 12px 14px;
+    }
+
+    .bubble{ max-width: 92vw; }
   }
 </style>
 </head>
+
 <body>
   <div class="bg" aria-hidden="true"></div>
   <div class="grid" aria-hidden="true"></div>
@@ -255,8 +438,8 @@
     </form>
   </section>
 
-<!-- ✅ Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- ✅ Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
 /* ===== 1) Берем ?token= один раз и сохраняем (оставляем как в старом) ===== */
@@ -332,10 +515,8 @@ function cssVar(name){
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 function clamp(n,a,b){ return Math.max(a, Math.min(b,n)); }
-function alphaColor(rgbLike, a){
-  // accepts: "rgb(...)" or "rgba(...)" or "#..." or "oklch(...)" (we fallback)
-  // simplest reliable: if already rgba -> replace alpha; else use with CSS color-mix (works modern)
-  return `color-mix(in oklab, ${rgbLike} ${Math.round(a*100)}%, transparent)`;
+function alphaColor(color, a){
+  return `color-mix(in oklab, ${color} ${Math.round(a*100)}%, transparent)`;
 }
 
 /* ===== Radar chart (lux) ===== */
@@ -385,8 +566,7 @@ function ensureRadar(){
 }
 
 /* ===== EMC line chart (lux) ===== */
-const MAX_POINTS = 120;           // ~ 120 points in history buffer
-const POLL_MS = 1500;             // keep your old polling cadence
+const MAX_POINTS = 120;
 let t0 = performance.now();
 let emcSeries = { t:[], E:[], M:[], C:[] };
 
@@ -437,8 +617,9 @@ function ensureEMC(){
 /* ===== Apply accent styling to charts ===== */
 function applyLuxChartColors(){
   const accent = cssVar('--accent') || '#7AE6FF';
+  const violet = cssVar('--violet') || '#B37AFF';
+  const amber  = cssVar('--amber')  || '#FFB76B';
 
-  // Radar
   if (radarChart){
     radarChart.data.datasets[0].borderColor = accent;
     radarChart.data.datasets[0].backgroundColor = alphaColor(accent, 0.14);
@@ -447,20 +628,10 @@ function applyLuxChartColors(){
     radarChart.update('none');
   }
 
-  // EMC: E uses accent, M violet-ish mix, C amber-ish mix
   if (emcChart){
-    const violet = cssVar('--violet') || '#B37AFF';
-    const amber  = cssVar('--amber')  || '#FFB76B';
-
     emcChart.data.datasets[0].borderColor = accent;
-    emcChart.data.datasets[0].backgroundColor = "transparent";
-
     emcChart.data.datasets[1].borderColor = violet;
-    emcChart.data.datasets[1].backgroundColor = "transparent";
-
     emcChart.data.datasets[2].borderColor = amber;
-    emcChart.data.datasets[2].backgroundColor = "transparent";
-
     emcChart.update('none');
   }
 }
@@ -491,7 +662,6 @@ function updateRadarFromState(s){
 
   radarChart.data.labels = labels.slice(0,5);
   radarChart.data.datasets[0].data = values.slice(0,5);
-
   renderEmotionTags(top5);
 
   const v = Number(s?.valence ?? 0);
@@ -507,7 +677,7 @@ function pushEMCPoint(s){
   if (!emcChart) return;
 
   const now = performance.now();
-  const t = (now - t0) / 1000.0; // seconds since load
+  const t = (now - t0) / 1000.0;
   const label = t < 60 ? `${t.toFixed(0)}s` : `${(t/60).toFixed(1)}m`;
 
   const E = Number(s?.E ?? 0);
@@ -590,7 +760,6 @@ function themeFromState(s){
   document.documentElement.style.setProperty('--ring','color-mix(in oklab, var(--accent) 60%, transparent)');
   tone.textContent=mode;
 
-  // ✅ Keep charts synced with new accent
   applyLuxChartColors();
 }
 
@@ -607,8 +776,6 @@ async function refreshState(){
 
     const st = j?.last || {};
     themeFromState(st);
-
-    // ✅ lux updates
     updateRadarFromState(st);
     pushEMCPoint(st);
 
@@ -667,7 +834,6 @@ form.addEventListener('submit', async (e)=>{
     msg.style.height = '46px';
 
     refreshState();
-
   }catch(err){
     hideTyping(typingEl);
     if (err.message === 'AUTH') {
@@ -698,15 +864,16 @@ cleanBtn.addEventListener('click', async () => {
     localStorage.removeItem('lumina_draft');
     sessionStorage.clear?.();
   } catch {}
+
   messages = [{
     role:'assistant',
     text:'ACAI: Greetings, conscious being. Synchronizing with your emotional field…'
   }];
   currentCid = null;
 
-  // reset timeline buffer (lux)
   emcSeries = { t:[], E:[], M:[], C:[] };
   t0 = performance.now();
+
   if (emcChart){
     emcChart.data.labels = [];
     emcChart.data.datasets.forEach(d => d.data = []);
@@ -727,11 +894,13 @@ cleanBtn.addEventListener('click', async () => {
 /* ===== 12) Пытаемся создать беседу сразу + запускаем state-poll ===== */
 (async () => {
   try { await ensureConversation(); } catch(_) {}
-  // init charts once, even before first state
-  ensureRadar(); ensureEMC(); applyLuxChartColors();
+
+  ensureRadar();
+  ensureEMC();
+  applyLuxChartColors();
 
   refreshState();
-  setInterval(refreshState,1500); // keep your old cadence
+  setInterval(refreshState,1500);
 })();
 </script>
 
