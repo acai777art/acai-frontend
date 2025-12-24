@@ -3,743 +3,657 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="color-scheme" content="dark" />
-<title>ACAI — LUMINA Console</title>
+<title>ACAI · LUMINA Console</title>
 
+<!-- Optional: Inter font (Stripe-like). If you want zero external deps, remove this. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
 <style>
   :root{
-    --bg0:#05060a;
-    --bg1:#07090f;
-    --ink:#e9eef8;
-    --muted:#9aa3af;
-
-    --cardA: color-mix(in oklab, #0b0f18 86%, transparent);
-    --cardB: color-mix(in oklab, #0a0e15 82%, transparent);
+    --bg0:#05070c;
+    --bg1:#070a12;
+    --card: rgba(13,18,28,.72);
+    --card2: rgba(10,14,22,.62);
+    --stroke: rgba(255,255,255,.08);
+    --stroke2: rgba(255,255,255,.12);
+    --ink: #eaf0ff;
+    --muted: rgba(234,240,255,.62);
 
     --accent:#7AE6FF;
-    --ring: color-mix(in oklab, var(--accent) 60%, transparent);
     --violet:#B37AFF;
     --amber:#FFB76B;
-    --stroke: color-mix(in oklab, var(--accent) 18%, #1a2230);
-    --stroke2: color-mix(in oklab, var(--accent) 28%, #1a2230);
+    --ring: color-mix(in oklab, var(--accent) 55%, transparent);
 
+    --shadow: 0 18px 60px rgba(0,0,0,.55);
+    --shadow2: 0 10px 30px rgba(0,0,0,.45);
+
+    --radius-xl: 22px;
+    --radius-lg: 18px;
+    --radius-md: 14px;
+    --radius-sm: 12px;
+
+    --blur: 14px;
     --bg-image:url("./bg_lumina.jpg");
-
-    --railW: 308px;
-    --topH: 68px;
   }
 
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
     margin:0;
+    font: 14.5px/1.55 "Inter", ui-sans-serif, system-ui, -apple-system, "SF Pro Text", Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial;
     color:var(--ink);
-    font:15px/1.55 Inter, ui-sans-serif, system-ui, -apple-system, "SF Pro Text", Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial;
-    background:#000;
+    background: radial-gradient(1200px 800px at 80% 0%, rgba(122,230,255,.10), transparent 55%),
+                radial-gradient(900px 700px at 0% 90%, rgba(179,122,255,.09), transparent 55%),
+                linear-gradient(180deg, var(--bg0), var(--bg1));
     overflow:hidden;
-    -webkit-font-smoothing:antialiased;
-    text-rendering:optimizeLegibility;
   }
 
-  /* Background stack */
+  /* Background image layer */
   .bg{
-    position:fixed; inset:0; z-index:-5;
-    background-image:var(--bg-image);
-    background-size:cover;
-    background-position:center;
-    filter:saturate(1.05) brightness(.92);
-    transform:translateZ(0);
+    position:fixed; inset:0; z-index:-4;
+    background-image: var(--bg-image);
+    background-size:cover; background-position:center;
+    filter:saturate(1.05) brightness(.9);
+    transform: scale(1.02);
   }
   .bg::after{
-    content:"";
-    position:absolute; inset:0;
-    background:
-      radial-gradient(1200px 720px at 80% -10%, color-mix(in oklab, var(--accent) 18%, #000) 0%, transparent 62%),
-      radial-gradient(980px 640px at -10% 90%, color-mix(in oklab, var(--accent) 12%, #000) 0%, transparent 58%),
-      linear-gradient(180deg, #04050ad9 0%, #05060ae6 100%);
+    content:""; position:absolute; inset:0;
+    background: radial-gradient(1200px 700px at 70% -10%, color-mix(in oklab, var(--accent) 12%, transparent), transparent 60%),
+                radial-gradient(900px 600px at -10% 110%, color-mix(in oklab, var(--violet) 10%, transparent), transparent 62%),
+                linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.72));
   }
-  .noise{
-    position:fixed; inset:0; z-index:-4; pointer-events:none;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.32'/%3E%3C/svg%3E");
-    mix-blend-mode:overlay;
-    opacity:.22;
-  }
-  .stars{
-    position:fixed; inset:0; z-index:-3; pointer-events:none; opacity:.08;
+
+  .grain{
+    position:fixed; inset:0; z-index:-3;
+    pointer-events:none;
+    opacity:.06;
     background-image:
-      radial-gradient(1px 1px at 12% 20%, #fff 50%, transparent 51%),
-      radial-gradient(1px 1px at 72% 62%, #fff 50%, transparent 51%),
-      radial-gradient(1px 1px at 38% 84%, #fff 50%, transparent 51%),
-      radial-gradient(1px 1px at 88% 18%, #fff 50%, transparent 51%);
-    background-size:28px 28px, 34px 34px, 46px 46px, 54px 54px;
+      radial-gradient(1px 1px at 10% 20%, #fff 50%, transparent 51%),
+      radial-gradient(1px 1px at 80% 30%, #fff 50%, transparent 51%),
+      radial-gradient(1px 1px at 40% 90%, #fff 50%, transparent 51%);
+    background-size: 26px 26px, 34px 34px, 44px 44px;
     mix-blend-mode:screen;
   }
 
   /* Top bar */
-  .bar{
-    height:var(--topH);
-    padding:0 16px;
-    display:flex;
-    align-items:center;
-    gap:12px;
-    border-bottom:1px solid color-mix(in oklab, var(--accent) 16%, transparent);
-    background:linear-gradient(180deg, color-mix(in oklab, var(--accent) 8%, #000) 0%, transparent 100%);
-    position:sticky; top:0; z-index:50;
-    backdrop-filter:blur(12px);
+  .top{
+    height:64px;
+    display:flex; align-items:center; gap:14px;
+    padding: 0 16px;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+    background: linear-gradient(180deg, rgba(10,14,22,.78), rgba(10,14,22,.22));
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    position:sticky; top:0; z-index:20;
   }
-  .brandMark{
-    width:34px;height:34px;border-radius:14px;
-    background:conic-gradient(from 210deg, var(--accent), var(--violet), var(--amber), var(--accent));
-    box-shadow:0 0 0 2px #0a0d14, 0 0 26px var(--ring) inset, 0 10px 26px #0008;
-    animation:hue 10s linear infinite;
+  .brand{
+    display:flex; align-items:center; gap:12px; min-width: 210px;
   }
-  @keyframes hue{from{filter:hue-rotate(0)}to{filter:hue-rotate(360deg)}}
-  .brandText{display:flex;flex-direction:column;gap:2px}
-  .brandText .top{
-    font-family:"Space Grotesk", Inter, system-ui;
-    font-weight:800;
+  .orb{
+    width:28px; height:28px; border-radius:10px;
+    background: conic-gradient(from 220deg, var(--accent), var(--violet), var(--amber), var(--accent));
+    box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 0 26px var(--ring);
+    animation: hue 9s linear infinite;
+  }
+  @keyframes hue{ from{ filter:hue-rotate(0deg)} to{filter:hue-rotate(360deg)} }
+
+  .brandText{
+    display:flex; flex-direction:column; gap:2px;
+  }
+  .brandText b{
     letter-spacing:.18em;
     text-transform:uppercase;
+    font-weight:900;
     font-size:12px;
-    background:linear-gradient(90deg,var(--accent),var(--violet),var(--amber));
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-    background-size:200% 100%;
-    animation:titleFlow 9s linear infinite;
-    text-shadow:0 0 18px #7ae6ff22;
+    background: linear-gradient(90deg, var(--accent), var(--violet), var(--amber));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
   }
-  @keyframes titleFlow{from{background-position:0% 50%}to{background-position:200% 50%}}
-  .brandText .sub{font-size:12px;color:color-mix(in oklab, var(--ink) 62%, var(--accent));opacity:.9}
+  .brandText span{
+    font-size:12px;
+    color: rgba(234,240,255,.55);
+  }
 
-  .barRight{margin-left:auto;display:flex;align-items:center;gap:10px}
-  .tonePill{
-    padding:7px 12px;border-radius:999px;
-    background:color-mix(in oklab, var(--accent) 14%, #000);
-    color:color-mix(in oklab, var(--ink) 80%, var(--accent));
-    border:1px solid color-mix(in oklab, var(--accent) 34%, transparent);
-    font-size:12px;text-transform:uppercase;letter-spacing:.16em;opacity:.92;
-    box-shadow:0 10px 26px #0006;
+  .spacer{flex:1}
+
+  .pill{
+    display:inline-flex; align-items:center; gap:8px;
+    padding: 8px 12px;
+    border-radius:999px;
+    border: 1px solid rgba(255,255,255,.10);
+    background: rgba(0,0,0,.22);
+    backdrop-filter: blur(10px);
+    color: color-mix(in oklab, var(--ink) 82%, var(--accent));
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    font-size:11px;
+    font-weight:800;
+  }
+  .dot{
+    width:8px; height:8px; border-radius:50%;
+    background: var(--accent);
+    box-shadow: 0 0 18px var(--ring);
+    animation: breathe 2.4s ease-in-out infinite;
+  }
+  @keyframes breathe{
+    0%,100%{transform:scale(.9); opacity:.7}
+    50%{transform:scale(1.2); opacity:1}
   }
 
   .btn{
-    --mx:50%;--my:50%;
-    height:40px;
-    padding:0 16px;border-radius:14px;border:none;cursor:pointer;
-    display:inline-flex;align-items:center;justify-content:center;
-    background:linear-gradient(135deg,var(--accent),var(--amber));
-    box-shadow:0 14px 30px rgba(122,230,255,.30),0 2px 10px rgba(0,0,0,.55);
-    color:#051014;font-weight:900;letter-spacing:.14em;text-transform:uppercase;
-    overflow:hidden;transition:transform .16s, box-shadow .16s, filter .16s;
-    user-select:none;
+    height:38px;
+    padding: 0 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,.10);
+    background: rgba(12,16,24,.45);
+    color: var(--ink);
+    cursor:pointer;
+    font-weight:800;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    font-size:11px;
+    box-shadow: 0 10px 26px rgba(0,0,0,.35);
+    transition: transform .16s ease, filter .16s ease, border-color .16s ease;
   }
-  .btn .label{
-    background:linear-gradient(90deg,#fff,#d8f7ff,#fff);
-    background-size:200% 100%;
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-    animation:shine 3.2s linear infinite;
-  }
-  @keyframes shine{from{background-position:0% 50%}to{background-position:200% 50%}}
-  .btn:hover{box-shadow:0 18px 42px rgba(122,230,255,.40),0 6px 18px rgba(0,0,0,.55)}
-  .btn:active{transform:scale(.985)}
-  .btn.ghost{
-    background:linear-gradient(180deg,#0e131b,#0a0e14);
-    color:var(--ink);
-    border:1px solid var(--stroke2);
-    box-shadow:0 2px 10px rgba(0,0,0,.52), inset 0 0 0 999px #ffffff08;
-  }
-  .btn.ghost .label{background:none;color:var(--ink);-webkit-background-clip:initial;background-clip:initial;animation:none;opacity:.9}
-  .btn.sm{height:36px;border-radius:12px;letter-spacing:.12em;font-size:12px;padding:0 12px}
+  .btn:hover{ filter:brightness(1.08); border-color: rgba(255,255,255,.18); }
+  .btn:active{ transform: translateY(1px) scale(.99); }
 
-  /* App grid (Stripe-like) */
-  .app{
-    height:calc(100% - var(--topH));
+  .btnPrimary{
+    border:none;
+    background: linear-gradient(135deg, var(--accent), var(--amber));
+    color:#071218;
+    box-shadow: 0 18px 40px rgba(122,230,255,.20), 0 10px 26px rgba(0,0,0,.35);
+  }
+
+  /* Layout */
+  .shell{
+    height: calc(100% - 64px);
     display:grid;
-    grid-template-columns: var(--railW) 1fr;
+    grid-template-columns: 320px 1fr 52px;
     gap: 14px;
     padding: 14px;
   }
 
-  /* Status rail */
+  /* Left rail */
   .rail{
-    position:relative;
+    border-radius: var(--radius-xl);
+    border: 1px solid rgba(255,255,255,.08);
+    background: linear-gradient(180deg, rgba(13,18,28,.72), rgba(8,10,16,.55));
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    box-shadow: var(--shadow);
     overflow:hidden;
-    border-radius:20px;
-    border:1px solid var(--stroke);
-    background:linear-gradient(180deg,var(--cardA) 0%, var(--cardB) 100%);
-    box-shadow:0 18px 50px #000b, inset 0 0 0 999px #ffffff03;
-    backdrop-filter:blur(12px);
     display:flex;
     flex-direction:column;
     min-height:0;
   }
   .railHead{
-    padding:14px 14px 10px;
-    border-bottom:1px solid color-mix(in oklab, var(--accent) 14%, transparent);
-    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding: 14px 14px 10px;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
   }
-  .railTitle{
-    font-family:"Space Grotesk", Inter, system-ui;
-    font-weight:700;
-    letter-spacing:.16em;
-    text-transform:uppercase;
+  .railHead b{
     font-size:12px;
-    color:color-mix(in oklab, var(--ink) 78%, var(--accent));
-    display:flex;align-items:center;gap:10px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    opacity:.92;
   }
-  .dot{
-    width:10px;height:10px;border-radius:50%;
-    background:var(--accent);
-    box-shadow:0 0 18px var(--ring), 0 0 40px color-mix(in oklab, var(--accent) 25%, transparent);
-    animation:breathe 2.4s ease-in-out infinite;
+  .railHead .miniBtns{
+    display:flex; gap:8px;
   }
-  @keyframes breathe{0%,100%{transform:scale(.92);opacity:.72}50%{transform:scale(1.14);opacity:1}}
-  .railActions{display:flex;gap:8px}
-  .miniBtn{
-    height:32px;border-radius:12px;padding:0 10px;
-    border:1px solid var(--stroke2);
-    background:linear-gradient(180deg,#0e131b,#0a0e14);
-    color:color-mix(in oklab, var(--ink) 86%, var(--accent));
-    font-weight:700;
-    letter-spacing:.08em;
+  .chip{
+    height:28px;
+    padding: 0 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.10);
+    background: rgba(0,0,0,.18);
+    color: rgba(234,240,255,.78);
+    font-weight:800;
+    letter-spacing:.12em;
+    font-size:10px;
+    text-transform:uppercase;
     cursor:pointer;
-    box-shadow:0 10px 20px rgba(0,0,0,.42), inset 0 0 0 999px #ffffff06;
   }
-  .miniBtn:hover{filter:brightness(1.06)}
+
   .railBody{
-    padding:12px 14px 14px;
+    padding: 12px 12px 14px;
     overflow:auto;
-    -webkit-overflow-scrolling:touch;
     min-height:0;
   }
 
   .card{
-    border-radius:18px;
-    border:1px solid var(--stroke);
-    background:linear-gradient(180deg, color-mix(in oklab, #0b0f18 82%, transparent), color-mix(in oklab, #0a0e15 88%, transparent));
-    box-shadow:0 1px 0 #0008, inset 0 0 0 999px #ffffff03, 0 16px 38px #000b;
-    padding:12px 12px 10px;
-    backdrop-filter:blur(12px);
-    margin-bottom:10px;
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(255,255,255,.08);
+    background: rgba(0,0,0,.18);
+    box-shadow: var(--shadow2);
+    padding: 12px;
+    margin-bottom: 12px;
   }
-  .cardTop{
-    display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;
-  }
-  .cardTitle{
-    font-family:"Space Grotesk", Inter, system-ui;
-    font-weight:700;font-size:12px;
-    letter-spacing:.14em;text-transform:uppercase;
-    color:color-mix(in oklab, var(--ink) 78%, var(--accent));
-  }
-  .pill{
-    font-size:11px;padding:6px 10px;border-radius:999px;
-    border:1px solid color-mix(in oklab, var(--accent) 30%, transparent);
-    background:color-mix(in oklab, var(--accent) 12%, #000);
-    color:color-mix(in oklab, var(--ink) 78%, var(--accent));
-    white-space:nowrap;
+  .card h4{
+    margin:0 0 10px 0;
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color: rgba(234,240,255,.70);
   }
   .kv{
     display:grid;
     grid-template-columns: 1fr auto;
-    gap:6px 10px;
+    gap: 8px 10px;
     font-size:12px;
-    color:color-mix(in oklab, var(--ink) 72%, #fff);
+    color: rgba(234,240,255,.70);
   }
-  .k{color:color-mix(in oklab, var(--ink) 58%, var(--accent))}
-  .v{font-variant-numeric:tabular-nums;opacity:.95}
-  .sep{height:1px;background:rgba(255,255,255,.06);margin:10px 0}
+  .kv b{ color: rgba(234,240,255,.92); font-weight:700; }
+  .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size:11px; }
 
-  /* Meters */
-  .meterRow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0 2px}
-  .meterLbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.62)}
-  .meterVal{font-size:11px;font-variant-numeric:tabular-nums;color:rgba(255,255,255,.75)}
   .meter{
-    height:10px;border-radius:999px;
-    border:1px solid rgba(255,255,255,.10);
-    background:rgba(255,255,255,.04);
+    margin-top:10px;
+  }
+  .meterRow{
+    display:flex; align-items:center; justify-content:space-between;
+    font-size:11px; color: rgba(234,240,255,.62);
+    margin-bottom:6px;
+  }
+  .bar{
+    height:8px;
+    border-radius:999px;
+    background: rgba(255,255,255,.08);
     overflow:hidden;
+    border:1px solid rgba(255,255,255,.08);
   }
-  .meter > i{
-    display:block;height:100%;
+  .bar > i{
+    display:block;
+    height:100%;
     width:0%;
-    background:linear-gradient(90deg, var(--accent), var(--amber));
-    box-shadow:0 0 18px var(--ring);
-    border-radius:inherit;
-    transition:width .25s ease;
+    background: linear-gradient(90deg, var(--accent), var(--amber));
+    border-radius:999px;
+    box-shadow: 0 0 18px rgba(122,230,255,.25);
   }
-  .meter.violet > i{background:linear-gradient(90deg, var(--violet), var(--accent))}
-  .meter.amber  > i{background:linear-gradient(90deg, var(--amber), var(--accent))}
 
-  /* Main chat column */
+  /* Center chat */
   .main{
+    border-radius: var(--radius-xl);
+    border: 1px solid rgba(255,255,255,.08);
+    background: linear-gradient(180deg, rgba(13,18,28,.62), rgba(8,10,16,.40));
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    box-shadow: var(--shadow);
+    overflow:hidden;
     display:grid;
     grid-template-rows: 1fr auto;
-    border-radius:20px;
-    border:1px solid color-mix(in oklab, var(--accent) 14%, transparent);
-    background:linear-gradient(180deg, color-mix(in oklab, #0b0f18 78%, transparent), color-mix(in oklab, #0a0e15 86%, transparent));
-    box-shadow:0 18px 60px #000c, inset 0 0 0 999px #ffffff02;
-    backdrop-filter:blur(12px);
-    overflow:hidden;
     min-height:0;
   }
-
   .feed{
+    padding: 18px 18px 8px;
     overflow:auto;
-    padding:18px 18px 10px;
-    -webkit-overflow-scrolling:touch;
     min-height:0;
+    -webkit-overflow-scrolling:touch;
   }
-  .feedInner{max-width:980px;margin:0 auto}
   .bubble{
-    max-width:min(900px,92vw);
-    margin:10px 0;
-    padding:14px 16px;
-    white-space:pre-wrap;
-    border-radius:16px;
+    max-width: min(860px, 96%);
+    padding: 14px 14px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,.09);
+    background: rgba(0,0,0,.18);
+    box-shadow: 0 12px 26px rgba(0,0,0,.35);
+    margin: 10px 0;
+    white-space: pre-wrap;
     position:relative;
-    background:linear-gradient(180deg,var(--cardA), var(--cardB));
-    border:1px solid var(--stroke);
-    box-shadow:0 1px 0 #0008,inset 0 0 0 999px #ffffff03,0 14px 34px #000b;
   }
   .bubble::after{
-    content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;
-    background:linear-gradient(120deg, transparent 34%, rgba(255,255,255,.12) 50%, transparent 68%);
-    mix-blend-mode:screen;opacity:0;transition:opacity .25s;
+    content:"";
+    position:absolute; inset:-1px;
+    border-radius: inherit;
+    pointer-events:none;
+    background: linear-gradient(120deg, transparent 35%, rgba(255,255,255,.10), transparent 65%);
+    opacity:0;
+    transition: opacity .2s ease;
+    mix-blend-mode:screen;
   }
-  .bubble:hover::after{opacity:.55}
-  .acai{border-color:color-mix(in oklab, var(--accent) 22%, #1a2230)}
-  .me{
-    margin-left:auto;
-    background:linear-gradient(180deg, color-mix(in oklab, var(--accent) 18%, var(--cardA)), var(--cardB));
-    border-color:color-mix(in oklab, var(--accent) 34%, #1a2230);
-  }
-  .typing{display:inline-flex;align-items:center;gap:8px;color:color-mix(in oklab, var(--ink) 74%, var(--accent));font-weight:600;letter-spacing:.06em;}
-  .dots{display:inline-flex;gap:4px;}
-  .dots i{width:6px;height:6px;border-radius:50%;background:color-mix(in oklab, var(--accent) 90%, #fff);opacity:.35;animation:blink 1.2s infinite;}
-  .dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
-  @keyframes blink{0%,100%{opacity:.22;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}
+  .bubble:hover::after{ opacity:.7; }
+  .me{ margin-left:auto; border-color: color-mix(in oklab, var(--accent) 24%, rgba(255,255,255,.08)); }
+  .acai{ border-color: rgba(255,255,255,.10); }
 
   .composer{
-    padding:12px 14px 14px;
+    display:flex;
+    gap:10px;
+    padding: 12px 12px;
     border-top:1px solid rgba(255,255,255,.06);
-    background:linear-gradient(180deg, rgba(10,15,22,.92), rgba(8,11,17,.96));
-    backdrop-filter:blur(12px);
+    background: linear-gradient(180deg, rgba(8,10,16,.25), rgba(8,10,16,.65));
   }
-  .composerInner{
-    max-width:980px;margin:0 auto;
-    display:flex;gap:10px;align-items:flex-end;
-  }
-  .in{
+  textarea{
     flex:1;
-    background:color-mix(in oklab, #0e131b 92%, transparent);
-    border:1px solid #151c26;
-    color:var(--ink);
-    border-radius:16px;
-    padding:12px 14px;
-    outline:none;
+    min-height:44px;
+    max-height:160px;
     resize:none;
-    min-height:46px;max-height:180px;
-    line-height:1.45;
-    transition:border-color .2s, box-shadow .2s;
-    box-shadow: inset 0 0 0 999px #ffffff05;
+    border-radius: 14px;
+    border:1px solid rgba(255,255,255,.10);
+    background: rgba(0,0,0,.22);
+    color: var(--ink);
+    padding: 12px 12px;
+    outline:none;
+    transition: border-color .16s ease, box-shadow .16s ease;
   }
-  .in:focus{border-color:color-mix(in oklab, var(--accent) 38%, #222);box-shadow:0 0 0 3px color-mix(in oklab, var(--accent) 18%, transparent);}
+  textarea:focus{
+    border-color: color-mix(in oklab, var(--accent) 35%, rgba(255,255,255,.10));
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 18%, transparent);
+  }
 
-  /* Edge widgets */
-  .edgeBtns{
-    position:fixed;
-    right:18px;
-    top: calc(var(--topH) + 22px);
-    z-index: 60;
+  /* Right dock buttons */
+  .dock{
     display:flex;
     flex-direction:column;
     gap:10px;
+    align-items:center;
+    padding-top: 6px;
   }
-  .edgeBtn{
-    width:46px;height:46px;border-radius:16px;
-    border:1px solid var(--stroke2);
-    background:linear-gradient(180deg,#0e131b,#0a0e14);
-    box-shadow:0 12px 28px rgba(0,0,0,.58), inset 0 0 0 999px #ffffff08;
+  .dockBtn{
+    width:46px; height:46px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,.10);
+    background: rgba(0,0,0,.18);
+    box-shadow: 0 12px 26px rgba(0,0,0,.35);
     cursor:pointer;
-    display:flex;align-items:center;justify-content:center;
-    color:color-mix(in oklab, var(--ink) 78%, var(--accent));
-    transition:transform .16s, filter .16s, box-shadow .16s;
-    user-select:none;
+    color: rgba(234,240,255,.82);
+    display:flex; align-items:center; justify-content:center;
+    transition: transform .16s ease, filter .16s ease, border-color .16s ease;
   }
-  .edgeBtn:hover{filter:brightness(1.08); box-shadow:0 16px 36px rgba(0,0,0,.64), 0 0 26px var(--ring);}
-  .edgeBtn:active{transform:scale(.985);}
-  .edgeBtn svg{width:22px;height:22px;opacity:.92;}
+  .dockBtn:hover{ filter:brightness(1.1); border-color: rgba(255,255,255,.16); }
+  .dockBtn:active{ transform: scale(.98); }
+  .dockBtn svg{ width:22px; height:22px; }
 
   /* Overlay + Drawer */
   .overlay{
-    position:fixed; inset:0;
-    background: rgba(0,0,0,.46);
-    backdrop-filter: blur(10px);
-    z-index: 70;
+    position:fixed; inset:0; z-index:50;
+    background: rgba(0,0,0,.42);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     opacity:0;
     pointer-events:none;
     transition: opacity .18s ease;
   }
-  .overlay.show{opacity:1;pointer-events:auto;}
+  .overlay.show{ opacity:1; pointer-events:auto; }
 
   .drawer{
     position:fixed;
-    top: var(--topH);
+    top:64px;
     right:0;
-    height: calc(100% - var(--topH));
-    width: min(460px, 92vw);
-    z-index: 80;
+    height: calc(100% - 64px);
+    width: min(460px, 94vw);
+    z-index:60;
     transform: translateX(104%);
     transition: transform .22s cubic-bezier(.2,.9,.2,1);
-    padding: 14px 12px;
+    padding: 14px;
     display:flex;
     flex-direction:column;
     gap:12px;
     overflow:hidden;
   }
-  .drawer.open{transform:translateX(0);}
-  .drawerHeader{
-    flex:0 0 auto;
-    display:flex;align-items:center;justify-content:space-between;gap:10px;
-    padding:10px 10px;border-radius:16px;
-    background:linear-gradient(180deg,var(--cardA),var(--cardB));
-    border:1px solid var(--stroke);
-    box-shadow:0 12px 30px #000a, inset 0 0 0 999px #ffffff03;
+  .drawer.open{ transform: translateX(0); }
+
+  .drawerFrame{
+    border-radius: var(--radius-xl);
+    border: 1px solid rgba(255,255,255,.10);
+    background: linear-gradient(180deg, rgba(13,18,28,.72), rgba(8,10,16,.55));
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    box-shadow: var(--shadow);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    min-height:0;
   }
-  .drawerTitle{
-    display:flex;align-items:center;gap:10px;
-    font-family:"Space Grotesk", Inter, system-ui;
-    font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:12px;
-    color:color-mix(in oklab, var(--ink) 82%, var(--accent));
+  .drawerHead{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 14px 14px;
+    border-bottom:1px solid rgba(255,255,255,.06);
   }
-  .drawerClose{
-    border:none;
-    background:linear-gradient(180deg,#0e131b,#0a0e14);
-    color:var(--ink);
-    border:1px solid var(--stroke2);
-    border-radius:12px;
-    height:34px;padding:0 12px;cursor:pointer;
-    box-shadow:0 10px 22px rgba(0,0,0,.42), inset 0 0 0 999px #ffffff06;
+  .drawerHead b{
+    font-size:12px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    display:flex; align-items:center; gap:10px;
   }
   .drawerBody{
-    flex:1 1 auto;
-    min-height:0;
+    padding: 14px;
     overflow:auto;
-    -webkit-overflow-scrolling:touch;
-    padding-right:2px;
+    min-height:0;
   }
-  .panel{
-    border-radius:18px;
-    border:1px solid var(--stroke);
-    background:linear-gradient(180deg,var(--cardA),var(--cardB));
-    box-shadow:0 1px 0 #0008, inset 0 0 0 999px #ffffff03, 0 14px 36px #000b;
-    padding:14px 14px 12px;
-    overflow:hidden;
-  }
-  .panelHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
-  .panelTitle{
-    font-family:"Space Grotesk", Inter, system-ui;
-    font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:12px;
-    color:color-mix(in oklab, var(--ink) 82%, var(--accent));
-    display:flex;align-items:center;gap:10px;
-  }
-  .miniLegend{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-  .tag{
-    font-size:11px;padding:6px 10px;border-radius:999px;
-    border:1px solid color-mix(in oklab, var(--accent) 22%, #1a2230);
-    background:linear-gradient(180deg,#0e131b,#0a0e14);
-    color:color-mix(in oklab, var(--ink) 76%, var(--accent));
-  }
-  .chartBox{height:min(46vh, 440px);width:100%;position:relative;}
-  .chartBox.radarBox{height:min(44vh, 390px);}
-  canvas{display:block;width:100% !important;height:100% !important;}
-
-  /* Command palette */
-  .cpOverlay{
-    position:fixed; inset:0;
-    background: rgba(0,0,0,.52);
-    backdrop-filter: blur(12px);
-    z-index: 120;
-    display:none;
-  }
-  .cpOverlay.show{display:block;}
-  .cp{
-    width:min(720px, 92vw);
-    margin: calc(var(--topH) + 40px) auto 0;
-    border-radius:20px;
-    border:1px solid var(--stroke);
-    background:linear-gradient(180deg,var(--cardA),var(--cardB));
-    box-shadow:0 40px 120px #000d, inset 0 0 0 999px #ffffff03;
-    overflow:hidden;
-  }
-  .cpTop{
-    padding:12px 12px 10px;
-    border-bottom:1px solid rgba(255,255,255,.06);
-    display:flex;gap:10px;align-items:center;
-  }
-  .cpInput{
-    flex:1;
-    height:44px;
-    border-radius:14px;
+  .meta{
+    font-size:11px;
+    color: rgba(234,240,255,.70);
     border:1px solid rgba(255,255,255,.10);
-    background:rgba(255,255,255,.04);
-    color:var(--ink);
-    padding:0 12px;
-    outline:none;
-    font-weight:600;
-    letter-spacing:.02em;
-  }
-  .cpHint{
-    font-size:12px;color:rgba(255,255,255,.55);
-    padding:0 6px;
+    border-radius:999px;
+    padding:6px 10px;
+    background: rgba(0,0,0,.18);
     white-space:nowrap;
   }
-  .cpList{max-height: 360px; overflow:auto; -webkit-overflow-scrolling:touch;}
-  .cpItem{
-    padding:12px 12px;
-    display:flex;align-items:center;justify-content:space-between;gap:10px;
-    border-top:1px solid rgba(255,255,255,.05);
-    cursor:pointer;
+
+  .panel{
+    border-radius: var(--radius-xl);
+    border: 1px solid rgba(255,255,255,.08);
+    background: rgba(0,0,0,.16);
+    box-shadow: var(--shadow2);
+    padding: 12px;
   }
-  .cpItem:hover{background:rgba(255,255,255,.04)}
-  .cpLeft{display:flex;flex-direction:column;gap:2px}
-  .cpName{font-weight:700}
-  .cpDesc{font-size:12px;color:rgba(255,255,255,.60)}
-  .kbd{
-    font-size:12px;
-    color:rgba(255,255,255,.70);
-    border:1px solid rgba(255,255,255,.12);
-    background:rgba(255,255,255,.04);
-    padding:4px 8px;
-    border-radius:10px;
-    font-variant-numeric:tabular-nums;
+  .panelTop{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    margin-bottom:10px;
+  }
+  .panelTop span{
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color: rgba(234,240,255,.70);
+    font-weight:800;
+    display:flex; align-items:center; gap:10px;
   }
 
-  @media (max-width: 900px){
-    :root{ --railW: 292px; }
+  .tagRow{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:12px;
   }
-  @media (max-width: 760px){
-    .app{grid-template-columns: 1fr;}
-    .rail{display:none;}
+  .tag{
+    font-size:11px;
+    padding:6px 10px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.10);
+    background: rgba(0,0,0,.18);
+    color: rgba(234,240,255,.78);
   }
-  @media (prefers-reduced-motion: reduce){
-    *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;}
+
+  .chartBox{
+    height: min(48vh, 440px);
+    width:100%;
+    position:relative;
+  }
+  .chartBox.radarBox{ height: min(44vh, 390px); }
+  canvas{ display:block; width:100% !important; height:100% !important; }
+
+  /* Mobile */
+  @media (max-width: 980px){
+    .shell{ grid-template-columns: 1fr 52px; }
+    .rail{ display:none; }
   }
 </style>
 </head>
 
 <body>
   <div class="bg" aria-hidden="true"></div>
-  <div class="noise" aria-hidden="true"></div>
-  <div class="stars" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
 
-  <header class="bar">
-    <div class="brandMark" aria-hidden="true"></div>
-    <div class="brandText">
-      <div class="top">AFFECTIVE CONTEXTUAL AI</div>
-      <div class="sub">LUMINA Console · Sensors + Command Palette</div>
+  <header class="top">
+    <div class="brand">
+      <div class="orb" aria-hidden="true"></div>
+      <div class="brandText">
+        <b>AFFECTIVE CONTEXTUAL AI</b>
+        <span>LUMINA Console · Sensors + Command</span>
+      </div>
     </div>
 
-    <div class="barRight">
-      <div class="tonePill" id="tone">NEUTRAL</div>
-      <button class="btn ghost sm" id="cmdk" type="button"><span class="label">⌘K</span></button>
-      <button class="btn ghost sm" id="logout" type="button"><span class="label">LOGOUT</span></button>
+    <div class="spacer"></div>
+
+    <div class="pill" title="Current regulation mode">
+      <span class="dot" aria-hidden="true"></span>
+      <span id="tone">NEUTRAL</span>
     </div>
+
+    <button class="btn" id="logout" type="button">LOGOUT</button>
   </header>
 
-  <main class="app">
-    <!-- LEFT: STATUS RAIL -->
+  <main class="shell">
+    <!-- Left sensor rail -->
     <aside class="rail" aria-label="Status Rail">
       <div class="railHead">
-        <div class="railTitle"><span class="dot" aria-hidden="true"></span> Status Rail</div>
-        <div class="railActions">
-          <button class="miniBtn" id="copyCid" type="button">CID</button>
-          <button class="miniBtn" id="copyApi" type="button">API</button>
+        <b>Status Rail</b>
+        <div class="miniBtns">
+          <button class="chip" id="cidBtn" type="button">CID</button>
+          <button class="chip" id="apiBtn" type="button">API</button>
         </div>
       </div>
 
       <div class="railBody">
         <div class="card">
-          <div class="cardTop">
-            <div class="cardTitle">Session</div>
-            <div class="pill" id="pillAuth">auth: —</div>
-          </div>
+          <h4>Session</h4>
           <div class="kv">
-            <div class="k">CID</div><div class="v" id="sCid">—</div>
-            <div class="k">API</div><div class="v" id="sApi">—</div>
-            <div class="k">JWT</div><div class="v" id="sJwt">—</div>
-          </div>
-          <div class="sep"></div>
-          <div class="kv">
-            <div class="k">Ping</div><div class="v" id="sPing">—</div>
-            <div class="k">Last update</div><div class="v" id="sLast">—</div>
-            <div class="k">Poll</div><div class="v" id="sPoll">—</div>
+            <span>CID</span><b class="mono" id="cidText">—</b>
+            <span>API</span><b class="mono" id="apiText">—</b>
+            <span>JWT</span><b class="mono" id="jwtText">—</b>
+            <span>Ping</span><b class="mono" id="pingText">—</b>
+            <span>Poll</span><b class="mono" id="pollText">1500ms</b>
           </div>
         </div>
 
         <div class="card">
-          <div class="cardTop">
-            <div class="cardTitle">Affective State</div>
-            <div class="pill" id="sMode">NEUTRAL</div>
-          </div>
+          <h4>Affective State</h4>
           <div class="kv">
-            <div class="k">valence</div><div class="v" id="sVal">—</div>
-            <div class="k">x (impulse)</div><div class="v" id="sX">—</div>
-            <div class="k">top emotion</div><div class="v" id="sTop">—</div>
+            <span>valence</span><b class="mono" id="valText">0.000</b>
+            <span>x (impulse)</span><b class="mono" id="xText">0.000</b>
+            <span>top emotion</span><b class="mono" id="topText">—</b>
           </div>
 
-          <div class="meterRow">
-            <div class="meterLbl">Valence</div><div class="meterVal" id="mValTxt">—</div>
+          <div class="meter">
+            <div class="meterRow">
+              <span>VALENCE</span><span class="mono" id="valPct">0%</span>
+            </div>
+            <div class="bar"><i id="valBar"></i></div>
           </div>
-          <div class="meter"><i id="mVal"></i></div>
 
-          <div class="meterRow">
-            <div class="meterLbl">Impulse</div><div class="meterVal" id="mXTxt">—</div>
+          <div class="meter">
+            <div class="meterRow">
+              <span>IMPULSE</span><span class="mono" id="xPct">0%</span>
+            </div>
+            <div class="bar"><i id="xBar"></i></div>
           </div>
-          <div class="meter violet"><i id="mX"></i></div>
         </div>
 
         <div class="card">
-          <div class="cardTop">
-            <div class="cardTitle">E · M · C</div>
-            <div class="pill" id="sBuf">buf: —</div>
-          </div>
+          <h4>E · M · C</h4>
           <div class="kv">
-            <div class="k">E</div><div class="v" id="sE">—</div>
-            <div class="k">M</div><div class="v" id="sM">—</div>
-            <div class="k">C</div><div class="v" id="sC">—</div>
-          </div>
-
-          <div class="meterRow">
-            <div class="meterLbl">E</div><div class="meterVal" id="mETxt">—</div>
-          </div>
-          <div class="meter"><i id="mE"></i></div>
-
-          <div class="meterRow">
-            <div class="meterLbl">M</div><div class="meterVal" id="mMTxt">—</div>
-          </div>
-          <div class="meter violet"><i id="mM"></i></div>
-
-          <div class="meterRow">
-            <div class="meterLbl">C</div><div class="meterVal" id="mCTxt">—</div>
-          </div>
-          <div class="meter amber"><i id="mC"></i></div>
-        </div>
-
-        <div class="card">
-          <div class="cardTop">
-            <div class="cardTitle">Controls</div>
-            <div class="pill">⌘K / CtrlK</div>
-          </div>
-          <div class="kv">
-            <div class="k">Open Radar</div><div class="v">R</div>
-            <div class="k">Open EMC</div><div class="v">E</div>
-            <div class="k">Clean</div><div class="v">⇧⌫</div>
-            <div class="k">Palette</div><div class="v">⌘K</div>
+            <span>E</span><b class="mono" id="eText">0.000</b>
+            <span>M</span><b class="mono" id="mText">0.000</b>
+            <span>C</span><b class="mono" id="cText">0.000</b>
           </div>
         </div>
-
       </div>
     </aside>
 
-    <!-- RIGHT: CHAT -->
-    <section class="main">
-      <div class="feed" id="feed"><div class="feedInner" id="feedInner"></div></div>
+    <!-- Main chat -->
+    <section class="main" aria-label="Chat">
+      <div class="feed" id="feed"></div>
 
       <form class="composer" id="form" novalidate>
-        <div class="composerInner">
-          <textarea id="msg" class="in" placeholder="Type a message…" rows="1"></textarea>
-          <button class="btn" id="send" type="submit"><span class="label">SEND</span></button>
-          <button class="btn ghost" id="clean" type="button"><span class="label">CLEAN</span></button>
-        </div>
+        <textarea id="msg" placeholder="Type a message…" rows="1"></textarea>
+        <button class="btn btnPrimary" id="send" type="submit">SEND</button>
+        <button class="btn" id="clean" type="button">CLEAN</button>
       </form>
     </section>
+
+    <!-- Right dock -->
+    <aside class="dock" aria-label="Dock">
+      <button class="dockBtn" id="openRadar" type="button" title="Emotion Radar">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 21a9 9 0 1 0-9-9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M12 12l6-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M3 12h2M12 3v2M19 12h2" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+          <circle cx="12" cy="12" r="2" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </button>
+
+      <button class="dockBtn" id="openEMC" type="button" title="E · M · C Timeline">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M4 19V5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M4 19H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M6 15l4-5 4 3 5-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="10" cy="10" r="1.5" fill="currentColor"/>
+          <circle cx="14" cy="13" r="1.5" fill="currentColor" opacity=".9"/>
+          <circle cx="19" cy="6" r="1.5" fill="currentColor" opacity=".85"/>
+        </svg>
+      </button>
+    </aside>
   </main>
 
-  <!-- Edge Buttons -->
-  <div class="edgeBtns" aria-label="Widgets">
-    <button class="edgeBtn" id="openRadar" type="button" title="Emotion Radar">
-      <svg viewBox="0 0 24 24" fill="none">
-        <path d="M12 21a9 9 0 1 0-9-9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        <path d="M12 12l6-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        <path d="M3 12h2M12 3v2M19 12h2" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".8"/>
-        <circle cx="12" cy="12" r="2" stroke="currentColor" stroke-width="2"/>
-      </svg>
-    </button>
-    <button class="edgeBtn" id="openEMC" type="button" title="E · M · C Timeline">
-      <svg viewBox="0 0 24 24" fill="none">
-        <path d="M4 19V5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        <path d="M4 19H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        <path d="M6 15l4-5 4 3 5-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="10" cy="10" r="1.5" fill="currentColor"/>
-        <circle cx="14" cy="13" r="1.5" fill="currentColor" opacity=".9"/>
-        <circle cx="19" cy="6" r="1.5" fill="currentColor" opacity=".85"/>
-      </svg>
-    </button>
-  </div>
-
-  <!-- overlay -->
   <div class="overlay" id="overlay" aria-hidden="true"></div>
 
-  <!-- Drawer: RADAR -->
-  <aside class="drawer" id="radarDrawer" aria-label="Emotion Radar Widget">
-    <div class="drawerHeader">
-      <div class="drawerTitle"><span class="dot" aria-hidden="true"></span> Emotion Radar</div>
-      <button class="drawerClose" type="button" data-close="radar">Close</button>
-    </div>
-    <div class="drawerBody">
-      <section class="panel">
-        <div class="panelHead">
-          <div class="panelTitle"><span class="dot" aria-hidden="true"></span> Emotion Radar</div>
-          <div class="pill" id="radarMeta">—</div>
+  <!-- Drawer: Radar -->
+  <aside class="drawer" id="radarDrawer" aria-label="Emotion Radar">
+    <div class="drawerFrame">
+      <div class="drawerHead">
+        <b><span class="dot" aria-hidden="true"></span> Emotion Radar</b>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <span class="meta" id="radarMeta">—</span>
+          <button class="btn" type="button" data-close="radar">Close</button>
         </div>
-        <div class="chartBox radarBox">
-          <canvas id="emotionRadar"></canvas>
+      </div>
+      <div class="drawerBody">
+        <div class="panel">
+          <div class="panelTop">
+            <span><span class="dot" aria-hidden="true"></span> Top emotions</span>
+          </div>
+          <div class="chartBox radarBox">
+            <canvas id="emotionRadar"></canvas>
+          </div>
+          <div class="tagRow" id="emotionTags"></div>
         </div>
-        <div class="miniLegend" id="emotionTags"></div>
-      </section>
+      </div>
     </div>
   </aside>
 
   <!-- Drawer: EMC -->
-  <aside class="drawer" id="emcDrawer" aria-label="E M C Widget">
-    <div class="drawerHeader">
-      <div class="drawerTitle"><span class="dot" aria-hidden="true"></span> E · M · C Timeline</div>
-      <button class="drawerClose" type="button" data-close="emc">Close</button>
-    </div>
-    <div class="drawerBody">
-      <section class="panel">
-        <div class="panelHead">
-          <div class="panelTitle"><span class="dot" aria-hidden="true"></span> E · M · C Timeline</div>
-          <div class="pill" id="emcMeta">—</div>
+  <aside class="drawer" id="emcDrawer" aria-label="E M C Timeline">
+    <div class="drawerFrame">
+      <div class="drawerHead">
+        <b><span class="dot" aria-hidden="true"></span> E · M · C Timeline</b>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <span class="meta" id="emcMeta">—</span>
+          <button class="btn" type="button" data-close="emc">Close</button>
         </div>
-        <div class="chartBox">
-          <canvas id="emcChart"></canvas>
+      </div>
+      <div class="drawerBody">
+        <div class="panel">
+          <div class="panelTop">
+            <span><span class="dot" aria-hidden="true"></span> Real-time series</span>
+          </div>
+          <div class="chartBox emcBox">
+            <canvas id="emcChart"></canvas>
+          </div>
         </div>
-      </section>
+      </div>
     </div>
   </aside>
 
-  <!-- Command Palette -->
-  <div class="cpOverlay" id="cpOverlay" aria-hidden="true">
-    <div class="cp" role="dialog" aria-modal="true" aria-label="Command Palette">
-      <div class="cpTop">
-        <input class="cpInput" id="cpInput" placeholder="Type a command… (e.g., radar, emc, clean, logout)" />
-        <div class="cpHint">Esc</div>
-      </div>
-      <div class="cpList" id="cpList"></div>
-    </div>
-  </div>
-
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
 /* =========================
-   CORE (unchanged logic)
-   ========================= */
+   1) Token boot (unchanged)
+========================= */
 (function bootToken(){
   const qs = new URLSearchParams(location.search);
   const t = qs.get('token');
@@ -749,17 +663,23 @@
   }
 })();
 
+/* =========================
+   2) Backend URL
+========================= */
 const API = (localStorage.getItem('ACAI_API') || 'https://acai-backend.onrender.com').replace(/\/$/,'');
 
+/* =========================
+   3) Auth headers
+========================= */
 function authHeaders(){
   let tok = null;
   try { tok = localStorage.getItem('acai_jwt'); } catch {}
   return tok ? { Authorization: 'Bearer ' + tok } : {};
 }
-function hasJwt(){
-  try { return !!localStorage.getItem('acai_jwt'); } catch { return false; }
-}
 
+/* =========================
+   4) Requests
+========================= */
 async function apiPost(path, data){
   const r = await fetch(API+path, {
     method:'POST',
@@ -777,236 +697,258 @@ async function apiDelete(path){
   if (!r.ok) throw new Error(await r.text());
   return r.json();
 }
+async function apiGetRaw(path){
+  const r = await fetch(API+path, {credentials:'include', headers: authHeaders(), cache:'no-store'});
+  if (r.status === 401) throw new Error('AUTH');
+  return r;
+}
+
 function forceReauth(){ location.href = API + '/auth/refresh'; }
 
 /* =========================
-   DOM
-   ========================= */
+   5) DOM refs
+========================= */
 const feed = document.getElementById('feed');
-const feedInner = document.getElementById('feedInner');
 const tone = document.getElementById('tone');
 const form = document.getElementById('form');
 const msg  = document.getElementById('msg');
 const cleanBtn = document.getElementById('clean');
 
-/* rail dom */
-const sCid = document.getElementById('sCid');
-const sApi = document.getElementById('sApi');
-const sJwt = document.getElementById('sJwt');
-const sPing = document.getElementById('sPing');
-const sLast = document.getElementById('sLast');
-const sPoll = document.getElementById('sPoll');
-const pillAuth = document.getElementById('pillAuth');
-
-const sMode = document.getElementById('sMode');
-const sVal = document.getElementById('sVal');
-const sX = document.getElementById('sX');
-const sTop = document.getElementById('sTop');
-
-const sE = document.getElementById('sE');
-const sM = document.getElementById('sM');
-const sC = document.getElementById('sC');
-const sBuf = document.getElementById('sBuf');
-
-const mVal = document.getElementById('mVal');
-const mX = document.getElementById('mX');
-const mE = document.getElementById('mE');
-const mM = document.getElementById('mM');
-const mC = document.getElementById('mC');
-
-const mValTxt = document.getElementById('mValTxt');
-const mXTxt = document.getElementById('mXTxt');
-const mETxt = document.getElementById('mETxt');
-const mMTxt = document.getElementById('mMTxt');
-const mCTxt = document.getElementById('mCTxt');
-
-document.getElementById('copyCid').addEventListener('click', ()=> copyText(currentCid || ''));
-document.getElementById('copyApi').addEventListener('click', ()=> copyText(API));
-
-function copyText(t){
-  if(!t) return;
-  navigator.clipboard?.writeText(t).catch(()=>{});
-}
-
-/* drawers */
 const overlay = document.getElementById('overlay');
 const radarDrawer = document.getElementById('radarDrawer');
 const emcDrawer = document.getElementById('emcDrawer');
 const openRadarBtn = document.getElementById('openRadar');
 const openEMCBtn = document.getElementById('openEMC');
 
+const radarMeta = document.getElementById('radarMeta');
+const emcMeta = document.getElementById('emcMeta');
+const tagsBox = document.getElementById('emotionTags');
+
+const cidText = document.getElementById('cidText');
+const apiText = document.getElementById('apiText');
+const jwtText = document.getElementById('jwtText');
+const pingText = document.getElementById('pingText');
+
+const valText = document.getElementById('valText');
+const xText   = document.getElementById('xText');
+const topText = document.getElementById('topText');
+
+const valPct = document.getElementById('valPct');
+const xPct   = document.getElementById('xPct');
+const valBar = document.getElementById('valBar');
+const xBar   = document.getElementById('xBar');
+
+const eText = document.getElementById('eText');
+const mText = document.getElementById('mText');
+const cText = document.getElementById('cText');
+
+apiText.textContent = API;
+jwtText.textContent = (localStorage.getItem('acai_jwt') ? 'present' : 'missing');
+
+/* =========================
+   6) Drawer logic
+========================= */
 function closeAllDrawers(){
   radarDrawer.classList.remove('open');
   emcDrawer.classList.remove('open');
   overlay.classList.remove('show');
 }
-function afterOpenResize(which){
+function openDrawer(which){
+  closeAllDrawers();
+  (which === 'radar' ? radarDrawer : emcDrawer).classList.add('open');
+  overlay.classList.add('show');
+
+  if (which === 'radar'){ ensureRadar(); applyLuxChartColors(); }
+  if (which === 'emc'){ ensureEMC(); applyLuxChartColors(); }
+
+  // after transition: resize charts correctly (iOS/Chrome)
   setTimeout(() => {
     if (which === 'radar' && radarChart){ radarChart.resize(); radarChart.update('none'); }
     if (which === 'emc' && emcChart){ emcChart.resize(); emcChart.update('none'); }
   }, 260);
 }
-function openDrawer(which){
-  closeAllDrawers();
-  if (which === 'radar') radarDrawer.classList.add('open');
-  if (which === 'emc') emcDrawer.classList.add('open');
-  overlay.classList.add('show');
-
-  if (which === 'radar'){ ensureRadar(); applyLuxChartColors(); }
-  if (which === 'emc'){ ensureEMC(); applyLuxChartColors(); }
-  afterOpenResize(which);
-}
 openRadarBtn.addEventListener('click', ()=> openDrawer('radar'));
 openEMCBtn.addEventListener('click', ()=> openDrawer('emc'));
 overlay.addEventListener('click', closeAllDrawers);
-document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeAllDrawers(); });
+document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeAllDrawers(); });
 document.querySelectorAll('[data-close]').forEach(btn=> btn.addEventListener('click', closeAllDrawers));
 
 /* =========================
-   Command palette
-   ========================= */
-const cpOverlay = document.getElementById('cpOverlay');
-const cpInput = document.getElementById('cpInput');
-const cpList = document.getElementById('cpList');
+   7) Chat local mirror
+========================= */
+let messages = JSON.parse(localStorage.getItem('lumina_chat') || '[]');
+if (messages.length === 0) messages.push({role:'assistant', text:'ACAI: Greetings, conscious being. Synchronizing with your emotional field…'});
+renderFeed();
 
-function showCP(){
-  cpOverlay.classList.add('show');
-  cpOverlay.setAttribute('aria-hidden','false');
-  cpInput.value = '';
-  renderCP('');
-  setTimeout(()=> cpInput.focus(), 10);
-}
-function hideCP(){
-  cpOverlay.classList.remove('show');
-  cpOverlay.setAttribute('aria-hidden','true');
-}
-document.getElementById('cmdk').addEventListener('click', showCP);
-cpOverlay.addEventListener('click', (e)=>{ if(e.target===cpOverlay) hideCP(); });
+msg.value = localStorage.getItem('lumina_draft') || '';
+msg.addEventListener('input', ()=> localStorage.setItem('lumina_draft', msg.value));
 
-const commands = [
-  {name:"Open Radar", desc:"Show Emotion Radar drawer", keys:"R", run:()=> openDrawer('radar')},
-  {name:"Open EMC", desc:"Show E·M·C timeline drawer", keys:"E", run:()=> openDrawer('emc')},
-  {name:"Clean", desc:"Clear local chat + reset series", keys:"⇧⌫", run:()=> cleanBtn.click()},
-  {name:"Logout", desc:"Logout and clear tokens", keys:"—", run:()=> document.getElementById('logout').click()},
-  {name:"Copy CID", desc:"Copy conversation id to clipboard", keys:"—", run:()=> copyText(currentCid || '')},
-  {name:"Copy API", desc:"Copy backend URL", keys:"—", run:()=> copyText(API)},
-  {name:"Force Reauth", desc:"Go to /auth/refresh", keys:"—", run:()=> forceReauth()},
-];
-
-function renderCP(q){
-  const s = (q||'').trim().toLowerCase();
-  const filtered = commands.filter(c => (c.name + " " + c.desc).toLowerCase().includes(s));
-  cpList.innerHTML = filtered.map((c,idx)=>`
-    <div class="cpItem" data-i="${idx}">
-      <div class="cpLeft">
-        <div class="cpName">${c.name}</div>
-        <div class="cpDesc">${c.desc}</div>
-      </div>
-      <div class="kbd">${c.keys || ''}</div>
-    </div>
-  `).join('');
-  cpList.querySelectorAll('.cpItem').forEach((el)=>{
-    el.addEventListener('click', ()=>{
-      const i = Number(el.dataset.i||0);
-      filtered[i]?.run?.();
-      hideCP();
-    });
-  });
+function saveAndRender(){
+  localStorage.setItem('lumina_chat', JSON.stringify(messages));
+  renderFeed();
 }
-cpInput.addEventListener('input', ()=> renderCP(cpInput.value));
-document.addEventListener('keydown', (e)=>{
-  const isMac = /Mac|iPhone|iPad|iPod/.test(navigator.platform);
-  const cmdk = (isMac ? e.metaKey : e.ctrlKey) && e.key.toLowerCase()==='k';
-  if(cmdk){
-    e.preventDefault();
-    if(cpOverlay.classList.contains('show')) hideCP(); else showCP();
+function renderFeed(){
+  feed.innerHTML = '';
+  for (const m of messages){
+    const el = document.createElement('div');
+    el.className = 'bubble ' + (m.role === 'user' ? 'me' : 'acai');
+    el.textContent = (m.role === 'user' ? 'You: ' : '') + m.text;
+    feed.appendChild(el);
   }
-  if(cpOverlay.classList.contains('show') && e.key==='Escape'){ hideCP(); }
-  // quick keys (when not typing)
-  if(document.activeElement === msg || document.activeElement === cpInput) return;
-  if(e.key.toLowerCase()==='r') openDrawer('radar');
-  if(e.key.toLowerCase()==='e') openDrawer('emc');
+  feed.scrollTop = feed.scrollHeight;
+}
+function showTyping(){
+  const el = document.createElement('div');
+  el.className = 'bubble acai';
+  el.textContent = 'ACAI is typing…';
+  el.dataset.typing='1';
+  feed.appendChild(el);
+  feed.scrollTop = feed.scrollHeight;
+  return el;
+}
+function hideTyping(el){ if(el && el.dataset.typing==='1') el.remove(); }
+
+/* auto-grow */
+msg.addEventListener('input', ()=>{
+  msg.style.height = 'auto';
+  msg.style.height = Math.min(msg.scrollHeight, 160) + 'px';
 });
 
 /* =========================
-   LUX helpers
-   ========================= */
+   8) Theme helpers
+========================= */
 function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 function clamp(n,a,b){ return Math.max(a, Math.min(b,n)); }
+const map=(v,inMin,inMax,outMin,outMax)=> outMin + (Math.max(inMin,Math.min(inMax,v))-inMin)*(outMax-outMin)/(inMax-inMin);
 function alphaColor(rgbLike, a){ return `color-mix(in oklab, ${rgbLike} ${Math.round(a*100)}%, transparent)`; }
 
-/* =========================
-   Charts
-   ========================= */
-const radarMeta = document.getElementById('radarMeta');
-const emcMeta = document.getElementById('emcMeta');
-const tagsBox = document.getElementById('emotionTags');
+/* Persist last tone color between reload until first /state arrives */
+(function restoreLastTheme(){
+  try{
+    const last = JSON.parse(localStorage.getItem('acai_last_state') || 'null');
+    if (last) themeFromState(last, {silent:true});
+  }catch{}
+})();
 
+function themeFromState(s, opts={}){
+  const v = Number(s?.valence ?? 0);
+  const x = Number(s?.impulse_x_ema ?? 0);
+
+  const hue = (v >= 0) ? map(v, 0, 1, 210, 150) : map(v, -1, 0, 10, 210);
+  const sat = map(Math.abs(x), 0, 0.5, 55, 92);
+  const lig = 54;
+
+  const accent = `oklch(${lig}% ${sat/100} ${hue})`;
+
+  let mode='NEUTRAL';
+  if (v > 0.28) mode='GROUND';
+  else if (v < -0.22) mode='STABILIZE';
+  else if (v < -0.08) mode='UPLIFT';
+
+  document.documentElement.style.setProperty('--accent', accent);
+  document.documentElement.style.setProperty('--ring', 'color-mix(in oklab, var(--accent) 60%, transparent)');
+  tone.textContent = mode;
+
+  if (!opts.silent) applyLuxChartColors();
+}
+
+/* =========================
+   9) Charts
+========================= */
 let radarChart = null;
 let emcChart = null;
 
 function ensureRadar(){
   if (radarChart) return;
-  const ctx = document.getElementById('emotionRadar')?.getContext('2d');
-  if (!ctx) return;
+  const radarCtx = document.getElementById('emotionRadar')?.getContext('2d');
+  if (!radarCtx) return;
 
-  radarChart = new Chart(ctx, {
-    type:"radar",
-    data:{ labels:["—","—","—","—","—"], datasets:[{ label:"Top emotions", data:[0,0,0,0,0], fill:true, borderWidth:2, pointRadius:4, pointHoverRadius:6 }] },
-    options:{
-      responsive:true, maintainAspectRatio:false, animation:{duration:360},
-      plugins:{ legend:{display:false}, tooltip:{ backgroundColor:"rgba(8,10,14,.92)", borderColor:"rgba(255,255,255,.10)", borderWidth:1, titleColor:"#fff", bodyColor:"#fff",
-        callbacks:{ label:(c)=> `${c.label}: ${(Number(c.raw||0)*100).toFixed(0)}%` } } },
-      scales:{ r:{ min:0, max:1, grid:{color:"rgba(255,255,255,.06)"}, angleLines:{color:"rgba(255,255,255,.08)"},
-        pointLabels:{color:"rgba(255,255,255,.78)", font:{size:12, weight:"600"}}, ticks:{display:false} } }
+  radarChart = new Chart(radarCtx, {
+    type: "radar",
+    data: {
+      labels: ["—","—","—","—","—"],
+      datasets: [{
+        label: "Top emotions",
+        data: [0,0,0,0,0],
+        fill: true,
+        borderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 420 },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: "rgba(8,10,14,.92)",
+          borderColor: "rgba(255,255,255,.10)",
+          borderWidth: 1,
+          titleColor: "#fff",
+          bodyColor: "#fff",
+          callbacks: {
+            label: (ctx) => `${ctx.label}: ${(Number(ctx.raw||0)*100).toFixed(0)}%`
+          }
+        }
+      },
+      scales: {
+        r: {
+          min: 0, max: 1,
+          grid: { color: "rgba(255,255,255,.06)" },
+          angleLines: { color: "rgba(255,255,255,.08)" },
+          pointLabels: { color: "rgba(255,255,255,.78)", font: { size: 12, weight: "600" } },
+          ticks: { display: false }
+        }
+      }
     }
   });
 }
 
 const MAX_POINTS = 120;
 const POLL_MS = 1500;
-
-/* Persist to avoid zeros/neutral blink */
-const KEY_STATE = "acai_last_state";
-const KEY_EMC   = "acai_emc_series";
-const KEY_T0    = "acai_emc_t0";
-
-let t0 = Number(sessionStorage.getItem(KEY_T0) || 0) || performance.now();
-let emcSeries = (() => {
-  try { return JSON.parse(sessionStorage.getItem(KEY_EMC) || "null") || {t:[],E:[],M:[],C:[]}; }
-  catch { return {t:[],E:[],M:[],C:[]}; }
-})();
-function persistEMC(){
-  try {
-    sessionStorage.setItem(KEY_EMC, JSON.stringify(emcSeries));
-    sessionStorage.setItem(KEY_T0, String(t0));
-  } catch {}
-}
+let t0 = performance.now();
+let emcSeries = { t:[], E:[], M:[], C:[] };
 
 function ensureEMC(){
   if (emcChart) return;
-  const ctx = document.getElementById('emcChart')?.getContext('2d');
-  if (!ctx) return;
+  const emcCtx = document.getElementById('emcChart')?.getContext('2d');
+  if (!emcCtx) return;
 
-  emcChart = new Chart(ctx, {
-    type:"line",
-    data:{
-      labels: emcSeries.t || [],
-      datasets:[
-        {label:"E", data: emcSeries.E || [], borderWidth:2, pointRadius:0, tension:.28},
-        {label:"M", data: emcSeries.M || [], borderWidth:2, pointRadius:0, tension:.28},
-        {label:"C", data: emcSeries.C || [], borderWidth:2, pointRadius:0, tension:.28},
+  emcChart = new Chart(emcCtx, {
+    type: "line",
+    data: {
+      labels: [],
+      datasets: [
+        { label:"E", data: [], borderWidth: 2, pointRadius: 0, tension: 0.28 },
+        { label:"M", data: [], borderWidth: 2, pointRadius: 0, tension: 0.28 },
+        { label:"C", data: [], borderWidth: 2, pointRadius: 0, tension: 0.28 },
       ]
     },
-    options:{
-      responsive:true, maintainAspectRatio:false, animation:{duration:220},
-      plugins:{
-        legend:{labels:{color:"rgba(255,255,255,.78)", boxWidth:10, usePointStyle:true, pointStyle:"circle"}},
-        tooltip:{backgroundColor:"rgba(8,10,14,.92)", borderColor:"rgba(255,255,255,.10)", borderWidth:1, titleColor:"#fff", bodyColor:"#fff"}
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 220 },
+      plugins: {
+        legend: {
+          labels: { color: "rgba(255,255,255,.78)", boxWidth: 10, usePointStyle: true, pointStyle:"circle" }
+        },
+        tooltip: {
+          backgroundColor: "rgba(8,10,14,.92)",
+          borderColor: "rgba(255,255,255,.10)",
+          borderWidth: 1,
+          titleColor: "#fff",
+          bodyColor: "#fff",
+        }
       },
-      scales:{
-        x:{grid:{color:"rgba(255,255,255,.05)"}, ticks:{color:"rgba(255,255,255,.55)", maxTicksLimit:6}},
-        y:{grid:{color:"rgba(255,255,255,.05)"}, ticks:{color:"rgba(255,255,255,.55)"}, suggestedMin:-1.2, suggestedMax:1.2}
+      scales: {
+        x: { grid: { color: "rgba(255,255,255,.05)" }, ticks: { color: "rgba(255,255,255,.55)", maxTicksLimit: 6 } },
+        y: {
+          grid: { color: "rgba(255,255,255,.05)" },
+          ticks:{ color: "rgba(255,255,255,.55)" }
+          /* intentionally no hard clamp here (your backend can go to 5+) */
+        }
       }
     }
   });
@@ -1016,7 +958,7 @@ function applyLuxChartColors(){
   const accent = cssVar('--accent') || '#7AE6FF';
   if (radarChart){
     radarChart.data.datasets[0].borderColor = accent;
-    radarChart.data.datasets[0].backgroundColor = alphaColor(accent, 0.14);
+    radarChart.data.datasets[0].backgroundColor = alphaColor(accent, 0.12);
     radarChart.data.datasets[0].pointBackgroundColor = accent;
     radarChart.data.datasets[0].pointBorderColor = alphaColor(accent, 0.35);
     radarChart.update('none');
@@ -1055,6 +997,7 @@ function updateRadarFromState(s){
 
   radarChart.data.labels = labels.slice(0,5);
   radarChart.data.datasets[0].data = values.slice(0,5);
+
   renderEmotionTags(top5);
 
   const v = Number(s?.valence ?? 0);
@@ -1092,166 +1035,65 @@ function pushEMCPoint(s){
   emcChart.data.datasets[2].data = emcSeries.C;
 
   if (emcMeta) emcMeta.textContent = `E=${E.toFixed(2)} · M=${M.toFixed(2)} · C=${C.toFixed(2)}`;
+
   applyLuxChartColors();
   emcChart.update();
-
-  persistEMC();
 }
 
 /* =========================
-   Theme + Status sensors
-   ========================= */
-const map=(v,inMin,inMax,outMin,outMax)=> outMin + (Math.max(inMin,Math.min(inMax,v))-inMin)*(outMax-outMin)/(inMax-inMin);
-
-function themeFromState(s){
-  const v = Number(s?.valence ?? 0);
-  const x = Number(s?.impulse_x_ema ?? 0);
-  const hue = (v >= 0) ? map(v, 0, 1, 210, 150) : map(v, -1, 0, 10, 210);
-  const sat = map(Math.abs(x), 0, 0.5, 55, 92);
-  const lig = 54;
-  const accent = `oklch(${lig}% ${sat/100} ${hue})`;
-
-  let mode='NEUTRAL';
-  if (v > 0.28) mode='GROUND';
-  else if (v < -0.22) mode='STABILIZE';
-  else if (v < -0.08) mode='UPLIFT';
-
-  document.documentElement.style.setProperty('--accent', accent);
-  document.documentElement.style.setProperty('--ring', 'color-mix(in oklab, var(--accent) 60%, transparent)');
-  tone.textContent = mode;
-  if (sMode) sMode.textContent = mode;
-
-  applyLuxChartColors();
-}
-
-function meter01(el, val01){
-  const p = clamp(val01, 0, 1);
-  if (el) el.style.width = (p*100).toFixed(0) + "%";
-}
-
-function updateRail(st, pingMs){
-  // session basics
-  sApi.textContent = API;
-  sCid.textContent = currentCid || "—";
-  sJwt.textContent = hasJwt() ? "present" : "missing";
-  pillAuth.textContent = hasJwt() ? "auth: jwt" : "auth: —";
-
-  sPoll.textContent = `${POLL_MS}ms`;
-  sPing.textContent = (Number.isFinite(pingMs) ? `${Math.round(pingMs)}ms` : "—");
-  sLast.textContent = new Date().toLocaleTimeString();
-
-  // state
-  const v = Number(st?.valence ?? 0);
-  const x = Number(st?.impulse_x_ema ?? 0);
-  sVal.textContent = v.toFixed(3);
-  sX.textContent = x.toFixed(3);
-
-  const top5 = Array.isArray(st?.top5) ? st.top5 : [];
-  const top = top5?.[0] ? `${top5[0][0]} ${(Number(top5[0][1]||0)*100).toFixed(0)}%` : "—";
-  sTop.textContent = top;
-
-  // meters: valence map [-1..1] => [0..1]
-  meter01(mVal, (v + 1) / 2);
-  meter01(mX, clamp(Math.abs(x)/0.6, 0, 1));
-  mValTxt.textContent = `(${((v+1)/2*100).toFixed(0)}%)`;
-  mXTxt.textContent = `(${(clamp(Math.abs(x)/0.6,0,1)*100).toFixed(0)}%)`;
-
-  // EMC
-  const E = Number(st?.E ?? 0);
-  const M = Number(st?.M ?? 0);
-  const C = Number(st?.C ?? 0);
-  sE.textContent = E.toFixed(3);
-  sM.textContent = M.toFixed(3);
-  sC.textContent = C.toFixed(3);
-
-  // meters: EMC assume [-1.2..1.2] -> [0..1]
-  const norm = (z)=> clamp((z + 1.2) / 2.4, 0, 1);
-  meter01(mE, norm(E)); meter01(mM, norm(M)); meter01(mC, norm(C));
-  mETxt.textContent = `(${(norm(E)*100).toFixed(0)}%)`;
-  mMTxt.textContent = `(${(norm(M)*100).toFixed(0)}%)`;
-  mCTxt.textContent = `(${(norm(C)*100).toFixed(0)}%)`;
-
-  sBuf.textContent = `buf: ${emcSeries.t.length}/${MAX_POINTS}`;
-}
-
-/* =========================
-   Chat local mirror
-   ========================= */
-let messages = (() => {
-  try { return JSON.parse(localStorage.getItem('lumina_chat') || '[]'); } catch { return []; }
-})();
-if (messages.length === 0){
-  messages.push({role:'assistant', text:'ACAI: Greetings, conscious being. Synchronizing with your emotional field…'});
-}
-
-function renderFeed(){
-  feedInner.innerHTML = '';
-  for (const m of messages){
-    const el = document.createElement('div');
-    el.className = 'bubble ' + (m.role === 'user' ? 'me' : 'acai');
-    el.textContent = (m.role === 'user' ? 'You: ' : '') + m.text;
-    feedInner.appendChild(el);
-  }
-  feed.scrollTop = feed.scrollHeight;
-}
-function saveAndRender(){
-  localStorage.setItem('lumina_chat', JSON.stringify(messages));
-  renderFeed();
-}
-function showTyping(){
-  const el = document.createElement('div');
-  el.className = 'bubble acai';
-  el.innerHTML = `<span class="typing">ACAI is typing <span class="dots"><i></i><i></i><i></i></span></span>`;
-  el.dataset.typing='1';
-  feedInner.appendChild(el);
-  feed.scrollTop = feed.scrollHeight;
-  return el;
-}
-function hideTyping(el){ if(el && el.dataset.typing==='1') el.remove(); }
-
-msg.value = localStorage.getItem('lumina_draft') || '';
-msg.addEventListener('input', ()=> localStorage.setItem('lumina_draft', msg.value));
-msg.addEventListener('input', ()=>{
-  msg.style.height = 'auto';
-  msg.style.height = Math.min(msg.scrollHeight, 180) + 'px';
-});
-renderFeed();
-
-/* Warm start (persisted state) */
-(function warmStart(){
-  try{
-    const st = JSON.parse(sessionStorage.getItem(KEY_STATE) || "null");
-    if(st){
-      themeFromState(st);
-      updateRadarFromState(st);
-      ensureEMC(); // to show restored series
-      updateRail(st, NaN);
-    } else {
-      sApi.textContent = API;
-      sJwt.textContent = hasJwt() ? "present" : "missing";
-    }
-  }catch{
-    sApi.textContent = API;
-  }
-})();
-
-/* =========================
-   Backend session + poll
-   ========================= */
+   10) CID persistence (FIX)
+========================= */
 let currentCid = null;
+
+function loadCid(){
+  try { return localStorage.getItem('acai_cid'); } catch { return null; }
+}
+function saveCid(cid){
+  try { localStorage.setItem('acai_cid', cid); } catch {}
+}
+function clearCid(){
+  try { localStorage.removeItem('acai_cid'); } catch {}
+}
+
+async function validateCid(cid){
+  // try to hit /state/{cid} - if ok => valid
+  const r = await apiGetRaw(`/state/${cid}`);
+  return r.ok;
+}
 
 async function ensureConversation(){
   if (currentCid) return currentCid;
+
+  // 1) Try restore CID from localStorage
+  const restored = loadCid();
+  if (restored){
+    try{
+      const ok = await validateCid(restored);
+      if (ok){
+        currentCid = restored;
+        cidText.textContent = currentCid;
+        return currentCid;
+      } else {
+        clearCid();
+      }
+    }catch(e){
+      // network issues - still keep restored, but we'll fallback if needed
+    }
+  }
+
+  // 2) Create new conversation (same as your old logic)
   try{
     const res = await apiPost('/api/conversations', {});
     currentCid = res.id;
+    saveCid(currentCid);
+    cidText.textContent = currentCid;
     return currentCid;
   } catch (e){
-    if (e.message === 'AUTH') {
+    if (e.message === 'AUTH'){
       const loginUrl = API + '/login?from=' + encodeURIComponent(location.href);
       let w=null;
-      try { w = window.open(loginUrl, '_blank', 'noopener'); } catch(_) {}
-      setTimeout(()=>{ if(!w || w.closed) location.href = loginUrl; }, 300);
+      try { w = window.open(loginUrl, '_blank', 'noopener'); } catch(_){}
+      setTimeout(() => { if (!w || w.closed) location.href = loginUrl; }, 300);
       alert('Please login via Telegram, then return here.');
     } else {
       console.error(e);
@@ -1261,35 +1103,68 @@ async function ensureConversation(){
   }
 }
 
+/* =========================
+   11) State poll + rail update
+========================= */
+function setBar(el, pct){
+  el.style.width = `${clamp(pct,0,100).toFixed(0)}%`;
+}
+
 async function refreshState(){
   try{
-    if(!currentCid) return;
-
-    const t1 = performance.now();
-    const r = await fetch(API + `/state/${currentCid}`, {
-      cache:'no-store',
-      credentials:'include',
-      headers: authHeaders()
-    });
-    const t2 = performance.now();
+    if (!currentCid) return;
+    const tStart = performance.now();
+    const r = await apiGetRaw(`/state/${currentCid}`);
+    const tEnd = performance.now();
+    pingText.textContent = `${Math.round(tEnd - tStart)}ms`;
 
     if(!r.ok) return;
     const j = await r.json();
     const st = j?.last || {};
 
-    try { sessionStorage.setItem(KEY_STATE, JSON.stringify(st)); } catch {}
+    // persist last state so reload doesn't feel "reset"
+    try{ localStorage.setItem('acai_last_state', JSON.stringify(st)); }catch{}
 
+    // theme + charts
     themeFromState(st);
     updateRadarFromState(st);
     pushEMCPoint(st);
 
-    updateRail(st, (t2 - t1));
-  }catch{}
+    // left rail numbers
+    const v = Number(st?.valence ?? 0);
+    const x = Number(st?.impulse_x_ema ?? 0);
+    const E = Number(st?.E ?? 0);
+    const M = Number(st?.M ?? 0);
+    const C = Number(st?.C ?? 0);
+
+    valText.textContent = v.toFixed(3);
+    xText.textContent = x.toFixed(3);
+    eText.textContent = E.toFixed(3);
+    mText.textContent = M.toFixed(3);
+    cText.textContent = C.toFixed(3);
+
+    const top = Array.isArray(st?.top5) && st.top5[0] ? st.top5[0][0] : '—';
+    topText.textContent = top;
+
+    // meters
+    // map valence [-1..1] => [0..100]
+    const vp = (clamp(v, -1, 1) + 1) * 50;
+    // map impulse [0..0.5] => [0..100]
+    const xp = clamp(Math.abs(x), 0, 0.5) / 0.5 * 100;
+
+    valPct.textContent = `${vp.toFixed(0)}%`;
+    xPct.textContent = `${xp.toFixed(0)}%`;
+    setBar(valBar, vp);
+    setBar(xBar, xp);
+
+  }catch(e){
+    if (e.message === 'AUTH') forceReauth();
+  }
 }
 
 /* =========================
-   Send / Clean
-   ========================= */
+   12) Send
+========================= */
 form.addEventListener('submit', async (e)=>{
   e.preventDefault();
   const text = msg.value.trim();
@@ -1310,9 +1185,10 @@ form.addEventListener('submit', async (e)=>{
 
     msg.value = '';
     localStorage.removeItem('lumina_draft');
-    msg.style.height = '46px';
+    msg.style.height = '44px';
 
     refreshState();
+
   }catch(err){
     hideTyping(typingEl);
     if (err.message === 'AUTH') {
@@ -1326,27 +1202,26 @@ form.addEventListener('submit', async (e)=>{
   }
 });
 
-cleanBtn.addEventListener('click', async ()=>{
+/* =========================
+   13) CLEAN (also clears CID)
+========================= */
+cleanBtn.addEventListener('click', async () => {
   if (!confirm("Delete local chat history? (You stay logged in)")) return;
-
   try { await apiDelete('/api/memory'); } catch(e){
-    if (e.message==='AUTH'){ return forceReauth(); }
+    if (e.message==='AUTH') return forceReauth();
   }
 
   try{
     localStorage.removeItem('lumina_chat');
     localStorage.removeItem('lumina_draft');
-    sessionStorage.removeItem(KEY_EMC);
-    sessionStorage.removeItem(KEY_STATE);
-    sessionStorage.removeItem(KEY_T0);
   }catch{}
 
-  messages = [{role:'assistant', text:'ACAI: Greetings, conscious being. Synchronizing with your emotional field…'}];
-  currentCid = null;
+  messages = [{ role:'assistant', text:'ACAI: Greetings, conscious being. Synchronizing with your emotional field…' }];
+  saveAndRender();
 
-  emcSeries = {t:[],E:[],M:[],C:[]};
+  // reset charts series only locally
+  emcSeries = { t:[], E:[], M:[], C:[] };
   t0 = performance.now();
-  persistEMC();
 
   if (emcChart){
     emcChart.data.labels = [];
@@ -1362,36 +1237,28 @@ cleanBtn.addEventListener('click', async ()=>{
   if (radarMeta) radarMeta.textContent = "—";
   if (emcMeta) emcMeta.textContent = "—";
 
-  saveAndRender();
+  // IMPORTANT: if you want to keep backend conversation state, DON'T clear CID.
+  // If you want "fresh" backend state after CLEAN, uncomment:
+  // clearCid(); currentCid = null; cidText.textContent = '—';
 });
 
-/* Init */
-(async ()=>{
-  sApi.textContent = API;
-  sPoll.textContent = `${POLL_MS}ms`;
-  sJwt.textContent = hasJwt() ? "present" : "missing";
-  pillAuth.textContent = hasJwt() ? "auth: jwt" : "auth: —";
-
-  ensureRadar(); ensureEMC(); applyLuxChartColors();
-  try { await ensureConversation(); } catch(_){}
-  refreshState();
-  setInterval(refreshState, POLL_MS);
-})();
-
 /* =========================
-   Music + Logout (same)
-   ========================= */
-const audio = document.getElementById('luminaMusic');
+   14) Logout (unchanged)
+========================= */
 document.getElementById('logout')?.addEventListener('click', async (e)=>{
-  e.preventDefault(); e.stopPropagation();
-  if (!confirm('Вы деиствительно хотите выити из аккаунта?')) return;
+  e.preventDefault();
+  e.stopPropagation();
+
+  if (!confirm('Вы действительно хотите выйти из аккаунта?')) return;
 
   try { await fetch(API + '/logout', { method:'POST', credentials:'include', headers: authHeaders() }); } catch(e){}
+
   try {
     localStorage.removeItem('acai_jwt');
     localStorage.removeItem('lumina_chat');
     localStorage.removeItem('lumina_draft');
-    sessionStorage.clear?.();
+    localStorage.removeItem('acai_last_state');
+    clearCid();
   } catch(e){}
 
   try {
@@ -1402,21 +1269,31 @@ document.getElementById('logout')?.addEventListener('click', async (e)=>{
 
   location.href = 'https://acai-frontend.onrender.com';
 });
+
+/* =========================
+   15) Init
+========================= */
+(async () => {
+  try { await ensureConversation(); } catch(_) {}
+  ensureRadar(); ensureEMC(); applyLuxChartColors();
+  refreshState();
+  setInterval(refreshState, POLL_MS);
+})();
 </script>
 
-<!-- Music (optional, kept) -->
+<!-- 🎵 LUMINA THEME MUSIC -->
 <audio id="luminaMusic" loop>
   <source src="./lumina_theme.mp3" type="audio/mpeg">
 </audio>
 <script>
+const audio = document.getElementById('luminaMusic');
 document.addEventListener('click', () => {
   try {
-    const a = document.getElementById('luminaMusic');
-    a.volume = 0;
-    a.play().catch(()=>{});
+    audio.volume = 0;
+    audio.play().catch(()=>{});
     let v = 0;
     const fade = setInterval(() => {
-      if (v < 0.35) { v += 0.01; a.volume = v; } else { clearInterval(fade); }
+      if (v < 0.35) { v += 0.01; audio.volume = v; } else { clearInterval(fade); }
     }, 120);
   } catch(e) {}
 }, { once:true });
