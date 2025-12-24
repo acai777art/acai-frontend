@@ -3,38 +3,37 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>ACAI · LUMINA Console</title>
+<meta name="color-scheme" content="dark" />
+<title>ACAI — LUMINA Console</title>
 
-<!-- Optional: Inter font (Stripe-like). If you want zero external deps, remove this. -->
+<!-- Premium typography (CDN). If you want полностью оффлайн — уберём. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
   :root{
-    --bg0:#05070c;
-    --bg1:#070a12;
-    --card: rgba(13,18,28,.72);
-    --card2: rgba(10,14,22,.62);
-    --stroke: rgba(255,255,255,.08);
-    --stroke2: rgba(255,255,255,.12);
-    --ink: #eaf0ff;
-    --muted: rgba(234,240,255,.62);
+    /* Core */
+    --bg0:#05060a;
+    --bg1:#07090f;
+    --card0:#0b0f18;
+    --card1:#0a0e15;
+    --ink:#e9eef8;
+    --muted:#9aa3af;
 
+    /* Accent (dynamic by state) */
     --accent:#7AE6FF;
+    --ring: color-mix(in oklab, var(--accent) 60%, transparent);
     --violet:#B37AFF;
     --amber:#FFB76B;
-    --ring: color-mix(in oklab, var(--accent) 55%, transparent);
 
-    --shadow: 0 18px 60px rgba(0,0,0,.55);
-    --shadow2: 0 10px 30px rgba(0,0,0,.45);
+    /* Visual materials */
+    --stroke: color-mix(in oklab, var(--accent) 18%, #1a2230);
+    --strokeStrong: color-mix(in oklab, var(--accent) 28%, #1a2230);
+    --glass: color-mix(in oklab, #0b0f18 86%, transparent);
+    --glass2: color-mix(in oklab, #0b0f18 72%, transparent);
 
-    --radius-xl: 22px;
-    --radius-lg: 18px;
-    --radius-md: 14px;
-    --radius-sm: 12px;
-
-    --blur: 14px;
+    /* Background */
     --bg-image:url("./bg_lumina.jpg");
   }
 
@@ -42,1262 +41,1181 @@
   html,body{height:100%}
   body{
     margin:0;
-    font: 14.5px/1.55 "Inter", ui-sans-serif, system-ui, -apple-system, "SF Pro Text", Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial;
     color:var(--ink);
-    background: radial-gradient(1200px 800px at 80% 0%, rgba(122,230,255,.10), transparent 55%),
-                radial-gradient(900px 700px at 0% 90%, rgba(179,122,255,.09), transparent 55%),
-                linear-gradient(180deg, var(--bg0), var(--bg1));
+    font:15px/1.55 Inter, ui-sans-serif, system-ui, -apple-system, "SF Pro Text", Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial;
+    background: #000;
     overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
   }
 
-  /* Background image layer */
+  /* Premium background stack */
   .bg{
-    position:fixed; inset:0; z-index:-4;
+    position:fixed; inset:0; z-index:-5;
     background-image: var(--bg-image);
-    background-size:cover; background-position:center;
-    filter:saturate(1.05) brightness(.9);
-    transform: scale(1.02);
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    filter:saturate(1.05) brightness(.92);
+    transform: translateZ(0);
   }
   .bg::after{
-    content:""; position:absolute; inset:0;
-    background: radial-gradient(1200px 700px at 70% -10%, color-mix(in oklab, var(--accent) 12%, transparent), transparent 60%),
-                radial-gradient(900px 600px at -10% 110%, color-mix(in oklab, var(--violet) 10%, transparent), transparent 62%),
-                linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.72));
+    content:"";
+    position:absolute; inset:0;
+    background:
+      radial-gradient(1200px 720px at 80% -10%, color-mix(in oklab, var(--accent) 18%, #000) 0%, transparent 62%),
+      radial-gradient(980px 640px at -10% 90%, color-mix(in oklab, var(--accent) 12%, #000) 0%, transparent 58%),
+      linear-gradient(180deg, #04050ad9 0%, #05060ae6 100%);
   }
-
-  .grain{
-    position:fixed; inset:0; z-index:-3;
-    pointer-events:none;
-    opacity:.06;
+  .noise{
+    position:fixed; inset:0; z-index:-4; pointer-events:none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.32'/%3E%3C/svg%3E");
+    mix-blend-mode:overlay;
+    opacity:.22;
+  }
+  .stars{
+    position:fixed; inset:0; z-index:-3; pointer-events:none; opacity:.08;
     background-image:
-      radial-gradient(1px 1px at 10% 20%, #fff 50%, transparent 51%),
-      radial-gradient(1px 1px at 80% 30%, #fff 50%, transparent 51%),
-      radial-gradient(1px 1px at 40% 90%, #fff 50%, transparent 51%);
-    background-size: 26px 26px, 34px 34px, 44px 44px;
+      radial-gradient(1px 1px at 12% 20%, #fff 50%, transparent 51%),
+      radial-gradient(1px 1px at 72% 62%, #fff 50%, transparent 51%),
+      radial-gradient(1px 1px at 38% 84%, #fff 50%, transparent 51%),
+      radial-gradient(1px 1px at 88% 18%, #fff 50%, transparent 51%);
+    background-size:28px 28px, 34px 34px, 46px 46px, 54px 54px;
     mix-blend-mode:screen;
   }
 
   /* Top bar */
-  .top{
-    height:64px;
-    display:flex; align-items:center; gap:14px;
-    padding: 0 16px;
-    border-bottom: 1px solid rgba(255,255,255,.06);
-    background: linear-gradient(180deg, rgba(10,14,22,.78), rgba(10,14,22,.22));
-    backdrop-filter: blur(var(--blur));
-    -webkit-backdrop-filter: blur(var(--blur));
-    position:sticky; top:0; z-index:20;
+  .bar{
+    height:68px;
+    padding:0 16px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    border-bottom:1px solid color-mix(in oklab, var(--accent) 16%, transparent);
+    background:
+      linear-gradient(180deg, color-mix(in oklab, var(--accent) 8%, #000) 0%, transparent 100%);
+    position:sticky; top:0; z-index:50;
+    backdrop-filter: blur(10px);
   }
-  .brand{
-    display:flex; align-items:center; gap:12px; min-width: 210px;
+  .brandMark{
+    width:34px;height:34px;border-radius:14px;
+    background: conic-gradient(from 210deg, var(--accent), var(--violet), var(--amber), var(--accent));
+    box-shadow:
+      0 0 0 2px #0a0d14,
+      0 0 26px var(--ring) inset,
+      0 10px 26px #0008;
+    animation: hue 10s linear infinite;
   }
-  .orb{
-    width:28px; height:28px; border-radius:10px;
-    background: conic-gradient(from 220deg, var(--accent), var(--violet), var(--amber), var(--accent));
-    box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 0 26px var(--ring);
-    animation: hue 9s linear infinite;
-  }
-  @keyframes hue{ from{ filter:hue-rotate(0deg)} to{filter:hue-rotate(360deg)} }
+  @keyframes hue{from{filter:hue-rotate(0)}to{filter:hue-rotate(360deg)}}
 
   .brandText{
     display:flex; flex-direction:column; gap:2px;
+    min-width: 160px;
   }
-  .brandText b{
+  .brandText .top{
+    font-family: "Space Grotesk", Inter, system-ui;
+    font-weight: 800;
     letter-spacing:.18em;
     text-transform:uppercase;
-    font-weight:900;
     font-size:12px;
     background: linear-gradient(90deg, var(--accent), var(--violet), var(--amber));
-    -webkit-background-clip:text;
-    background-clip:text;
+    -webkit-background-clip:text; background-clip:text;
     color:transparent;
+    background-size:200% 100%;
+    animation: titleFlow 9s linear infinite;
+    text-shadow:0 0 18px #7ae6ff22;
   }
-  .brandText span{
+  .brandText .sub{
     font-size:12px;
-    color: rgba(234,240,255,.55);
+    color: color-mix(in oklab, var(--ink) 62%, var(--accent));
+    opacity:.9;
+    letter-spacing:.02em;
+  }
+  @keyframes titleFlow{from{background-position:0% 50%}to{background-position:200% 50%}}
+
+  .right{
+    margin-left:auto;
+    display:flex;
+    align-items:center;
+    gap:10px;
   }
 
-  .spacer{flex:1}
-
-  .pill{
-    display:inline-flex; align-items:center; gap:8px;
-    padding: 8px 12px;
+  .tonePill{
+    padding:7px 12px;
     border-radius:999px;
-    border: 1px solid rgba(255,255,255,.10);
-    background: rgba(0,0,0,.22);
-    backdrop-filter: blur(10px);
-    color: color-mix(in oklab, var(--ink) 82%, var(--accent));
-    letter-spacing:.14em;
+    background: color-mix(in oklab, var(--accent) 14%, #000);
+    color: color-mix(in oklab, var(--ink) 80%, var(--accent));
+    border:1px solid color-mix(in oklab, var(--accent) 34%, transparent);
+    font-size:12px;
     text-transform:uppercase;
-    font-size:11px;
-    font-weight:800;
-  }
-  .dot{
-    width:8px; height:8px; border-radius:50%;
-    background: var(--accent);
-    box-shadow: 0 0 18px var(--ring);
-    animation: breathe 2.4s ease-in-out infinite;
-  }
-  @keyframes breathe{
-    0%,100%{transform:scale(.9); opacity:.7}
-    50%{transform:scale(1.2); opacity:1}
+    letter-spacing:.16em;
+    opacity:.92;
+    box-shadow: 0 10px 26px #0006;
   }
 
   .btn{
-    height:38px;
-    padding: 0 14px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,.10);
-    background: rgba(12,16,24,.45);
-    color: var(--ink);
-    cursor:pointer;
-    font-weight:800;
-    letter-spacing:.12em;
-    text-transform:uppercase;
-    font-size:11px;
-    box-shadow: 0 10px 26px rgba(0,0,0,.35);
-    transition: transform .16s ease, filter .16s ease, border-color .16s ease;
-  }
-  .btn:hover{ filter:brightness(1.08); border-color: rgba(255,255,255,.18); }
-  .btn:active{ transform: translateY(1px) scale(.99); }
-
-  .btnPrimary{
+    --mx:50%;--my:50%;
+    position:relative;
+    display:inline-flex;align-items:center;justify-content:center;
+    padding:0 16px;
+    height:40px;
+    border-radius:14px;
     border:none;
-    background: linear-gradient(135deg, var(--accent), var(--amber));
-    color:#071218;
-    box-shadow: 0 18px 40px rgba(122,230,255,.20), 0 10px 26px rgba(0,0,0,.35);
+    cursor:pointer;
+    background:linear-gradient(135deg,var(--accent),var(--amber));
+    box-shadow:0 14px 30px rgba(122,230,255,.30),0 2px 10px rgba(0,0,0,.55);
+    color:#051014;
+    font-weight:900;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    overflow:hidden;
+    transform-style:preserve-3d;
+    transition:transform .16s, box-shadow .16s, filter .16s;
+    user-select:none;
   }
+  .btn .label{
+    position:relative; z-index:2;
+    background: linear-gradient(90deg,#fff,#d8f7ff,#fff);
+    background-size:200% 100%;
+    -webkit-background-clip:text;background-clip:text;
+    color:transparent;
+    animation:shineText 3.2s linear infinite;
+  }
+  @keyframes shineText{from{background-position:0% 50%}to{background-position:200% 50%}}
+  .btn::after{
+    content:"";
+    position:absolute; inset:-1px;
+    pointer-events:none;
+    background: radial-gradient(160px 160px at var(--mx) var(--my), rgba(255,255,255,.18), rgba(255,255,255,0) 62%);
+    opacity:0; transition:opacity .18s;
+  }
+  .btn:hover{ box-shadow:0 18px 42px rgba(122,230,255,.40),0 6px 18px rgba(0,0,0,.55) }
+  .btn:hover::after{opacity:1}
+  .btn:active{ transform: scale(.985) }
+
+  .btn.ghost{
+    background: linear-gradient(180deg, #0e131b, #0a0e14);
+    color: var(--ink);
+    border: 1px solid var(--strokeStrong);
+    box-shadow: 0 2px 10px rgba(0,0,0,.52), inset 0 0 0 999px #ffffff08;
+  }
+  .btn.ghost .label{
+    background:none; color:var(--ink);
+    -webkit-background-clip:initial;background-clip:initial;
+    animation:none; opacity:.88;
+  }
+  .btn.sm{ height:36px; border-radius:12px; letter-spacing:.12em; font-size:12px; padding:0 12px; }
 
   /* Layout */
-  .shell{
-    height: calc(100% - 64px);
-    display:grid;
-    grid-template-columns: 320px 1fr 52px;
-    gap: 14px;
-    padding: 14px;
-  }
-
-  /* Left rail */
-  .rail{
-    border-radius: var(--radius-xl);
-    border: 1px solid rgba(255,255,255,.08);
-    background: linear-gradient(180deg, rgba(13,18,28,.72), rgba(8,10,16,.55));
-    backdrop-filter: blur(var(--blur));
-    -webkit-backdrop-filter: blur(var(--blur));
-    box-shadow: var(--shadow);
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-    min-height:0;
-  }
-  .railHead{
-    padding: 14px 14px 10px;
-    border-bottom: 1px solid rgba(255,255,255,.06);
-    display:flex; align-items:center; justify-content:space-between; gap:10px;
-  }
-  .railHead b{
-    font-size:12px;
-    letter-spacing:.18em;
-    text-transform:uppercase;
-    opacity:.92;
-  }
-  .railHead .miniBtns{
-    display:flex; gap:8px;
-  }
-  .chip{
-    height:28px;
-    padding: 0 10px;
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,.10);
-    background: rgba(0,0,0,.18);
-    color: rgba(234,240,255,.78);
-    font-weight:800;
-    letter-spacing:.12em;
-    font-size:10px;
-    text-transform:uppercase;
-    cursor:pointer;
-  }
-
-  .railBody{
-    padding: 12px 12px 14px;
-    overflow:auto;
-    min-height:0;
-  }
-
-  .card{
-    border-radius: var(--radius-lg);
-    border: 1px solid rgba(255,255,255,.08);
-    background: rgba(0,0,0,.18);
-    box-shadow: var(--shadow2);
-    padding: 12px;
-    margin-bottom: 12px;
-  }
-  .card h4{
-    margin:0 0 10px 0;
-    font-size:11px;
-    letter-spacing:.18em;
-    text-transform:uppercase;
-    color: rgba(234,240,255,.70);
-  }
-  .kv{
-    display:grid;
-    grid-template-columns: 1fr auto;
-    gap: 8px 10px;
-    font-size:12px;
-    color: rgba(234,240,255,.70);
-  }
-  .kv b{ color: rgba(234,240,255,.92); font-weight:700; }
-  .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size:11px; }
-
-  .meter{
-    margin-top:10px;
-  }
-  .meterRow{
-    display:flex; align-items:center; justify-content:space-between;
-    font-size:11px; color: rgba(234,240,255,.62);
-    margin-bottom:6px;
-  }
-  .bar{
-    height:8px;
-    border-radius:999px;
-    background: rgba(255,255,255,.08);
-    overflow:hidden;
-    border:1px solid rgba(255,255,255,.08);
-  }
-  .bar > i{
-    display:block;
-    height:100%;
-    width:0%;
-    background: linear-gradient(90deg, var(--accent), var(--amber));
-    border-radius:999px;
-    box-shadow: 0 0 18px rgba(122,230,255,.25);
-  }
-
-  /* Center chat */
-  .main{
-    border-radius: var(--radius-xl);
-    border: 1px solid rgba(255,255,255,.08);
-    background: linear-gradient(180deg, rgba(13,18,28,.62), rgba(8,10,16,.40));
-    backdrop-filter: blur(var(--blur));
-    -webkit-backdrop-filter: blur(var(--blur));
-    box-shadow: var(--shadow);
-    overflow:hidden;
+  .wrap{
+    height:calc(100% - 68px);
     display:grid;
     grid-template-rows: 1fr auto;
-    min-height:0;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "feed"
+      "composer";
   }
+
+  /* Feed */
   .feed{
-    padding: 18px 18px 8px;
+    grid-area:feed;
     overflow:auto;
-    min-height:0;
+    padding:22px 16px 10px;
+    scroll-behavior:smooth;
     -webkit-overflow-scrolling:touch;
   }
+  .feedInner{
+    max-width: 980px;
+    margin: 0 auto;
+  }
+
+  /* Bubbles premium */
   .bubble{
-    max-width: min(860px, 96%);
-    padding: 14px 14px;
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,.09);
-    background: rgba(0,0,0,.18);
-    box-shadow: 0 12px 26px rgba(0,0,0,.35);
-    margin: 10px 0;
-    white-space: pre-wrap;
+    max-width:min(900px,92vw);
+    margin:10px 0;
+    padding:14px 16px;
+    white-space:pre-wrap;
+    border-radius:16px;
     position:relative;
+
+    background:
+      linear-gradient(180deg, var(--glass) 0%, color-mix(in oklab, #0a0e15 88%, transparent) 100%);
+    border:1px solid var(--stroke);
+    box-shadow:
+      0 1px 0 #0008,
+      inset 0 0 0 999px #ffffff03,
+      0 14px 34px #000b;
+    backdrop-filter: blur(10px);
+  }
+  .bubble::before{
+    content:"";
+    position:absolute; inset:-1px;
+    border-radius:inherit;
+    pointer-events:none;
+    background:
+      radial-gradient(420px 220px at 12% 12%, color-mix(in oklab, var(--accent) 18%, transparent) 0%, transparent 65%),
+      radial-gradient(380px 240px at 92% 20%, color-mix(in oklab, var(--violet) 12%, transparent) 0%, transparent 60%);
+    opacity:.35;
+    filter: blur(8px);
   }
   .bubble::after{
     content:"";
     position:absolute; inset:-1px;
-    border-radius: inherit;
+    border-radius:inherit;
     pointer-events:none;
-    background: linear-gradient(120deg, transparent 35%, rgba(255,255,255,.10), transparent 65%);
-    opacity:0;
-    transition: opacity .2s ease;
+    background: linear-gradient(120deg, transparent 34%, rgba(255,255,255,.12) 50%, transparent 68%);
     mix-blend-mode:screen;
+    opacity:0;
+    transition:opacity .25s;
   }
-  .bubble:hover::after{ opacity:.7; }
-  .me{ margin-left:auto; border-color: color-mix(in oklab, var(--accent) 24%, rgba(255,255,255,.08)); }
-  .acai{ border-color: rgba(255,255,255,.10); }
+  .bubble:hover::after{ opacity:.55 }
 
+  .acai{ border-color: color-mix(in oklab, var(--accent) 24%, #1a2230); }
+  .me{
+    margin-left:auto;
+    background:
+      linear-gradient(180deg, color-mix(in oklab, var(--accent) 18%, var(--glass2)) 0%, color-mix(in oklab, #0a0e15 90%, transparent) 100%);
+    border-color: color-mix(in oklab, var(--accent) 34%, #1a2230);
+  }
+
+  /* Typing */
+  .typing{ display:inline-flex; align-items:center; gap:8px;
+    color: color-mix(in oklab, var(--ink) 74%, var(--accent));
+    font-weight:600; letter-spacing:.06em;
+  }
+  .dots{ display:inline-flex; gap:4px; }
+  .dots i{
+    width:6px;height:6px;border-radius:50%;
+    background: color-mix(in oklab, var(--accent) 90%, #fff);
+    opacity:.35;
+    animation: blink 1.2s infinite;
+  }
+  .dots i:nth-child(2){animation-delay:.2s}
+  .dots i:nth-child(3){animation-delay:.4s}
+  @keyframes blink{0%,100%{opacity:.22;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}
+
+  /* Composer premium */
   .composer{
+    grid-area: composer;
+    padding: 12px 16px 16px;
+    border-top:1px solid #0a0d12;
+    background: linear-gradient(180deg, rgba(10,15,22,.92), rgba(8,11,17,.96));
+    backdrop-filter: blur(10px);
+  }
+  .composerInner{
+    max-width: 980px;
+    margin: 0 auto;
     display:flex;
     gap:10px;
-    padding: 12px 12px;
-    border-top:1px solid rgba(255,255,255,.06);
-    background: linear-gradient(180deg, rgba(8,10,16,.25), rgba(8,10,16,.65));
+    align-items:flex-end;
   }
-  textarea{
+  .in{
     flex:1;
-    min-height:44px;
-    max-height:160px;
-    resize:none;
-    border-radius: 14px;
-    border:1px solid rgba(255,255,255,.10);
-    background: rgba(0,0,0,.22);
-    color: var(--ink);
-    padding: 12px 12px;
+    background: color-mix(in oklab, #0e131b 92%, transparent);
+    border:1px solid #151c26;
+    color:var(--ink);
+    border-radius:16px;
+    padding:12px 14px;
     outline:none;
-    transition: border-color .16s ease, box-shadow .16s ease;
+    transition:border-color .2s, box-shadow .2s;
+    resize:none;
+    min-height:46px;
+    max-height:180px;
+    line-height:1.45;
+    box-shadow: inset 0 0 0 999px #ffffff05;
   }
-  textarea:focus{
-    border-color: color-mix(in oklab, var(--accent) 35%, rgba(255,255,255,.10));
+  .in:focus{
+    border-color: color-mix(in oklab, var(--accent) 38%, #222);
     box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 18%, transparent);
   }
 
-  /* Right dock buttons */
-  .dock{
+  /* Edge widgets */
+  .edgeBtns{
+    position:fixed;
+    right:12px;
+    top: calc(68px + 14px);
+    z-index: 60;
     display:flex;
     flex-direction:column;
     gap:10px;
-    align-items:center;
-    padding-top: 6px;
+    pointer-events:auto;
   }
-  .dockBtn{
-    width:46px; height:46px;
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,.10);
-    background: rgba(0,0,0,.18);
-    box-shadow: 0 12px 26px rgba(0,0,0,.35);
+  .edgeBtn{
+    width:46px;height:46px;
+    border-radius:16px;
+    border:1px solid var(--strokeStrong);
+    background: linear-gradient(180deg, #0e131b, #0a0e14);
+    box-shadow: 0 12px 28px rgba(0,0,0,.58), inset 0 0 0 999px #ffffff08;
     cursor:pointer;
-    color: rgba(234,240,255,.82);
     display:flex; align-items:center; justify-content:center;
-    transition: transform .16s ease, filter .16s ease, border-color .16s ease;
+    color: color-mix(in oklab, var(--ink) 78%, var(--accent));
+    transition: transform .16s ease, filter .16s ease, box-shadow .16s ease;
   }
-  .dockBtn:hover{ filter:brightness(1.1); border-color: rgba(255,255,255,.16); }
-  .dockBtn:active{ transform: scale(.98); }
-  .dockBtn svg{ width:22px; height:22px; }
+  .edgeBtn:hover{ filter:brightness(1.08); box-shadow: 0 16px 36px rgba(0,0,0,.64), 0 0 26px var(--ring); }
+  .edgeBtn:active{ transform: scale(.985); }
+  .edgeBtn svg{ width:22px;height:22px; opacity:.92; }
 
-  /* Overlay + Drawer */
+  /* Overlay */
   .overlay{
-    position:fixed; inset:0; z-index:50;
-    background: rgba(0,0,0,.42);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    position:fixed; inset:0;
+    background: rgba(0,0,0,.46);
+    backdrop-filter: blur(10px);
+    z-index: 70;
     opacity:0;
     pointer-events:none;
     transition: opacity .18s ease;
   }
   .overlay.show{ opacity:1; pointer-events:auto; }
 
+  /* Drawer (strict) */
   .drawer{
     position:fixed;
-    top:64px;
+    top:68px;
     right:0;
-    height: calc(100% - 64px);
-    width: min(460px, 94vw);
-    z-index:60;
+    height: calc(100% - 68px);
+    width: min(460px, 92vw);
+    z-index: 80;
     transform: translateX(104%);
     transition: transform .22s cubic-bezier(.2,.9,.2,1);
-    padding: 14px;
+    padding: 14px 12px;
     display:flex;
     flex-direction:column;
     gap:12px;
-    overflow:hidden;
+    overflow:hidden; /* critical */
   }
   .drawer.open{ transform: translateX(0); }
 
-  .drawerFrame{
-    border-radius: var(--radius-xl);
-    border: 1px solid rgba(255,255,255,.10);
-    background: linear-gradient(180deg, rgba(13,18,28,.72), rgba(8,10,16,.55));
-    backdrop-filter: blur(var(--blur));
-    -webkit-backdrop-filter: blur(var(--blur));
-    box-shadow: var(--shadow);
-    overflow:hidden;
+  .drawerHeader{
+    flex: 0 0 auto;
     display:flex;
-    flex-direction:column;
-    min-height:0;
+    gap:10px;
+    align-items:center;
+    justify-content:space-between;
+    padding: 10px 10px;
+    border-radius: 16px;
+    background: linear-gradient(180deg, var(--glass) 0%, color-mix(in oklab, #0a0e15 88%, transparent) 100%);
+    border: 1px solid var(--stroke);
+    box-shadow: 0 12px 30px #000a, inset 0 0 0 999px #ffffff03;
+    backdrop-filter: blur(12px);
   }
-  .drawerHead{
-    display:flex; align-items:center; justify-content:space-between;
-    padding: 14px 14px;
-    border-bottom:1px solid rgba(255,255,255,.06);
-  }
-  .drawerHead b{
-    font-size:12px;
-    letter-spacing:.18em;
-    text-transform:uppercase;
+  .drawerTitle{
     display:flex; align-items:center; gap:10px;
+    font-family: "Space Grotesk", Inter, system-ui;
+    font-weight: 700;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    font-size: 12px;
+    color: color-mix(in oklab, var(--ink) 82%, var(--accent));
   }
+
+  .luxDot{
+    width:10px;height:10px;border-radius:50%;
+    background: var(--accent);
+    box-shadow: 0 0 18px var(--ring), 0 0 40px color-mix(in oklab, var(--accent) 25%, transparent);
+    animation: breathe 2.4s ease-in-out infinite;
+  }
+  @keyframes breathe{
+    0%,100%{ transform: scale(.92); opacity:.72; }
+    50%{ transform: scale(1.14); opacity:1; }
+  }
+
+  .drawerClose{
+    border:none;
+    background: linear-gradient(180deg,#0e131b,#0a0e14);
+    color: var(--ink);
+    border:1px solid var(--strokeStrong);
+    border-radius: 12px;
+    height:34px;
+    padding:0 12px;
+    cursor:pointer;
+    box-shadow: 0 10px 22px rgba(0,0,0,.42), inset 0 0 0 999px #ffffff06;
+  }
+
   .drawerBody{
-    padding: 14px;
+    flex: 1 1 auto;
+    min-height: 0; /* iOS critical */
     overflow:auto;
-    min-height:0;
-  }
-  .meta{
-    font-size:11px;
-    color: rgba(234,240,255,.70);
-    border:1px solid rgba(255,255,255,.10);
-    border-radius:999px;
-    padding:6px 10px;
-    background: rgba(0,0,0,.18);
-    white-space:nowrap;
+    -webkit-overflow-scrolling:touch;
+    padding-right: 2px;
   }
 
+  /* Panel */
   .panel{
-    border-radius: var(--radius-xl);
-    border: 1px solid rgba(255,255,255,.08);
-    background: rgba(0,0,0,.16);
-    box-shadow: var(--shadow2);
-    padding: 12px;
+    position:relative;
+    padding:14px 14px 12px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, var(--glass) 0%, color-mix(in oklab, #0a0e15 88%, transparent) 100%);
+    border: 1px solid var(--stroke);
+    box-shadow: 0 1px 0 #0008, inset 0 0 0 999px #ffffff03, 0 14px 36px #000b;
+    overflow:hidden;
+    backdrop-filter: blur(12px);
   }
-  .panelTop{
-    display:flex; align-items:center; justify-content:space-between; gap:10px;
+  .panel::before{
+    content:"";
+    position:absolute; inset:-2px;
+    border-radius: inherit;
+    background:
+      radial-gradient(420px 260px at 30% 20%, color-mix(in oklab, var(--accent) 22%, transparent) 0%, transparent 60%),
+      radial-gradient(320px 240px at 80% 30%, color-mix(in oklab, var(--violet) 14%, transparent) 0%, transparent 62%);
+    filter: blur(12px);
+    opacity:.8;
+    pointer-events:none;
+  }
+
+  .panelHead{
+    position:relative;
+    display:flex; align-items:center; justify-content:space-between;
     margin-bottom:10px;
+    gap:10px;
   }
-  .panelTop span{
-    font-size:11px;
-    letter-spacing:.18em;
-    text-transform:uppercase;
-    color: rgba(234,240,255,.70);
-    font-weight:800;
+  .panelTitle{
+    font-family:"Space Grotesk", Inter, system-ui;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    font-size: 12px;
+    color: color-mix(in oklab, var(--ink) 82%, var(--accent));
+    opacity:.95;
     display:flex; align-items:center; gap:10px;
   }
+  .pill{
+    position:relative;
+    font-size: 11px;
+    padding:6px 10px;
+    border-radius: 999px;
+    border: 1px solid color-mix(in oklab, var(--accent) 30%, transparent);
+    background: color-mix(in oklab, var(--accent) 12%, #000);
+    color: color-mix(in oklab, var(--ink) 78%, var(--accent));
+    opacity:.95;
+    white-space:nowrap;
+    box-shadow: 0 8px 20px rgba(0,0,0,.35);
+  }
 
-  .tagRow{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    margin-top:12px;
+  .miniLegend{
+    position:relative;
+    display:flex; flex-wrap:wrap; gap:6px;
+    margin-top:10px;
   }
   .tag{
     font-size:11px;
     padding:6px 10px;
     border-radius:999px;
-    border:1px solid rgba(255,255,255,.10);
-    background: rgba(0,0,0,.18);
-    color: rgba(234,240,255,.78);
+    border:1px solid color-mix(in oklab, var(--accent) 22%, #1a2230);
+    background: linear-gradient(180deg, #0e131b, #0a0e14);
+    color: color-mix(in oklab, var(--ink) 76%, var(--accent));
+    opacity:.92;
   }
 
+  /* Chart boxes strict sizes */
   .chartBox{
-    height: min(48vh, 440px);
-    width:100%;
-    position:relative;
+    height: min(46vh, 440px);
+    width: 100%;
+    position: relative;
   }
   .chartBox.radarBox{ height: min(44vh, 390px); }
+
   canvas{ display:block; width:100% !important; height:100% !important; }
 
-  /* Mobile */
-  @media (max-width: 980px){
-    .shell{ grid-template-columns: 1fr 52px; }
-    .rail{ display:none; }
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior:auto !important; }
+  }
+
+  @media (max-width: 520px){
+    body{ overflow:hidden; }
+    .edgeBtns{ right: 10px; top: calc(68px + 10px); }
+    .drawer{ width: 94vw; }
+    .chartBox{ height: min(52vh, 440px); }
+    .chartBox.radarBox{ height: min(48vh, 390px); }
   }
 </style>
 </head>
 
 <body>
   <div class="bg" aria-hidden="true"></div>
-  <div class="grain" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="stars" aria-hidden="true"></div>
 
-  <header class="top">
-    <div class="brand">
-      <div class="orb" aria-hidden="true"></div>
-      <div class="brandText">
-        <b>AFFECTIVE CONTEXTUAL AI</b>
-        <span>LUMINA Console · Sensors + Command</span>
-      </div>
+  <header class="bar">
+    <div class="brandMark" aria-hidden="true"></div>
+
+    <div class="brandText">
+      <div class="top">AFFECTIVE CONTEXTUAL AI</div>
+      <div class="sub">LUMINA Console · Affective Cybernetics</div>
     </div>
 
-    <div class="spacer"></div>
-
-    <div class="pill" title="Current regulation mode">
-      <span class="dot" aria-hidden="true"></span>
-      <span id="tone">NEUTRAL</span>
+    <div class="right">
+      <div class="tonePill" id="tone">NEUTRAL</div>
+      <button class="btn ghost sm" id="logout" type="button"><span class="label">LOGOUT</span></button>
     </div>
-
-    <button class="btn" id="logout" type="button">LOGOUT</button>
   </header>
 
-  <main class="shell">
-    <!-- Left sensor rail -->
-    <aside class="rail" aria-label="Status Rail">
-      <div class="railHead">
-        <b>Status Rail</b>
-        <div class="miniBtns">
-          <button class="chip" id="cidBtn" type="button">CID</button>
-          <button class="chip" id="apiBtn" type="button">API</button>
-        </div>
+  <section class="wrap">
+    <div class="feed" id="feed">
+      <div class="feedInner" id="feedInner"></div>
+    </div>
+
+    <form class="composer" id="form" novalidate>
+      <div class="composerInner">
+        <textarea id="msg" class="in" placeholder="Type a message…" rows="1"></textarea>
+        <button class="btn" id="send" type="submit"><span class="label">SEND</span></button>
+        <button class="btn ghost" id="clean" type="button"><span class="label">CLEAN</span></button>
       </div>
+    </form>
+  </section>
 
-      <div class="railBody">
-        <div class="card">
-          <h4>Session</h4>
-          <div class="kv">
-            <span>CID</span><b class="mono" id="cidText">—</b>
-            <span>API</span><b class="mono" id="apiText">—</b>
-            <span>JWT</span><b class="mono" id="jwtText">—</b>
-            <span>Ping</span><b class="mono" id="pingText">—</b>
-            <span>Poll</span><b class="mono" id="pollText">1500ms</b>
-          </div>
-        </div>
+  <!-- Edge Buttons -->
+  <div class="edgeBtns" aria-label="Widgets">
+    <button class="edgeBtn" id="openRadar" type="button" title="Emotion Radar">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M12 21a9 9 0 1 0-9-9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M12 12l6-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M3 12h2M12 3v2M19 12h2" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+        <circle cx="12" cy="12" r="2" stroke="currentColor" stroke-width="2"/>
+      </svg>
+    </button>
 
-        <div class="card">
-          <h4>Affective State</h4>
-          <div class="kv">
-            <span>valence</span><b class="mono" id="valText">0.000</b>
-            <span>x (impulse)</span><b class="mono" id="xText">0.000</b>
-            <span>top emotion</span><b class="mono" id="topText">—</b>
-          </div>
-
-          <div class="meter">
-            <div class="meterRow">
-              <span>VALENCE</span><span class="mono" id="valPct">0%</span>
-            </div>
-            <div class="bar"><i id="valBar"></i></div>
-          </div>
-
-          <div class="meter">
-            <div class="meterRow">
-              <span>IMPULSE</span><span class="mono" id="xPct">0%</span>
-            </div>
-            <div class="bar"><i id="xBar"></i></div>
-          </div>
-        </div>
-
-        <div class="card">
-          <h4>E · M · C</h4>
-          <div class="kv">
-            <span>E</span><b class="mono" id="eText">0.000</b>
-            <span>M</span><b class="mono" id="mText">0.000</b>
-            <span>C</span><b class="mono" id="cText">0.000</b>
-          </div>
-        </div>
-      </div>
-    </aside>
-
-    <!-- Main chat -->
-    <section class="main" aria-label="Chat">
-      <div class="feed" id="feed"></div>
-
-      <form class="composer" id="form" novalidate>
-        <textarea id="msg" placeholder="Type a message…" rows="1"></textarea>
-        <button class="btn btnPrimary" id="send" type="submit">SEND</button>
-        <button class="btn" id="clean" type="button">CLEAN</button>
-      </form>
-    </section>
-
-    <!-- Right dock -->
-    <aside class="dock" aria-label="Dock">
-      <button class="dockBtn" id="openRadar" type="button" title="Emotion Radar">
-        <svg viewBox="0 0 24 24" fill="none">
-          <path d="M12 21a9 9 0 1 0-9-9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M12 12l6-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M3 12h2M12 3v2M19 12h2" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".8"/>
-          <circle cx="12" cy="12" r="2" stroke="currentColor" stroke-width="2"/>
-        </svg>
-      </button>
-
-      <button class="dockBtn" id="openEMC" type="button" title="E · M · C Timeline">
-        <svg viewBox="0 0 24 24" fill="none">
-          <path d="M4 19V5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M4 19H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M6 15l4-5 4 3 5-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="10" cy="10" r="1.5" fill="currentColor"/>
-          <circle cx="14" cy="13" r="1.5" fill="currentColor" opacity=".9"/>
-          <circle cx="19" cy="6" r="1.5" fill="currentColor" opacity=".85"/>
-        </svg>
-      </button>
-    </aside>
-  </main>
+    <button class="edgeBtn" id="openEMC" type="button" title="E · M · C Timeline">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M4 19V5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M4 19H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M6 15l4-5 4 3 5-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="10" cy="10" r="1.5" fill="currentColor"/>
+        <circle cx="14" cy="13" r="1.5" fill="currentColor" opacity=".9"/>
+        <circle cx="19" cy="6" r="1.5" fill="currentColor" opacity=".85"/>
+      </svg>
+    </button>
+  </div>
 
   <div class="overlay" id="overlay" aria-hidden="true"></div>
 
-  <!-- Drawer: Radar -->
-  <aside class="drawer" id="radarDrawer" aria-label="Emotion Radar">
-    <div class="drawerFrame">
-      <div class="drawerHead">
-        <b><span class="dot" aria-hidden="true"></span> Emotion Radar</b>
-        <div style="display:flex; gap:10px; align-items:center;">
-          <span class="meta" id="radarMeta">—</span>
-          <button class="btn" type="button" data-close="radar">Close</button>
+  <!-- Drawer: RADAR -->
+  <aside class="drawer" id="radarDrawer" aria-label="Emotion Radar Widget">
+    <div class="drawerHeader">
+      <div class="drawerTitle"><span class="luxDot" aria-hidden="true"></span> Emotion Radar</div>
+      <button class="drawerClose" type="button" data-close="radar">Close</button>
+    </div>
+    <div class="drawerBody">
+      <section class="panel">
+        <div class="panelHead">
+          <div class="panelTitle"><span class="luxDot" aria-hidden="true"></span> Emotion Radar</div>
+          <div class="pill" id="radarMeta">—</div>
         </div>
-      </div>
-      <div class="drawerBody">
-        <div class="panel">
-          <div class="panelTop">
-            <span><span class="dot" aria-hidden="true"></span> Top emotions</span>
-          </div>
-          <div class="chartBox radarBox">
-            <canvas id="emotionRadar"></canvas>
-          </div>
-          <div class="tagRow" id="emotionTags"></div>
+        <div class="chartBox radarBox">
+          <canvas id="emotionRadar"></canvas>
         </div>
-      </div>
+        <div class="miniLegend" id="emotionTags"></div>
+      </section>
     </div>
   </aside>
 
   <!-- Drawer: EMC -->
-  <aside class="drawer" id="emcDrawer" aria-label="E M C Timeline">
-    <div class="drawerFrame">
-      <div class="drawerHead">
-        <b><span class="dot" aria-hidden="true"></span> E · M · C Timeline</b>
-        <div style="display:flex; gap:10px; align-items:center;">
-          <span class="meta" id="emcMeta">—</span>
-          <button class="btn" type="button" data-close="emc">Close</button>
+  <aside class="drawer" id="emcDrawer" aria-label="E M C Widget">
+    <div class="drawerHeader">
+      <div class="drawerTitle"><span class="luxDot" aria-hidden="true"></span> E · M · C Timeline</div>
+      <button class="drawerClose" type="button" data-close="emc">Close</button>
+    </div>
+    <div class="drawerBody">
+      <section class="panel">
+        <div class="panelHead">
+          <div class="panelTitle"><span class="luxDot" aria-hidden="true"></span> E · M · C Timeline</div>
+          <div class="pill" id="emcMeta">—</div>
         </div>
-      </div>
-      <div class="drawerBody">
-        <div class="panel">
-          <div class="panelTop">
-            <span><span class="dot" aria-hidden="true"></span> Real-time series</span>
-          </div>
-          <div class="chartBox emcBox">
-            <canvas id="emcChart"></canvas>
-          </div>
+        <div class="chartBox">
+          <canvas id="emcChart"></canvas>
         </div>
-      </div>
+      </section>
     </div>
   </aside>
 
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script>
-/* =========================
-   1) Token boot (unchanged)
-========================= */
-(function bootToken(){
-  const qs = new URLSearchParams(location.search);
-  const t = qs.get('token');
-  if (t && t.length > 10) {
-    try { localStorage.setItem('acai_jwt', t); } catch {}
-    history.replaceState({}, '', location.pathname + location.hash);
+  <script>
+  /* =========================
+     ✅ LOGIC: unchanged core
+     ========================= */
+
+  // 1) token boot
+  (function bootToken(){
+    const qs = new URLSearchParams(location.search);
+    const t = qs.get('token');
+    if (t && t.length > 10) {
+      try { localStorage.setItem('acai_jwt', t); } catch {}
+      history.replaceState({}, '', location.pathname + location.hash);
+    }
+  })();
+
+  // 2) backend
+  const API = (localStorage.getItem('ACAI_API') || 'https://acai-backend.onrender.com').replace(/\/$/,'');
+
+  function authHeaders(){
+    let tok = null;
+    try { tok = localStorage.getItem('acai_jwt'); } catch {}
+    return tok ? { Authorization: 'Bearer ' + tok } : {};
   }
-})();
 
-/* =========================
-   2) Backend URL
-========================= */
-const API = (localStorage.getItem('ACAI_API') || 'https://acai-backend.onrender.com').replace(/\/$/,'');
-
-/* =========================
-   3) Auth headers
-========================= */
-function authHeaders(){
-  let tok = null;
-  try { tok = localStorage.getItem('acai_jwt'); } catch {}
-  return tok ? { Authorization: 'Bearer ' + tok } : {};
-}
-
-/* =========================
-   4) Requests
-========================= */
-async function apiPost(path, data){
-  const r = await fetch(API+path, {
-    method:'POST',
-    credentials:'include',
-    headers:{'Content-Type':'application/json', ...authHeaders()},
-    body: JSON.stringify(data||{})
-  });
-  if (r.status === 401) throw new Error('AUTH');
-  if (!r.ok) throw new Error(await r.text());
-  return r.json();
-}
-async function apiDelete(path){
-  const r = await fetch(API+path, {method:'DELETE', credentials:'include', headers: authHeaders()});
-  if (r.status === 401) throw new Error('AUTH');
-  if (!r.ok) throw new Error(await r.text());
-  return r.json();
-}
-async function apiGetRaw(path){
-  const r = await fetch(API+path, {credentials:'include', headers: authHeaders(), cache:'no-store'});
-  if (r.status === 401) throw new Error('AUTH');
-  return r;
-}
-
-function forceReauth(){ location.href = API + '/auth/refresh'; }
-
-/* =========================
-   5) DOM refs
-========================= */
-const feed = document.getElementById('feed');
-const tone = document.getElementById('tone');
-const form = document.getElementById('form');
-const msg  = document.getElementById('msg');
-const cleanBtn = document.getElementById('clean');
-
-const overlay = document.getElementById('overlay');
-const radarDrawer = document.getElementById('radarDrawer');
-const emcDrawer = document.getElementById('emcDrawer');
-const openRadarBtn = document.getElementById('openRadar');
-const openEMCBtn = document.getElementById('openEMC');
-
-const radarMeta = document.getElementById('radarMeta');
-const emcMeta = document.getElementById('emcMeta');
-const tagsBox = document.getElementById('emotionTags');
-
-const cidText = document.getElementById('cidText');
-const apiText = document.getElementById('apiText');
-const jwtText = document.getElementById('jwtText');
-const pingText = document.getElementById('pingText');
-
-const valText = document.getElementById('valText');
-const xText   = document.getElementById('xText');
-const topText = document.getElementById('topText');
-
-const valPct = document.getElementById('valPct');
-const xPct   = document.getElementById('xPct');
-const valBar = document.getElementById('valBar');
-const xBar   = document.getElementById('xBar');
-
-const eText = document.getElementById('eText');
-const mText = document.getElementById('mText');
-const cText = document.getElementById('cText');
-
-apiText.textContent = API;
-jwtText.textContent = (localStorage.getItem('acai_jwt') ? 'present' : 'missing');
-
-/* =========================
-   6) Drawer logic
-========================= */
-function closeAllDrawers(){
-  radarDrawer.classList.remove('open');
-  emcDrawer.classList.remove('open');
-  overlay.classList.remove('show');
-}
-function openDrawer(which){
-  closeAllDrawers();
-  (which === 'radar' ? radarDrawer : emcDrawer).classList.add('open');
-  overlay.classList.add('show');
-
-  if (which === 'radar'){ ensureRadar(); applyLuxChartColors(); }
-  if (which === 'emc'){ ensureEMC(); applyLuxChartColors(); }
-
-  // after transition: resize charts correctly (iOS/Chrome)
-  setTimeout(() => {
-    if (which === 'radar' && radarChart){ radarChart.resize(); radarChart.update('none'); }
-    if (which === 'emc' && emcChart){ emcChart.resize(); emcChart.update('none'); }
-  }, 260);
-}
-openRadarBtn.addEventListener('click', ()=> openDrawer('radar'));
-openEMCBtn.addEventListener('click', ()=> openDrawer('emc'));
-overlay.addEventListener('click', closeAllDrawers);
-document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeAllDrawers(); });
-document.querySelectorAll('[data-close]').forEach(btn=> btn.addEventListener('click', closeAllDrawers));
-
-/* =========================
-   7) Chat local mirror
-========================= */
-let messages = JSON.parse(localStorage.getItem('lumina_chat') || '[]');
-if (messages.length === 0) messages.push({role:'assistant', text:'ACAI: Greetings, conscious being. Synchronizing with your emotional field…'});
-renderFeed();
-
-msg.value = localStorage.getItem('lumina_draft') || '';
-msg.addEventListener('input', ()=> localStorage.setItem('lumina_draft', msg.value));
-
-function saveAndRender(){
-  localStorage.setItem('lumina_chat', JSON.stringify(messages));
-  renderFeed();
-}
-function renderFeed(){
-  feed.innerHTML = '';
-  for (const m of messages){
-    const el = document.createElement('div');
-    el.className = 'bubble ' + (m.role === 'user' ? 'me' : 'acai');
-    el.textContent = (m.role === 'user' ? 'You: ' : '') + m.text;
-    feed.appendChild(el);
+  async function apiPost(path, data){
+    const r = await fetch(API+path, {
+      method:'POST',
+      credentials:'include',
+      headers:{'Content-Type':'application/json', ...authHeaders()},
+      body: JSON.stringify(data||{})
+    });
+    if (r.status === 401) throw new Error('AUTH');
+    if (!r.ok) throw new Error(await r.text());
+    return r.json();
   }
-  feed.scrollTop = feed.scrollHeight;
-}
-function showTyping(){
-  const el = document.createElement('div');
-  el.className = 'bubble acai';
-  el.textContent = 'ACAI is typing…';
-  el.dataset.typing='1';
-  feed.appendChild(el);
-  feed.scrollTop = feed.scrollHeight;
-  return el;
-}
-function hideTyping(el){ if(el && el.dataset.typing==='1') el.remove(); }
 
-/* auto-grow */
-msg.addEventListener('input', ()=>{
-  msg.style.height = 'auto';
-  msg.style.height = Math.min(msg.scrollHeight, 160) + 'px';
-});
+  async function apiDelete(path){
+    const r = await fetch(API+path, { method:'DELETE', credentials:'include', headers: authHeaders() });
+    if (r.status === 401) throw new Error('AUTH');
+    if (!r.ok) throw new Error(await r.text());
+    return r.json();
+  }
 
-/* =========================
-   8) Theme helpers
-========================= */
-function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
-function clamp(n,a,b){ return Math.max(a, Math.min(b,n)); }
-const map=(v,inMin,inMax,outMin,outMax)=> outMin + (Math.max(inMin,Math.min(inMax,v))-inMin)*(outMax-outMin)/(inMax-inMin);
-function alphaColor(rgbLike, a){ return `color-mix(in oklab, ${rgbLike} ${Math.round(a*100)}%, transparent)`; }
+  function forceReauth(){ location.href = API + '/auth/refresh'; }
 
-/* Persist last tone color between reload until first /state arrives */
-(function restoreLastTheme(){
-  try{
-    const last = JSON.parse(localStorage.getItem('acai_last_state') || 'null');
-    if (last) themeFromState(last, {silent:true});
-  }catch{}
-})();
+  /* =========================
+     DOM
+     ========================= */
+  const feed = document.getElementById('feed');
+  const feedInner = document.getElementById('feedInner');
+  const tone = document.getElementById('tone');
+  const form = document.getElementById('form');
+  const msg  = document.getElementById('msg');
+  const cleanBtn = document.getElementById('clean');
 
-function themeFromState(s, opts={}){
-  const v = Number(s?.valence ?? 0);
-  const x = Number(s?.impulse_x_ema ?? 0);
+  /* Drawers */
+  const overlay = document.getElementById('overlay');
+  const radarDrawer = document.getElementById('radarDrawer');
+  const emcDrawer = document.getElementById('emcDrawer');
+  const openRadarBtn = document.getElementById('openRadar');
+  const openEMCBtn = document.getElementById('openEMC');
 
-  const hue = (v >= 0) ? map(v, 0, 1, 210, 150) : map(v, -1, 0, 10, 210);
-  const sat = map(Math.abs(x), 0, 0.5, 55, 92);
-  const lig = 54;
+  function closeAllDrawers(){
+    radarDrawer.classList.remove('open');
+    emcDrawer.classList.remove('open');
+    overlay.classList.remove('show');
+  }
 
-  const accent = `oklch(${lig}% ${sat/100} ${hue})`;
+  function afterOpenResize(which){
+    // wait drawer transition -> correct canvas sizing for Chart.js
+    setTimeout(() => {
+      if (which === 'radar' && radarChart){ radarChart.resize(); radarChart.update('none'); }
+      if (which === 'emc' && emcChart){ emcChart.resize(); emcChart.update('none'); }
+    }, 260);
+  }
 
-  let mode='NEUTRAL';
-  if (v > 0.28) mode='GROUND';
-  else if (v < -0.22) mode='STABILIZE';
-  else if (v < -0.08) mode='UPLIFT';
+  function openDrawer(which){
+    closeAllDrawers();
+    if (which === 'radar') radarDrawer.classList.add('open');
+    if (which === 'emc') emcDrawer.classList.add('open');
+    overlay.classList.add('show');
 
-  document.documentElement.style.setProperty('--accent', accent);
-  document.documentElement.style.setProperty('--ring', 'color-mix(in oklab, var(--accent) 60%, transparent)');
-  tone.textContent = mode;
+    if (which === 'radar'){ ensureRadar(); applyLuxChartColors(); }
+    if (which === 'emc'){ ensureEMC(); applyLuxChartColors(); }
+    afterOpenResize(which);
+  }
 
-  if (!opts.silent) applyLuxChartColors();
-}
+  openRadarBtn.addEventListener('click', ()=> openDrawer('radar'));
+  openEMCBtn.addEventListener('click', ()=> openDrawer('emc'));
+  overlay.addEventListener('click', closeAllDrawers);
+  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeAllDrawers(); });
+  document.querySelectorAll('[data-close]').forEach(btn=> btn.addEventListener('click', closeAllDrawers));
 
-/* =========================
-   9) Charts
-========================= */
-let radarChart = null;
-let emcChart = null;
+  /* =========================
+     LUX helpers
+     ========================= */
+  function cssVar(name){
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+  function clamp(n,a,b){ return Math.max(a, Math.min(b,n)); }
+  function alphaColor(rgbLike, a){
+    return `color-mix(in oklab, ${rgbLike} ${Math.round(a*100)}%, transparent)`;
+  }
 
-function ensureRadar(){
-  if (radarChart) return;
-  const radarCtx = document.getElementById('emotionRadar')?.getContext('2d');
-  if (!radarCtx) return;
+  /* =========================
+     Charts
+     ========================= */
+  const radarMeta = document.getElementById('radarMeta');
+  const emcMeta = document.getElementById('emcMeta');
+  const tagsBox = document.getElementById('emotionTags');
 
-  radarChart = new Chart(radarCtx, {
-    type: "radar",
-    data: {
-      labels: ["—","—","—","—","—"],
-      datasets: [{
-        label: "Top emotions",
-        data: [0,0,0,0,0],
-        fill: true,
-        borderWidth: 2,
-        pointRadius: 4,
-        pointHoverRadius: 6,
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: { duration: 420 },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: "rgba(8,10,14,.92)",
-          borderColor: "rgba(255,255,255,.10)",
-          borderWidth: 1,
-          titleColor: "#fff",
-          bodyColor: "#fff",
-          callbacks: {
-            label: (ctx) => `${ctx.label}: ${(Number(ctx.raw||0)*100).toFixed(0)}%`
+  let radarChart = null;
+  let emcChart = null;
+
+  function ensureRadar(){
+    if (radarChart) return;
+    const ctx = document.getElementById('emotionRadar')?.getContext('2d');
+    if (!ctx) return;
+
+    radarChart = new Chart(ctx, {
+      type: "radar",
+      data: {
+        labels: ["—","—","—","—","—"],
+        datasets: [{
+          label: "Top emotions",
+          data: [0,0,0,0,0],
+          fill: true,
+          borderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 360 },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: "rgba(8,10,14,.92)",
+            borderColor: "rgba(255,255,255,.10)",
+            borderWidth: 1,
+            titleColor: "#fff",
+            bodyColor: "#fff",
+            callbacks: {
+              label: (c) => `${c.label}: ${(Number(c.raw||0)*100).toFixed(0)}%`
+            }
+          }
+        },
+        scales: {
+          r: {
+            min: 0, max: 1,
+            grid: { color: "rgba(255,255,255,.06)" },
+            angleLines: { color: "rgba(255,255,255,.08)" },
+            pointLabels: { color: "rgba(255,255,255,.78)", font: { size: 12, weight: "600" } },
+            ticks: { display: false }
           }
         }
-      },
-      scales: {
-        r: {
-          min: 0, max: 1,
-          grid: { color: "rgba(255,255,255,.06)" },
-          angleLines: { color: "rgba(255,255,255,.08)" },
-          pointLabels: { color: "rgba(255,255,255,.78)", font: { size: 12, weight: "600" } },
-          ticks: { display: false }
-        }
       }
-    }
-  });
-}
+    });
+  }
 
-const MAX_POINTS = 120;
-const POLL_MS = 1500;
-let t0 = performance.now();
-let emcSeries = { t:[], E:[], M:[], C:[] };
+  const MAX_POINTS = 120;
+  const POLL_MS = 1500;
 
-function ensureEMC(){
-  if (emcChart) return;
-  const emcCtx = document.getElementById('emcChart')?.getContext('2d');
-  if (!emcCtx) return;
+  // ✅ Persist buffers across reload (so not zeros)
+  const KEY_STATE = "acai_last_state";
+  const KEY_EMC   = "acai_emc_series";
+  const KEY_T0    = "acai_emc_t0";
 
-  emcChart = new Chart(emcCtx, {
-    type: "line",
-    data: {
-      labels: [],
-      datasets: [
-        { label:"E", data: [], borderWidth: 2, pointRadius: 0, tension: 0.28 },
-        { label:"M", data: [], borderWidth: 2, pointRadius: 0, tension: 0.28 },
-        { label:"C", data: [], borderWidth: 2, pointRadius: 0, tension: 0.28 },
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: { duration: 220 },
-      plugins: {
-        legend: {
-          labels: { color: "rgba(255,255,255,.78)", boxWidth: 10, usePointStyle: true, pointStyle:"circle" }
+  let t0 = Number(sessionStorage.getItem(KEY_T0) || 0) || performance.now();
+  let emcSeries = (() => {
+    try { return JSON.parse(sessionStorage.getItem(KEY_EMC) || "null") || {t:[],E:[],M:[],C:[]}; }
+    catch { return {t:[],E:[],M:[],C:[]}; }
+  })();
+
+  function persistEMC(){
+    try {
+      sessionStorage.setItem(KEY_EMC, JSON.stringify(emcSeries));
+      sessionStorage.setItem(KEY_T0, String(t0));
+    } catch {}
+  }
+
+  function ensureEMC(){
+    if (emcChart) return;
+    const ctx = document.getElementById('emcChart')?.getContext('2d');
+    if (!ctx) return;
+
+    emcChart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: emcSeries.t || [],
+        datasets: [
+          { label:"E", data: emcSeries.E || [], borderWidth: 2, pointRadius: 0, tension: 0.28 },
+          { label:"M", data: emcSeries.M || [], borderWidth: 2, pointRadius: 0, tension: 0.28 },
+          { label:"C", data: emcSeries.C || [], borderWidth: 2, pointRadius: 0, tension: 0.28 },
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 220 },
+        plugins: {
+          legend: {
+            labels: { color: "rgba(255,255,255,.78)", boxWidth: 10, usePointStyle: true, pointStyle:"circle" }
+          },
+          tooltip: {
+            backgroundColor: "rgba(8,10,14,.92)",
+            borderColor: "rgba(255,255,255,.10)",
+            borderWidth: 1,
+            titleColor: "#fff",
+            bodyColor: "#fff",
+          }
         },
-        tooltip: {
-          backgroundColor: "rgba(8,10,14,.92)",
-          borderColor: "rgba(255,255,255,.10)",
-          borderWidth: 1,
-          titleColor: "#fff",
-          bodyColor: "#fff",
-        }
-      },
-      scales: {
-        x: { grid: { color: "rgba(255,255,255,.05)" }, ticks: { color: "rgba(255,255,255,.55)", maxTicksLimit: 6 } },
-        y: {
-          grid: { color: "rgba(255,255,255,.05)" },
-          ticks:{ color: "rgba(255,255,255,.55)" }
-          /* intentionally no hard clamp here (your backend can go to 5+) */
+        scales: {
+          x: { grid: { color: "rgba(255,255,255,.05)" }, ticks: { color: "rgba(255,255,255,.55)", maxTicksLimit: 6 } },
+          y: { grid: { color: "rgba(255,255,255,.05)" }, ticks: { color: "rgba(255,255,255,.55)" }, suggestedMin: -1.2, suggestedMax: 1.2 }
         }
       }
+    });
+  }
+
+  function applyLuxChartColors(){
+    const accent = cssVar('--accent') || '#7AE6FF';
+
+    if (radarChart){
+      radarChart.data.datasets[0].borderColor = accent;
+      radarChart.data.datasets[0].backgroundColor = alphaColor(accent, 0.14);
+      radarChart.data.datasets[0].pointBackgroundColor = accent;
+      radarChart.data.datasets[0].pointBorderColor = alphaColor(accent, 0.35);
+      radarChart.update('none');
     }
-  });
-}
 
-function applyLuxChartColors(){
-  const accent = cssVar('--accent') || '#7AE6FF';
-  if (radarChart){
-    radarChart.data.datasets[0].borderColor = accent;
-    radarChart.data.datasets[0].backgroundColor = alphaColor(accent, 0.12);
-    radarChart.data.datasets[0].pointBackgroundColor = accent;
-    radarChart.data.datasets[0].pointBorderColor = alphaColor(accent, 0.35);
-    radarChart.update('none');
-  }
-  if (emcChart){
-    const violet = cssVar('--violet') || '#B37AFF';
-    const amber  = cssVar('--amber')  || '#FFB76B';
-    emcChart.data.datasets[0].borderColor = accent;
-    emcChart.data.datasets[1].borderColor = violet;
-    emcChart.data.datasets[2].borderColor = amber;
-    emcChart.update('none');
-  }
-}
-
-function renderEmotionTags(top5){
-  if (!tagsBox) return;
-  tagsBox.innerHTML = "";
-  (top5||[]).slice(0,5).forEach(([name, prob])=>{
-    const el = document.createElement('span');
-    el.className = 'tag';
-    const p = clamp(Number(prob||0),0,1);
-    el.textContent = `${name} ${(p*100).toFixed(0)}%`;
-    tagsBox.appendChild(el);
-  });
-}
-
-function updateRadarFromState(s){
-  ensureRadar();
-  if (!radarChart) return;
-
-  const top5 = Array.isArray(s?.top5) ? s.top5 : [];
-  const labels = top5.map(x => x?.[0] ?? "—");
-  const values = top5.map(x => clamp(Number(x?.[1] ?? 0), 0, 1));
-  while (labels.length < 5) labels.push("—");
-  while (values.length < 5) values.push(0);
-
-  radarChart.data.labels = labels.slice(0,5);
-  radarChart.data.datasets[0].data = values.slice(0,5);
-
-  renderEmotionTags(top5);
-
-  const v = Number(s?.valence ?? 0);
-  const x = Number(s?.impulse_x_ema ?? 0);
-  if (radarMeta) radarMeta.textContent = `val=${v.toFixed(2)} · x=${x.toFixed(2)}`;
-
-  applyLuxChartColors();
-  radarChart.update();
-}
-
-function pushEMCPoint(s){
-  ensureEMC();
-  if (!emcChart) return;
-
-  const now = performance.now();
-  const t = (now - t0) / 1000.0;
-  const label = t < 60 ? `${t.toFixed(0)}s` : `${(t/60).toFixed(1)}m`;
-
-  const E = Number(s?.E ?? 0);
-  const M = Number(s?.M ?? 0);
-  const C = Number(s?.C ?? 0);
-
-  emcSeries.t.push(label);
-  emcSeries.E.push(E);
-  emcSeries.M.push(M);
-  emcSeries.C.push(C);
-
-  if (emcSeries.t.length > MAX_POINTS){
-    emcSeries.t.shift(); emcSeries.E.shift(); emcSeries.M.shift(); emcSeries.C.shift();
-  }
-
-  emcChart.data.labels = emcSeries.t;
-  emcChart.data.datasets[0].data = emcSeries.E;
-  emcChart.data.datasets[1].data = emcSeries.M;
-  emcChart.data.datasets[2].data = emcSeries.C;
-
-  if (emcMeta) emcMeta.textContent = `E=${E.toFixed(2)} · M=${M.toFixed(2)} · C=${C.toFixed(2)}`;
-
-  applyLuxChartColors();
-  emcChart.update();
-}
-
-/* =========================
-   10) CID persistence (FIX)
-========================= */
-let currentCid = null;
-
-function loadCid(){
-  try { return localStorage.getItem('acai_cid'); } catch { return null; }
-}
-function saveCid(cid){
-  try { localStorage.setItem('acai_cid', cid); } catch {}
-}
-function clearCid(){
-  try { localStorage.removeItem('acai_cid'); } catch {}
-}
-
-async function validateCid(cid){
-  // try to hit /state/{cid} - if ok => valid
-  const r = await apiGetRaw(`/state/${cid}`);
-  return r.ok;
-}
-
-async function ensureConversation(){
-  if (currentCid) return currentCid;
-
-  // 1) Try restore CID from localStorage
-  const restored = loadCid();
-  if (restored){
-    try{
-      const ok = await validateCid(restored);
-      if (ok){
-        currentCid = restored;
-        cidText.textContent = currentCid;
-        return currentCid;
-      } else {
-        clearCid();
-      }
-    }catch(e){
-      // network issues - still keep restored, but we'll fallback if needed
+    if (emcChart){
+      const violet = cssVar('--violet') || '#B37AFF';
+      const amber  = cssVar('--amber')  || '#FFB76B';
+      emcChart.data.datasets[0].borderColor = accent;
+      emcChart.data.datasets[1].borderColor = violet;
+      emcChart.data.datasets[2].borderColor = amber;
+      emcChart.update('none');
     }
   }
 
-  // 2) Create new conversation (same as your old logic)
-  try{
-    const res = await apiPost('/api/conversations', {});
-    currentCid = res.id;
-    saveCid(currentCid);
-    cidText.textContent = currentCid;
-    return currentCid;
-  } catch (e){
-    if (e.message === 'AUTH'){
-      const loginUrl = API + '/login?from=' + encodeURIComponent(location.href);
-      let w=null;
-      try { w = window.open(loginUrl, '_blank', 'noopener'); } catch(_){}
-      setTimeout(() => { if (!w || w.closed) location.href = loginUrl; }, 300);
-      alert('Please login via Telegram, then return here.');
-    } else {
-      console.error(e);
-      alert('Cannot create conversation.');
-    }
-    throw e;
-  }
-}
-
-/* =========================
-   11) State poll + rail update
-========================= */
-function setBar(el, pct){
-  el.style.width = `${clamp(pct,0,100).toFixed(0)}%`;
-}
-
-async function refreshState(){
-  try{
-    if (!currentCid) return;
-    const tStart = performance.now();
-    const r = await apiGetRaw(`/state/${currentCid}`);
-    const tEnd = performance.now();
-    pingText.textContent = `${Math.round(tEnd - tStart)}ms`;
-
-    if(!r.ok) return;
-    const j = await r.json();
-    const st = j?.last || {};
-
-    // persist last state so reload doesn't feel "reset"
-    try{ localStorage.setItem('acai_last_state', JSON.stringify(st)); }catch{}
-
-    // theme + charts
-    themeFromState(st);
-    updateRadarFromState(st);
-    pushEMCPoint(st);
-
-    // left rail numbers
-    const v = Number(st?.valence ?? 0);
-    const x = Number(st?.impulse_x_ema ?? 0);
-    const E = Number(st?.E ?? 0);
-    const M = Number(st?.M ?? 0);
-    const C = Number(st?.C ?? 0);
-
-    valText.textContent = v.toFixed(3);
-    xText.textContent = x.toFixed(3);
-    eText.textContent = E.toFixed(3);
-    mText.textContent = M.toFixed(3);
-    cText.textContent = C.toFixed(3);
-
-    const top = Array.isArray(st?.top5) && st.top5[0] ? st.top5[0][0] : '—';
-    topText.textContent = top;
-
-    // meters
-    // map valence [-1..1] => [0..100]
-    const vp = (clamp(v, -1, 1) + 1) * 50;
-    // map impulse [0..0.5] => [0..100]
-    const xp = clamp(Math.abs(x), 0, 0.5) / 0.5 * 100;
-
-    valPct.textContent = `${vp.toFixed(0)}%`;
-    xPct.textContent = `${xp.toFixed(0)}%`;
-    setBar(valBar, vp);
-    setBar(xBar, xp);
-
-  }catch(e){
-    if (e.message === 'AUTH') forceReauth();
-  }
-}
-
-/* =========================
-   12) Send
-========================= */
-form.addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  const text = msg.value.trim();
-  if(!text) return;
-
-  messages.push({role:'user', text});
-  saveAndRender();
-
-  const typingEl = showTyping();
-
-  try{
-    const cid = await ensureConversation();
-    const j = await apiPost(`/api/chat/${cid}`, { message: text });
-    hideTyping(typingEl);
-
-    messages.push({role:'assistant', text: j?.reply || '(no reply)'});
-    saveAndRender();
-
-    msg.value = '';
-    localStorage.removeItem('lumina_draft');
-    msg.style.height = '44px';
-
-    refreshState();
-
-  }catch(err){
-    hideTyping(typingEl);
-    if (err.message === 'AUTH') {
-      messages.push({role:'assistant', text:'Reauth…'});
-      saveAndRender();
-      forceReauth();
-    } else {
-      messages.push({role:'assistant', text:'Error: cannot reach backend.'});
-      saveAndRender();
-    }
-  }
-});
-
-/* =========================
-   13) CLEAN (also clears CID)
-========================= */
-cleanBtn.addEventListener('click', async () => {
-  if (!confirm("Delete local chat history? (You stay logged in)")) return;
-  try { await apiDelete('/api/memory'); } catch(e){
-    if (e.message==='AUTH') return forceReauth();
+  function renderEmotionTags(top5){
+    if (!tagsBox) return;
+    tagsBox.innerHTML = "";
+    (top5||[]).slice(0,5).forEach(([name, prob])=>{
+      const el = document.createElement('span');
+      el.className = 'tag';
+      const p = clamp(Number(prob||0),0,1);
+      el.textContent = `${name} ${(p*100).toFixed(0)}%`;
+      tagsBox.appendChild(el);
+    });
   }
 
-  try{
-    localStorage.removeItem('lumina_chat');
-    localStorage.removeItem('lumina_draft');
-  }catch{}
+  function updateRadarFromState(s){
+    ensureRadar();
+    if (!radarChart) return;
 
-  messages = [{ role:'assistant', text:'ACAI: Greetings, conscious being. Synchronizing with your emotional field…' }];
-  saveAndRender();
+    const top5 = Array.isArray(s?.top5) ? s.top5 : [];
+    const labels = top5.map(x => x?.[0] ?? "—");
+    const values = top5.map(x => clamp(Number(x?.[1] ?? 0), 0, 1));
 
-  // reset charts series only locally
-  emcSeries = { t:[], E:[], M:[], C:[] };
-  t0 = performance.now();
+    while (labels.length < 5) labels.push("—");
+    while (values.length < 5) values.push(0);
 
-  if (emcChart){
-    emcChart.data.labels = [];
-    emcChart.data.datasets.forEach(d => d.data = []);
-    emcChart.update();
-  }
-  if (radarChart){
-    radarChart.data.labels = ["—","—","—","—","—"];
-    radarChart.data.datasets[0].data = [0,0,0,0,0];
+    radarChart.data.labels = labels.slice(0,5);
+    radarChart.data.datasets[0].data = values.slice(0,5);
+
+    renderEmotionTags(top5);
+
+    const v = Number(s?.valence ?? 0);
+    const x = Number(s?.impulse_x_ema ?? 0);
+    if (radarMeta) radarMeta.textContent = `val=${v.toFixed(2)} · x=${x.toFixed(2)}`;
+
+    applyLuxChartColors();
     radarChart.update();
   }
-  if (tagsBox) tagsBox.innerHTML = "";
-  if (radarMeta) radarMeta.textContent = "—";
-  if (emcMeta) emcMeta.textContent = "—";
 
-  // IMPORTANT: if you want to keep backend conversation state, DON'T clear CID.
-  // If you want "fresh" backend state after CLEAN, uncomment:
-  // clearCid(); currentCid = null; cidText.textContent = '—';
-});
+  function pushEMCPoint(s){
+    ensureEMC();
+    if (!emcChart) return;
 
-/* =========================
-   14) Logout (unchanged)
-========================= */
-document.getElementById('logout')?.addEventListener('click', async (e)=>{
-  e.preventDefault();
-  e.stopPropagation();
+    const now = performance.now();
+    const t = (now - t0) / 1000.0;
+    const label = t < 60 ? `${t.toFixed(0)}s` : `${(t/60).toFixed(1)}m`;
 
-  if (!confirm('Вы действительно хотите выйти из аккаунта?')) return;
+    const E = Number(s?.E ?? 0);
+    const M = Number(s?.M ?? 0);
+    const C = Number(s?.C ?? 0);
 
-  try { await fetch(API + '/logout', { method:'POST', credentials:'include', headers: authHeaders() }); } catch(e){}
+    emcSeries.t.push(label);
+    emcSeries.E.push(E);
+    emcSeries.M.push(M);
+    emcSeries.C.push(C);
 
-  try {
-    localStorage.removeItem('acai_jwt');
-    localStorage.removeItem('lumina_chat');
-    localStorage.removeItem('lumina_draft');
-    localStorage.removeItem('acai_last_state');
-    clearCid();
-  } catch(e){}
+    if (emcSeries.t.length > MAX_POINTS){
+      emcSeries.t.shift(); emcSeries.E.shift(); emcSeries.M.shift(); emcSeries.C.shift();
+    }
 
-  try {
-    const u = new URL(location.href);
-    u.searchParams.delete('token');
-    history.replaceState({}, '', u.pathname + u.hash);
-  } catch(e){}
+    emcChart.data.labels = emcSeries.t;
+    emcChart.data.datasets[0].data = emcSeries.E;
+    emcChart.data.datasets[1].data = emcSeries.M;
+    emcChart.data.datasets[2].data = emcSeries.C;
 
-  location.href = 'https://acai-frontend.onrender.com';
-});
+    if (emcMeta) emcMeta.textContent = `E=${E.toFixed(2)} · M=${M.toFixed(2)} · C=${C.toFixed(2)}`;
 
-/* =========================
-   15) Init
-========================= */
-(async () => {
-  try { await ensureConversation(); } catch(_) {}
-  ensureRadar(); ensureEMC(); applyLuxChartColors();
-  refreshState();
-  setInterval(refreshState, POLL_MS);
-})();
-</script>
+    applyLuxChartColors();
+    emcChart.update();
 
-<!-- 🎵 LUMINA THEME MUSIC -->
-<audio id="luminaMusic" loop>
-  <source src="./lumina_theme.mp3" type="audio/mpeg">
-</audio>
-<script>
-const audio = document.getElementById('luminaMusic');
-document.addEventListener('click', () => {
-  try {
-    audio.volume = 0;
-    audio.play().catch(()=>{});
-    let v = 0;
-    const fade = setInterval(() => {
-      if (v < 0.35) { v += 0.01; audio.volume = v; } else { clearInterval(fade); }
-    }, 120);
-  } catch(e) {}
-}, { once:true });
-</script>
+    persistEMC();
+  }
 
+  /* =========================
+     Chat local mirror (same idea)
+     ========================= */
+  let messages = (() => {
+    try { return JSON.parse(localStorage.getItem('lumina_chat') || '[]'); } catch { return []; }
+  })();
+
+  if (messages.length === 0) {
+    messages.push({role:'assistant', text:'ACAI: Greetings, conscious being. Synchronizing with your emotional field…'});
+  }
+
+  function saveAndRender(){
+    localStorage.setItem('lumina_chat', JSON.stringify(messages));
+    renderFeed();
+  }
+
+  function renderFeed(){
+    feedInner.innerHTML = '';
+    for (const m of messages){
+      const el = document.createElement('div');
+      el.className = 'bubble ' + (m.role === 'user' ? 'me' : 'acai');
+      el.textContent = (m.role === 'user' ? 'You: ' : '') + m.text;
+      feedInner.appendChild(el);
+    }
+    feed.scrollTop = feed.scrollHeight;
+  }
+
+  function showTyping(){
+    const el = document.createElement('div');
+    el.className = 'bubble acai';
+    el.innerHTML = `<span class="typing">ACAI is typing <span class="dots"><i></i><i></i><i></i></span></span>`;
+    el.dataset.typing='1';
+    feedInner.appendChild(el);
+    feed.scrollTop = feed.scrollHeight;
+    return el;
+  }
+
+  function hideTyping(el){ if (el && el.dataset.typing==='1') el.remove(); }
+
+  // Draft
+  msg.value = localStorage.getItem('lumina_draft') || '';
+  msg.addEventListener('input', ()=> localStorage.setItem('lumina_draft', msg.value));
+
+  // Auto-grow
+  msg.addEventListener('input', ()=>{
+    msg.style.height = 'auto';
+    msg.style.height = Math.min(msg.scrollHeight, 180) + 'px';
+  });
+
+  renderFeed();
+
+  /* =========================
+     Theme from state (same logic)
+     ========================= */
+  const map=(v,inMin,inMax,outMin,outMax)=> outMin + (Math.max(inMin,Math.min(inMax,v))-inMin)*(outMax-outMin)/(inMax-inMin);
+
+  function themeFromState(s){
+    const v = Number(s?.valence ?? 0);
+    const x = Number(s?.impulse_x_ema ?? 0);
+    const hue = (v >= 0) ? map(v, 0, 1, 210, 150) : map(v, -1, 0, 10, 210);
+    const sat = map(Math.abs(x), 0, 0.5, 55, 92);
+    const lig = 54;
+    const accent = `oklch(${lig}% ${sat/100} ${hue})`;
+
+    let mode='NEUTRAL';
+    if (v > 0.28) mode='GROUND';
+    else if (v < -0.22) mode='STABILIZE';
+    else if (v < -0.08) mode='UPLIFT';
+
+    document.documentElement.style.setProperty('--accent', accent);
+    document.documentElement.style.setProperty('--ring', 'color-mix(in oklab, var(--accent) 60%, transparent)');
+    tone.textContent = mode;
+
+    applyLuxChartColors();
+  }
+
+  // ✅ Warm start from persisted last state (avoids neutral/zeros blink)
+  (function warmStart(){
+    try{
+      const st = JSON.parse(sessionStorage.getItem(KEY_STATE) || "null");
+      if (st) {
+        themeFromState(st);
+        updateRadarFromState(st);
+        // NOTE: EMC already restored from emcSeries at init
+        if (emcMeta){
+          const E = Number(st?.E ?? 0), M = Number(st?.M ?? 0), C = Number(st?.C ?? 0);
+          emcMeta.textContent = `E=${E.toFixed(2)} · M=${M.toFixed(2)} · C=${C.toFixed(2)}`;
+        }
+      }
+    } catch {}
+  })();
+
+  /* =========================
+     State poll + backend session
+     ========================= */
+  let currentCid = null;
+
+  async function ensureConversation(){
+    if (currentCid) return currentCid;
+    try{
+      const res = await apiPost('/api/conversations', {});
+      currentCid = res.id;
+      return currentCid;
+    } catch (e) {
+      if (e.message === 'AUTH') {
+        const loginUrl = API + '/login?from=' + encodeURIComponent(location.href);
+        let w = null;
+        try { w = window.open(loginUrl, '_blank', 'noopener'); } catch(_) {}
+        setTimeout(() => { if (!w || w.closed) location.href = loginUrl; }, 300);
+        alert('Please login via Telegram, then return here.');
+      } else {
+        console.error(e);
+        alert('Cannot create conversation.');
+      }
+      throw e;
+    }
+  }
+
+  async function refreshState(){
+    try{
+      if (!currentCid) return;
+      const r = await fetch(API + `/state/${currentCid}`, {
+        cache:'no-store',
+        credentials:'include',
+        headers: authHeaders()
+      });
+      if(!r.ok) return;
+
+      const j = await r.json();
+      const st = j?.last || {};
+
+      // persist last state
+      try { sessionStorage.setItem(KEY_STATE, JSON.stringify(st)); } catch {}
+
+      themeFromState(st);
+      updateRadarFromState(st);
+      pushEMCPoint(st);
+    }catch{}
+  }
+
+  /* Send */
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const text = msg.value.trim();
+    if(!text) return;
+
+    messages.push({role:'user', text});
+    saveAndRender();
+
+    const typingEl = showTyping();
+
+    try{
+      const cid = await ensureConversation();
+      const j = await apiPost(`/api/chat/${cid}`, { message: text });
+      hideTyping(typingEl);
+
+      messages.push({role:'assistant', text: j?.reply || '(no reply)'});
+      saveAndRender();
+
+      msg.value = '';
+      localStorage.removeItem('lumina_draft');
+      msg.style.height = '46px';
+
+      refreshState();
+    }catch(err){
+      hideTyping(typingEl);
+      if (err.message === 'AUTH') {
+        messages.push({role:'assistant', text:'Reauth…'});
+        saveAndRender();
+        forceReauth();
+      } else {
+        messages.push({role:'assistant', text:'Error: cannot reach backend.'});
+        saveAndRender();
+      }
+    }
+  });
+
+  /* CLEAN */
+  cleanBtn.addEventListener('click', async () => {
+    if (!confirm("Delete local chat history? (You stay logged in)")) return;
+
+    try { await apiDelete('/api/memory'); } catch(e){
+      if (e.message==='AUTH'){ return forceReauth(); }
+    }
+
+    try {
+      localStorage.removeItem('lumina_chat');
+      localStorage.removeItem('lumina_draft');
+      sessionStorage.removeItem(KEY_EMC);
+      sessionStorage.removeItem(KEY_STATE);
+      sessionStorage.removeItem(KEY_T0);
+    } catch {}
+
+    messages = [{ role:'assistant', text:'ACAI: Greetings, conscious being. Synchronizing with your emotional field…' }];
+    currentCid = null;
+
+    emcSeries = { t:[], E:[], M:[], C:[] };
+    t0 = performance.now();
+    persistEMC();
+
+    if (emcChart){
+      emcChart.data.labels = [];
+      emcChart.data.datasets.forEach(d => d.data = []);
+      emcChart.update();
+    }
+    if (radarChart){
+      radarChart.data.labels = ["—","—","—","—","—"];
+      radarChart.data.datasets[0].data = [0,0,0,0,0];
+      radarChart.update();
+    }
+    if (tagsBox) tagsBox.innerHTML = "";
+    if (radarMeta) radarMeta.textContent = "—";
+    if (emcMeta) emcMeta.textContent = "—";
+
+    saveAndRender();
+  });
+
+  /* Init */
+  (async () => {
+    // charts init (state может апдейтить их хоть сразу)
+    ensureRadar();
+    ensureEMC();
+    applyLuxChartColors();
+
+    try { await ensureConversation(); } catch(_) {}
+    refreshState();
+    setInterval(refreshState, POLL_MS);
+  })();
+  </script>
+
+  <!-- Music (unchanged idea) -->
+  <audio id="luminaMusic" loop>
+    <source src="./lumina_theme.mp3" type="audio/mpeg">
+  </audio>
+  <script>
+    const audio = document.getElementById('luminaMusic');
+    document.addEventListener('click', () => {
+      try {
+        audio.volume = 0;
+        audio.play().catch(()=>{});
+        let v = 0;
+        const fade = setInterval(() => {
+          if (v < 0.35) { v += 0.01; audio.volume = v; } else { clearInterval(fade); }
+        }, 120);
+      } catch(e) {}
+    }, { once:true });
+  </script>
+
+  <!-- Logout (same logic) -->
+  <script>
+    document.getElementById('logout')?.addEventListener('click', async (e)=>{
+      e.preventDefault(); e.stopPropagation();
+      if (!confirm('Вы деиствительно хотите выити из аккаунта?')) return;
+
+      try { await fetch(API + '/logout', { method:'POST', credentials:'include', headers: authHeaders() }); } catch(e){}
+
+      try {
+        localStorage.removeItem('acai_jwt');
+        localStorage.removeItem('lumina_chat');
+        localStorage.removeItem('lumina_draft');
+        sessionStorage.clear?.();
+      } catch(e){}
+
+      try {
+        const u = new URL(location.href);
+        u.searchParams.delete('token');
+        history.replaceState({}, '', u.pathname + u.hash);
+      } catch(e){}
+
+      location.href = 'https://acai-frontend.onrender.com';
+    });
+  </script>
 </body>
 </html>
