@@ -3,136 +3,481 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Affective Realms: LUMINA — Prologue Chat</title>
+<meta name="color-scheme" content="dark" />
+<title>ACAI — LUMINA Console</title>
+
+<!-- Premium typography (CDN). If you want полностью оффлайн — уберём. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
   :root{
-    --bg:#07090f; --card:#0b0f18; --ink:#e9eef8; --muted:#9aa3af;
-    --accent:#7AE6FF; --ring:#7AE6FF60; --violet:#B37AFF; --amber:#FFB76B;
+    /* Core */
+    --bg0:#05060a;
+    --bg1:#07090f;
+    --card0:#0b0f18;
+    --card1:#0a0e15;
+    --ink:#e9eef8;
+    --muted:#9aa3af;
+
+    /* Accent (dynamic by state) */
+    --accent:#7AE6FF;
+    --ring: color-mix(in oklab, var(--accent) 60%, transparent);
+    --violet:#B37AFF;
+    --amber:#FFB76B;
+
+    /* Visual materials */
+    --stroke: color-mix(in oklab, var(--accent) 18%, #1a2230);
+    --strokeStrong: color-mix(in oklab, var(--accent) 28%, #1a2230);
+    --glass: color-mix(in oklab, #0b0f18 86%, transparent);
+    --glass2: color-mix(in oklab, #0b0f18 72%, transparent);
+
+    /* Background */
     --bg-image:url("./bg_lumina.jpg");
   }
-  *{box-sizing:border-box} html,body{height:100%}
-  body{margin:0;color:var(--ink);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,"SF Pro Text",Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial;background:#000;overflow:hidden;}
-  .bg{position:fixed;inset:0;z-index:-3;background-image:var(--bg-image);background-size:cover;background-position:center;background-repeat:no-repeat;filter:saturate(1.05) brightness(.95);}
-  .bg::after{content:"";position:absolute;inset:0;background:
-      radial-gradient(1300px 800px at 80% -10%, color-mix(in oklab, var(--accent) 16%, #000) 0%, transparent 62%),
-      radial-gradient(1000px 600px at -10% 90%, color-mix(in oklab, var(--accent) 10%, #000) 0%, transparent 56%),
-      linear-gradient(180deg,#07090fbb 0%, #06080dcc 100%);}
-  .grid{position:fixed;inset:0;pointer-events:none;opacity:.07;z-index:-2;background-image:
-      radial-gradient(1px 1px at 10% 20%, #fff 50%, transparent 51%),
-      radial-gradient(1px 1px at 70% 60%, #fff 50%, transparent 51%),
-      radial-gradient(1px 1px at 30% 80%, #fff 50%, transparent 51%);
-    background-size:26px 26px,32px 32px,42px 42px;mix-blend-mode:screen;}
-  .bar{height:68px;padding:0 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid color-mix(in oklab, var(--accent) 18%, transparent);
-    background:linear-gradient(180deg, color-mix(in oklab, var(--accent) 9%, #000) 0%, transparent 100%);position:sticky;top:0;z-index:5;backdrop-filter:blur(6px);}
-  .spark{width:28px;height:28px;border-radius:10px;background:conic-gradient(from 210deg, var(--accent), var(--violet), var(--amber), var(--accent));
-    box-shadow:0 0 0 2px #0a0d14,0 0 22px var(--ring) inset,0 8px 22px #0008;animation:orbit 8s linear infinite;}
-  @keyframes orbit{from{filter:hue-rotate(0)}to{filter:hue-rotate(360deg)}}
-  .title{font-weight:900;letter-spacing:.18em;text-transform:uppercase;background:linear-gradient(90deg,var(--accent),var(--violet),var(--amber));
-    -webkit-background-clip:text;background-clip:text;color:transparent;background-size:200% 100%;animation:titleFlow 9s linear infinite;text-shadow:0 0 18px #7ae6ff22;}
-  @keyframes titleFlow{from{background-position:0% 50%}to{background-position:200% 50%}}
-  .tone{margin-left:auto;padding:7px 12px;border-radius:999px;background:color-mix(in oklab, var(--accent) 18%, #000);
-    color:color-mix(in oklab, var(--ink) 80%, var(--accent));border:1px solid color-mix(in oklab, var(--accent) 40%, transparent);
-    font-size:12px;text-transform:uppercase;letter-spacing:.16em;opacity:.9;}
 
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    color:var(--ink);
+    font:15px/1.55 Inter, ui-sans-serif, system-ui, -apple-system, "SF Pro Text", Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial;
+    background: #000;
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+
+  /* Premium background stack */
+  .bg{
+    position:fixed; inset:0; z-index:-5;
+    background-image: var(--bg-image);
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    filter:saturate(1.05) brightness(.92);
+    transform: translateZ(0);
+  }
+  .bg::after{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      radial-gradient(1200px 720px at 80% -10%, color-mix(in oklab, var(--accent) 18%, #000) 0%, transparent 62%),
+      radial-gradient(980px 640px at -10% 90%, color-mix(in oklab, var(--accent) 12%, #000) 0%, transparent 58%),
+      linear-gradient(180deg, #04050ad9 0%, #05060ae6 100%);
+  }
+  .noise{
+    position:fixed; inset:0; z-index:-4; pointer-events:none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.32'/%3E%3C/svg%3E");
+    mix-blend-mode:overlay;
+    opacity:.22;
+  }
+  .stars{
+    position:fixed; inset:0; z-index:-3; pointer-events:none; opacity:.08;
+    background-image:
+      radial-gradient(1px 1px at 12% 20%, #fff 50%, transparent 51%),
+      radial-gradient(1px 1px at 72% 62%, #fff 50%, transparent 51%),
+      radial-gradient(1px 1px at 38% 84%, #fff 50%, transparent 51%),
+      radial-gradient(1px 1px at 88% 18%, #fff 50%, transparent 51%);
+    background-size:28px 28px, 34px 34px, 46px 46px, 54px 54px;
+    mix-blend-mode:screen;
+  }
+
+  /* Top bar */
+  .bar{
+    height:68px;
+    padding:0 16px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    border-bottom:1px solid color-mix(in oklab, var(--accent) 16%, transparent);
+    background:
+      linear-gradient(180deg, color-mix(in oklab, var(--accent) 8%, #000) 0%, transparent 100%);
+    position:sticky; top:0; z-index:50;
+    backdrop-filter: blur(10px);
+  }
+  .brandMark{
+    width:34px;height:34px;border-radius:14px;
+    background: conic-gradient(from 210deg, var(--accent), var(--violet), var(--amber), var(--accent));
+    box-shadow:
+      0 0 0 2px #0a0d14,
+      0 0 26px var(--ring) inset,
+      0 10px 26px #0008;
+    animation: hue 10s linear infinite;
+  }
+  @keyframes hue{from{filter:hue-rotate(0)}to{filter:hue-rotate(360deg)}}
+
+  .brandText{
+    display:flex; flex-direction:column; gap:2px;
+    min-width: 160px;
+  }
+  .brandText .top{
+    font-family: "Space Grotesk", Inter, system-ui;
+    font-weight: 800;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    font-size:12px;
+    background: linear-gradient(90deg, var(--accent), var(--violet), var(--amber));
+    -webkit-background-clip:text; background-clip:text;
+    color:transparent;
+    background-size:200% 100%;
+    animation: titleFlow 9s linear infinite;
+    text-shadow:0 0 18px #7ae6ff22;
+  }
+  .brandText .sub{
+    font-size:12px;
+    color: color-mix(in oklab, var(--ink) 62%, var(--accent));
+    opacity:.9;
+    letter-spacing:.02em;
+  }
+  @keyframes titleFlow{from{background-position:0% 50%}to{background-position:200% 50%}}
+
+  .right{
+    margin-left:auto;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+
+  .tonePill{
+    padding:7px 12px;
+    border-radius:999px;
+    background: color-mix(in oklab, var(--accent) 14%, #000);
+    color: color-mix(in oklab, var(--ink) 80%, var(--accent));
+    border:1px solid color-mix(in oklab, var(--accent) 34%, transparent);
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.16em;
+    opacity:.92;
+    box-shadow: 0 10px 26px #0006;
+  }
+
+  .btn{
+    --mx:50%;--my:50%;
+    position:relative;
+    display:inline-flex;align-items:center;justify-content:center;
+    padding:0 16px;
+    height:40px;
+    border-radius:14px;
+    border:none;
+    cursor:pointer;
+    background:linear-gradient(135deg,var(--accent),var(--amber));
+    box-shadow:0 14px 30px rgba(122,230,255,.30),0 2px 10px rgba(0,0,0,.55);
+    color:#051014;
+    font-weight:900;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    overflow:hidden;
+    transform-style:preserve-3d;
+    transition:transform .16s, box-shadow .16s, filter .16s;
+    user-select:none;
+  }
+  .btn .label{
+    position:relative; z-index:2;
+    background: linear-gradient(90deg,#fff,#d8f7ff,#fff);
+    background-size:200% 100%;
+    -webkit-background-clip:text;background-clip:text;
+    color:transparent;
+    animation:shineText 3.2s linear infinite;
+  }
+  @keyframes shineText{from{background-position:0% 50%}to{background-position:200% 50%}}
+  .btn::after{
+    content:"";
+    position:absolute; inset:-1px;
+    pointer-events:none;
+    background: radial-gradient(160px 160px at var(--mx) var(--my), rgba(255,255,255,.18), rgba(255,255,255,0) 62%);
+    opacity:0; transition:opacity .18s;
+  }
+  .btn:hover{ box-shadow:0 18px 42px rgba(122,230,255,.40),0 6px 18px rgba(0,0,0,.55) }
+  .btn:hover::after{opacity:1}
+  .btn:active{ transform: scale(.985) }
+
+  .btn.ghost{
+    background: linear-gradient(180deg, #0e131b, #0a0e14);
+    color: var(--ink);
+    border: 1px solid var(--strokeStrong);
+    box-shadow: 0 2px 10px rgba(0,0,0,.52), inset 0 0 0 999px #ffffff08;
+  }
+  .btn.ghost .label{
+    background:none; color:var(--ink);
+    -webkit-background-clip:initial;background-clip:initial;
+    animation:none; opacity:.88;
+  }
+  .btn.sm{ height:36px; border-radius:12px; letter-spacing:.12em; font-size:12px; padding:0 12px; }
+
+  /* Layout */
   .wrap{
     height:calc(100% - 68px);
     display:grid;
-    grid-template-rows:1fr auto;
+    grid-template-rows: 1fr auto;
     grid-template-columns: 1fr;
     grid-template-areas:
       "feed"
       "composer";
   }
 
-  .feed{grid-area:feed; overflow:auto;padding:24px 16px 8px 16px;scroll-behavior:smooth; -webkit-overflow-scrolling:touch;}
-  .bubble{max-width:min(860px,92vw);margin:10px 0;padding:14px 16px;white-space:pre-wrap;border-radius:14px;position:relative;
-    background:linear-gradient(180deg,#0b0f18 0%,#0a0e15 100%);border:1px solid color-mix(in oklab, var(--accent) 18%, #1a2230);
-    box-shadow:0 1px 0 #0008,inset 0 0 0 999px #ffffff03,0 8px 24px #000a;}
-  .bubble::after{content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;background:
-    linear-gradient(120deg,transparent 30%,rgba(255,255,255,.12) 50%,transparent 70%);mix-blend-mode:screen;opacity:0;transition:opacity .25s;}
-  .bubble:hover::after{opacity:.65}
-  .acai{border-color:color-mix(in oklab, var(--accent) 25%, #1a2230)}
-  .me{margin-left:auto;background:linear-gradient(180deg,color-mix(in oklab, var(--accent) 26%, #0b0f18),#0a0e15);
-    border-color:color-mix(in oklab, var(--accent) 34%, #1a2230);}
-  .typing{display:inline-flex;align-items:center;gap:8px;color:color-mix(in oklab, var(--ink) 75%, var(--accent));font-weight:600;letter-spacing:.06em;}
-  .dots{display:inline-flex;gap:4px;}
-  .dots i{width:6px;height:6px;border-radius:50%;background:color-mix(in oklab, var(--accent) 90%, #fff);opacity:.4;animation:blink 1.2s infinite;}
-  .dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
-  @keyframes blink{0%,100%{opacity:.2;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}
+  /* Feed */
+  .feed{
+    grid-area:feed;
+    overflow:auto;
+    padding:22px 16px 10px;
+    scroll-behavior:smooth;
+    -webkit-overflow-scrolling:touch;
+  }
+  .feedInner{
+    max-width: 980px;
+    margin: 0 auto;
+  }
 
+  /* Bubbles premium */
+  .bubble{
+    max-width:min(900px,92vw);
+    margin:10px 0;
+    padding:14px 16px;
+    white-space:pre-wrap;
+    border-radius:16px;
+    position:relative;
+
+    background:
+      linear-gradient(180deg, var(--glass) 0%, color-mix(in oklab, #0a0e15 88%, transparent) 100%);
+    border:1px solid var(--stroke);
+    box-shadow:
+      0 1px 0 #0008,
+      inset 0 0 0 999px #ffffff03,
+      0 14px 34px #000b;
+    backdrop-filter: blur(10px);
+  }
+  .bubble::before{
+    content:"";
+    position:absolute; inset:-1px;
+    border-radius:inherit;
+    pointer-events:none;
+    background:
+      radial-gradient(420px 220px at 12% 12%, color-mix(in oklab, var(--accent) 18%, transparent) 0%, transparent 65%),
+      radial-gradient(380px 240px at 92% 20%, color-mix(in oklab, var(--violet) 12%, transparent) 0%, transparent 60%);
+    opacity:.35;
+    filter: blur(8px);
+  }
+  .bubble::after{
+    content:"";
+    position:absolute; inset:-1px;
+    border-radius:inherit;
+    pointer-events:none;
+    background: linear-gradient(120deg, transparent 34%, rgba(255,255,255,.12) 50%, transparent 68%);
+    mix-blend-mode:screen;
+    opacity:0;
+    transition:opacity .25s;
+  }
+  .bubble:hover::after{ opacity:.55 }
+
+  .acai{ border-color: color-mix(in oklab, var(--accent) 24%, #1a2230); }
+  .me{
+    margin-left:auto;
+    background:
+      linear-gradient(180deg, color-mix(in oklab, var(--accent) 18%, var(--glass2)) 0%, color-mix(in oklab, #0a0e15 90%, transparent) 100%);
+    border-color: color-mix(in oklab, var(--accent) 34%, #1a2230);
+  }
+
+  /* Typing */
+  .typing{ display:inline-flex; align-items:center; gap:8px;
+    color: color-mix(in oklab, var(--ink) 74%, var(--accent));
+    font-weight:600; letter-spacing:.06em;
+  }
+  .dots{ display:inline-flex; gap:4px; }
+  .dots i{
+    width:6px;height:6px;border-radius:50%;
+    background: color-mix(in oklab, var(--accent) 90%, #fff);
+    opacity:.35;
+    animation: blink 1.2s infinite;
+  }
+  .dots i:nth-child(2){animation-delay:.2s}
+  .dots i:nth-child(3){animation-delay:.4s}
+  @keyframes blink{0%,100%{opacity:.22;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}
+
+  /* Composer premium */
   .composer{
     grid-area: composer;
-    padding:12px 16px 18px;display:flex;gap:10px;border-top:1px solid #0a0d12;background:linear-gradient(180deg,#0a0f16,#080b11);
+    padding: 12px 16px 16px;
+    border-top:1px solid #0a0d12;
+    background: linear-gradient(180deg, rgba(10,15,22,.92), rgba(8,11,17,.96));
+    backdrop-filter: blur(10px);
   }
-  .in{flex:1;background:#0e131b;border:1px solid #151c26;color:var(--ink);border-radius:12px;padding:12px 14px;outline:none;
-    transition:border-color .2s,box-shadow .2s;resize:none;min-height:46px;max-height:180px;line-height:1.4;}
-  .in:focus{border-color:color-mix(in oklab, var(--accent) 38%, #222);box-shadow:0 0 0 3px color-mix(in oklab, var(--accent) 22%, transparent);}
-  .btn{--mx:50%;--my:50%;position:relative;display:inline-flex;align-items:center;justify-content:center;padding:0 18px;min-width:118px;border-radius:12px;border:none;cursor:pointer;
-    background:linear-gradient(135deg,var(--accent),var(--amber));box-shadow:0 12px 26px rgba(122,230,255,.35),0 2px 8px rgba(0,0,0,.45);
-    color:#051014;font-weight:900;letter-spacing:.14em;text-transform:uppercase;overflow:hidden;transform-style:preserve-3d;transition:transform .18s,box-shadow .18s,filter .18s;}
-  .btn .label{position:relative;z-index:2;background:linear-gradient(90deg,#fff,#d8f7ff,#fff);background-size:200% 100%;
-    -webkit-background-clip:text;background-clip:text;color:transparent;animation:shineText 3.2s linear infinite;}
-  @keyframes shineText{from{background-position:0% 50%}to{background-position:200% 50%}}
-  .btn::after{content:"";position:absolute;inset:-1px;pointer-events:none;background:radial-gradient(140px 140px at var(--mx) var(--my),rgba(255,255,255,.2),rgba(255,255,255,0) 60%);opacity:0;transition:opacity .18s;}
-  .btn::before{content:"";position:absolute;left:-40%;top:-220%;width:180%;height:420%;transform:rotate(22deg);background:linear-gradient(to right,transparent 46%,rgba(255,255,255,.16) 50%,transparent 54%);
-    mix-blend-mode:screen;opacity:0;transition:opacity .25s;}
-  .btn:hover{box-shadow:0 18px 42px rgba(122,230,255,.45),0 6px 18px rgba(0,0,0,.55)}
-  .btn:hover::after{opacity:1}.btn:hover::before{opacity:1;animation:sweep 1.4s ease}
-  @keyframes sweep{from{left:-40%}to{left:60%}}.btn:active{transform:perspective(700px) translateZ(0) scale(.985)}
-  .btn.ghost{background:linear-gradient(180deg,#0e131b,#0a0e14);color:var(--ink);border:1px solid color-mix(in oklab,var(--accent)28%,#1a2230);box-shadow:0 2px 10px rgba(0,0,0,.45),inset 0 0 0 999px #ffffff08;transition:filter .2s ease,box-shadow .2s ease;}
-  .btn.ghost .label{background:none;color:var(--ink);-webkit-background-clip:initial;background-clip:initial;animation:none;opacity:.9;}
-  .btn.ghost:hover{filter:brightness(1.08);box-shadow:0 4px 18px rgba(122,230,255,.2);}
-  .btn.sm{min-width:92px;padding:8px 12px;height:36px;font-size:12px;letter-spacing:.12em;}
+  .composerInner{
+    max-width: 980px;
+    margin: 0 auto;
+    display:flex;
+    gap:10px;
+    align-items:flex-end;
+  }
+  .in{
+    flex:1;
+    background: color-mix(in oklab, #0e131b 92%, transparent);
+    border:1px solid #151c26;
+    color:var(--ink);
+    border-radius:16px;
+    padding:12px 14px;
+    outline:none;
+    transition:border-color .2s, box-shadow .2s;
+    resize:none;
+    min-height:46px;
+    max-height:180px;
+    line-height:1.45;
+    box-shadow: inset 0 0 0 999px #ffffff05;
+  }
+  .in:focus{
+    border-color: color-mix(in oklab, var(--accent) 38%, #222);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 18%, transparent);
+  }
 
-  /* ===== LUX PANEL styles (kept) ===== */
+  /* Edge widgets */
+  .edgeBtns{
+    position:fixed;
+    right:12px;
+    top: calc(68px + 14px);
+    z-index: 60;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    pointer-events:auto;
+  }
+  .edgeBtn{
+    width:46px;height:46px;
+    border-radius:16px;
+    border:1px solid var(--strokeStrong);
+    background: linear-gradient(180deg, #0e131b, #0a0e14);
+    box-shadow: 0 12px 28px rgba(0,0,0,.58), inset 0 0 0 999px #ffffff08;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    color: color-mix(in oklab, var(--ink) 78%, var(--accent));
+    transition: transform .16s ease, filter .16s ease, box-shadow .16s ease;
+  }
+  .edgeBtn:hover{ filter:brightness(1.08); box-shadow: 0 16px 36px rgba(0,0,0,.64), 0 0 26px var(--ring); }
+  .edgeBtn:active{ transform: scale(.985); }
+  .edgeBtn svg{ width:22px;height:22px; opacity:.92; }
+
+  /* Overlay */
+  .overlay{
+    position:fixed; inset:0;
+    background: rgba(0,0,0,.46);
+    backdrop-filter: blur(10px);
+    z-index: 70;
+    opacity:0;
+    pointer-events:none;
+    transition: opacity .18s ease;
+  }
+  .overlay.show{ opacity:1; pointer-events:auto; }
+
+  /* Drawer (strict) */
+  .drawer{
+    position:fixed;
+    top:68px;
+    right:0;
+    height: calc(100% - 68px);
+    width: min(460px, 92vw);
+    z-index: 80;
+    transform: translateX(104%);
+    transition: transform .22s cubic-bezier(.2,.9,.2,1);
+    padding: 14px 12px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    overflow:hidden; /* critical */
+  }
+  .drawer.open{ transform: translateX(0); }
+
+  .drawerHeader{
+    flex: 0 0 auto;
+    display:flex;
+    gap:10px;
+    align-items:center;
+    justify-content:space-between;
+    padding: 10px 10px;
+    border-radius: 16px;
+    background: linear-gradient(180deg, var(--glass) 0%, color-mix(in oklab, #0a0e15 88%, transparent) 100%);
+    border: 1px solid var(--stroke);
+    box-shadow: 0 12px 30px #000a, inset 0 0 0 999px #ffffff03;
+    backdrop-filter: blur(12px);
+  }
+  .drawerTitle{
+    display:flex; align-items:center; gap:10px;
+    font-family: "Space Grotesk", Inter, system-ui;
+    font-weight: 700;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    font-size: 12px;
+    color: color-mix(in oklab, var(--ink) 82%, var(--accent));
+  }
+
+  .luxDot{
+    width:10px;height:10px;border-radius:50%;
+    background: var(--accent);
+    box-shadow: 0 0 18px var(--ring), 0 0 40px color-mix(in oklab, var(--accent) 25%, transparent);
+    animation: breathe 2.4s ease-in-out infinite;
+  }
+  @keyframes breathe{
+    0%,100%{ transform: scale(.92); opacity:.72; }
+    50%{ transform: scale(1.14); opacity:1; }
+  }
+
+  .drawerClose{
+    border:none;
+    background: linear-gradient(180deg,#0e131b,#0a0e14);
+    color: var(--ink);
+    border:1px solid var(--strokeStrong);
+    border-radius: 12px;
+    height:34px;
+    padding:0 12px;
+    cursor:pointer;
+    box-shadow: 0 10px 22px rgba(0,0,0,.42), inset 0 0 0 999px #ffffff06;
+  }
+
+  .drawerBody{
+    flex: 1 1 auto;
+    min-height: 0; /* iOS critical */
+    overflow:auto;
+    -webkit-overflow-scrolling:touch;
+    padding-right: 2px;
+  }
+
+  /* Panel */
   .panel{
     position:relative;
     padding:14px 14px 12px;
     border-radius: 18px;
-    background: linear-gradient(180deg,#0b0f18 0%,#0a0e15 100%);
-    border: 1px solid color-mix(in oklab, var(--accent) 18%, #1a2230);
+    background: linear-gradient(180deg, var(--glass) 0%, color-mix(in oklab, #0a0e15 88%, transparent) 100%);
+    border: 1px solid var(--stroke);
     box-shadow: 0 1px 0 #0008, inset 0 0 0 999px #ffffff03, 0 14px 36px #000b;
     overflow:hidden;
+    backdrop-filter: blur(12px);
   }
   .panel::before{
     content:"";
     position:absolute; inset:-2px;
     border-radius: inherit;
-    background: radial-gradient(420px 260px at 30% 20%, color-mix(in oklab, var(--accent) 26%, transparent) 0%, transparent 60%),
-                radial-gradient(320px 240px at 80% 30%, color-mix(in oklab, var(--violet) 18%, transparent) 0%, transparent 62%);
-    filter: blur(10px);
-    opacity:.9;
+    background:
+      radial-gradient(420px 260px at 30% 20%, color-mix(in oklab, var(--accent) 22%, transparent) 0%, transparent 60%),
+      radial-gradient(320px 240px at 80% 30%, color-mix(in oklab, var(--violet) 14%, transparent) 0%, transparent 62%);
+    filter: blur(12px);
+    opacity:.8;
     pointer-events:none;
   }
-  .panel::after{
-    content:"";
-    position:absolute; inset:-40% -40%;
-    background: linear-gradient(120deg, transparent 40%, rgba(255,255,255,.10) 50%, transparent 60%);
-    transform: rotate(10deg);
-    opacity:.0;
-    pointer-events:none;
-  }
-  .panel:hover::after{ opacity:.55; animation: shimmer 1.3s ease; }
-  @keyframes shimmer { from{ transform: translateX(-18%) rotate(10deg);} to{ transform: translateX(18%) rotate(10deg);} }
 
   .panelHead{
     position:relative;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
+    display:flex; align-items:center; justify-content:space-between;
     margin-bottom:10px;
     gap:10px;
   }
   .panelTitle{
-    font-weight: 900;
+    font-family:"Space Grotesk", Inter, system-ui;
+    font-weight: 700;
     letter-spacing: .14em;
     text-transform: uppercase;
     font-size: 12px;
     color: color-mix(in oklab, var(--ink) 82%, var(--accent));
     opacity:.95;
-    display:flex;
-    align-items:center;
-    gap:10px;
+    display:flex; align-items:center; gap:10px;
   }
   .pill{
     position:relative;
@@ -146,16 +491,7 @@
     white-space:nowrap;
     box-shadow: 0 8px 20px rgba(0,0,0,.35);
   }
-  .luxDot{
-    width:10px;height:10px;border-radius:50%;
-    background: var(--accent);
-    box-shadow: 0 0 18px var(--ring), 0 0 40px color-mix(in oklab, var(--accent) 25%, transparent);
-    animation: breathe 2.4s ease-in-out infinite;
-  }
-  @keyframes breathe{
-    0%,100%{ transform: scale(.92); filter:saturate(1.0); opacity:.75; }
-    50%{ transform: scale(1.14); filter:saturate(1.2); opacity:1; }
-  }
+
   .miniLegend{
     position:relative;
     display:flex; flex-wrap:wrap; gap:6px;
@@ -171,142 +507,61 @@
     opacity:.92;
   }
 
-  /* ===== EDGE WIDGETS ===== */
-  .edgeBtns{
-    position:fixed;
-    right:10px;
-    top: calc(68px + 14px);
-    z-index: 20;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    pointer-events:auto;
-  }
-  .edgeBtn{
-    width:44px;height:44px;
-    border-radius:14px;
-    border:1px solid color-mix(in oklab, var(--accent) 28%, #1a2230);
-    background: linear-gradient(180deg,#0e131b,#0a0e14);
-    box-shadow: 0 10px 26px rgba(0,0,0,.55), inset 0 0 0 999px #ffffff07;
-    cursor:pointer;
-    display:flex;align-items:center;justify-content:center;
-    color: color-mix(in oklab, var(--ink) 78%, var(--accent));
-    transition: transform .16s ease, filter .16s ease, box-shadow .16s ease;
-    user-select:none;
-  }
-  .edgeBtn:hover{ filter:brightness(1.08); box-shadow: 0 14px 34px rgba(0,0,0,.62), 0 0 22px var(--ring); }
-  .edgeBtn:active{ transform:scale(.98); }
-  .edgeBtn svg{ width:22px;height:22px; opacity:.92; }
-
-  .overlay{
-    position:fixed; inset:0;
-    background: rgba(0,0,0,.45);
-    backdrop-filter: blur(6px);
-    z-index: 30;
-    opacity:0;
-    pointer-events:none;
-    transition: opacity .18s ease;
-  }
-  .overlay.show{ opacity:1; pointer-events:auto; }
-
-  /* ✅ FIX: drawer has strict height + flex column */
-  .drawer{
-    position:fixed;
-    top:68px;
-    right:0;
-    height: calc(100% - 68px);
-    width: min(420px, 92vw);
-    z-index: 40;
-    transform: translateX(104%);
-    transition: transform .22s cubic-bezier(.2,.9,.2,1);
-    padding: 14px 12px 14px 12px;
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-    overflow:hidden; /* ✅ prevents “infinite” */
-  }
-  .drawer.open{ transform: translateX(0); }
-
-  .drawerHeader{
-    flex: 0 0 auto;
-    display:flex;
-    gap:10px;
-    align-items:center;
-    justify-content:space-between;
-    padding: 10px 10px;
-    border-radius: 16px;
-    background: linear-gradient(180deg,#0b0f18 0%,#0a0e15 100%);
-    border: 1px solid color-mix(in oklab, var(--accent) 18%, #1a2230);
-    box-shadow: 0 10px 30px #000a, inset 0 0 0 999px #ffffff03;
-  }
-  .drawerTitle{
-    display:flex;align-items:center;gap:10px;
-    font-weight:900;
-    letter-spacing:.14em;
-    text-transform:uppercase;
-    font-size:12px;
-    color: color-mix(in oklab, var(--ink) 82%, var(--accent));
-  }
-  .drawerClose{
-    border:none;
-    background: linear-gradient(180deg,#0e131b,#0a0e14);
-    color: var(--ink);
-    border:1px solid color-mix(in oklab, var(--accent) 22%, #1a2230);
-    border-radius: 12px;
-    height:34px;
-    padding:0 12px;
-    cursor:pointer;
-    box-shadow: 0 10px 22px rgba(0,0,0,.42), inset 0 0 0 999px #ffffff06;
-  }
-
-  /* ✅ FIX: body takes remaining height */
-  .drawerBody{
-    flex: 1 1 auto;
-    min-height: 0;                 /* ✅ crucial for iOS flex scroll */
-    overflow:auto;
-    -webkit-overflow-scrolling:touch;
-    padding-right: 2px;
-  }
-
-  /* ✅ FIX: chart boxes have strict height, canvas fills them */
+  /* Chart boxes strict sizes */
   .chartBox{
-    height: min(46vh, 420px);
+    height: min(46vh, 440px);
     width: 100%;
     position: relative;
   }
-  .chartBox.radarBox{ height: min(44vh, 380px); }
-  .chartBox.emcBox{ height: min(46vh, 420px); }
+  .chartBox.radarBox{ height: min(44vh, 390px); }
 
   canvas{ display:block; width:100% !important; height:100% !important; }
 
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior:auto !important; }
+  }
+
   @media (max-width: 520px){
-    .edgeBtns{ top: calc(68px + 10px); right: 8px; }
+    body{ overflow:hidden; }
+    .edgeBtns{ right: 10px; top: calc(68px + 10px); }
     .drawer{ width: 94vw; }
-    .chartBox{ height: min(52vh, 420px); }
-    .chartBox.radarBox{ height: min(48vh, 380px); }
+    .chartBox{ height: min(52vh, 440px); }
+    .chartBox.radarBox{ height: min(48vh, 390px); }
   }
 </style>
 </head>
+
 <body>
   <div class="bg" aria-hidden="true"></div>
-  <div class="grid" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="stars" aria-hidden="true"></div>
 
   <header class="bar">
-    <div class="spark" aria-hidden="true"></div>
-    <div class="title">AFFECTIVE CONTEXTUAL AI</div>
-    <div class="tone" id="tone">NEUTRAL</div>
-    <button class="btn ghost sm" id="logout" type="button">
-      <span class="label">LOGOUT</span>
-    </button>
+    <div class="brandMark" aria-hidden="true"></div>
+
+    <div class="brandText">
+      <div class="top">AFFECTIVE CONTEXTUAL AI</div>
+      <div class="sub">LUMINA Console · Affective Cybernetics</div>
+    </div>
+
+    <div class="right">
+      <div class="tonePill" id="tone">NEUTRAL</div>
+      <button class="btn ghost sm" id="logout" type="button"><span class="label">LOGOUT</span></button>
+    </div>
   </header>
 
   <section class="wrap">
-    <div class="feed" id="feed"></div>
+    <div class="feed" id="feed">
+      <div class="feedInner" id="feedInner"></div>
+    </div>
 
     <form class="composer" id="form" novalidate>
-      <textarea id="msg" class="in" placeholder="Type a message…" rows="1"></textarea>
-      <button class="btn" id="send" type="submit"><span class="label">SEND</span></button>
-      <button class="btn ghost" id="clean" type="button"><span class="label">CLEAN</span></button>
+      <div class="composerInner">
+        <textarea id="msg" class="in" placeholder="Type a message…" rows="1"></textarea>
+        <button class="btn" id="send" type="submit"><span class="label">SEND</span></button>
+        <button class="btn ghost" id="clean" type="button"><span class="label">CLEAN</span></button>
+      </div>
     </form>
   </section>
 
@@ -367,511 +622,600 @@
           <div class="panelTitle"><span class="luxDot" aria-hidden="true"></span> E · M · C Timeline</div>
           <div class="pill" id="emcMeta">—</div>
         </div>
-        <div class="chartBox emcBox">
+        <div class="chartBox">
           <canvas id="emcChart"></canvas>
         </div>
       </section>
     </div>
   </aside>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script>
-(function bootToken(){
-  const qs = new URLSearchParams(location.search);
-  const t = qs.get('token');
-  if (t && t.length > 10) {
-    try { localStorage.setItem('acai_jwt', t); } catch {}
-    history.replaceState({}, '', location.pathname + location.hash);
+  <script>
+  /* =========================
+     ✅ LOGIC: unchanged core
+     ========================= */
+
+  // 1) token boot
+  (function bootToken(){
+    const qs = new URLSearchParams(location.search);
+    const t = qs.get('token');
+    if (t && t.length > 10) {
+      try { localStorage.setItem('acai_jwt', t); } catch {}
+      history.replaceState({}, '', location.pathname + location.hash);
+    }
+  })();
+
+  // 2) backend
+  const API = (localStorage.getItem('ACAI_API') || 'https://acai-backend.onrender.com').replace(/\/$/,'');
+
+  function authHeaders(){
+    let tok = null;
+    try { tok = localStorage.getItem('acai_jwt'); } catch {}
+    return tok ? { Authorization: 'Bearer ' + tok } : {};
   }
-})();
 
-const API = (localStorage.getItem('ACAI_API') || 'https://acai-backend.onrender.com').replace(/\/$/,'');
+  async function apiPost(path, data){
+    const r = await fetch(API+path, {
+      method:'POST',
+      credentials:'include',
+      headers:{'Content-Type':'application/json', ...authHeaders()},
+      body: JSON.stringify(data||{})
+    });
+    if (r.status === 401) throw new Error('AUTH');
+    if (!r.ok) throw new Error(await r.text());
+    return r.json();
+  }
 
-function authHeaders(){
-  let tok = null;
-  try { tok = localStorage.getItem('acai_jwt'); } catch {}
-  return tok ? { Authorization: 'Bearer ' + tok } : {};
-}
+  async function apiDelete(path){
+    const r = await fetch(API+path, { method:'DELETE', credentials:'include', headers: authHeaders() });
+    if (r.status === 401) throw new Error('AUTH');
+    if (!r.ok) throw new Error(await r.text());
+    return r.json();
+  }
 
-async function apiPost(path, data){
-  const r = await fetch(API+path, {
-    method:'POST',
-    credentials:'include',
-    headers:{'Content-Type':'application/json', ...authHeaders()},
-    body: JSON.stringify(data||{})
-  });
-  if (r.status === 401) throw new Error('AUTH');
-  if (!r.ok) throw new Error(await r.text());
-  return r.json();
-}
-async function apiDelete(path){
-  const r = await fetch(API+path, {method:'DELETE', credentials:'include', headers: authHeaders()});
-  if (r.status === 401) throw new Error('AUTH');
-  if (!r.ok) throw new Error(await r.text());
-  return r.json();
-}
+  function forceReauth(){ location.href = API + '/auth/refresh'; }
 
-function forceReauth() { location.href = API + '/auth/refresh'; }
+  /* =========================
+     DOM
+     ========================= */
+  const feed = document.getElementById('feed');
+  const feedInner = document.getElementById('feedInner');
+  const tone = document.getElementById('tone');
+  const form = document.getElementById('form');
+  const msg  = document.getElementById('msg');
+  const cleanBtn = document.getElementById('clean');
 
-/* DOM */
-const feed = document.getElementById('feed');
-const tone = document.getElementById('tone');
-const form = document.getElementById('form');
-const msg  = document.getElementById('msg');
-const cleanBtn = document.getElementById('clean');
+  /* Drawers */
+  const overlay = document.getElementById('overlay');
+  const radarDrawer = document.getElementById('radarDrawer');
+  const emcDrawer = document.getElementById('emcDrawer');
+  const openRadarBtn = document.getElementById('openRadar');
+  const openEMCBtn = document.getElementById('openEMC');
 
-/* Drawers */
-const overlay = document.getElementById('overlay');
-const radarDrawer = document.getElementById('radarDrawer');
-const emcDrawer = document.getElementById('emcDrawer');
-const openRadarBtn = document.getElementById('openRadar');
-const openEMCBtn = document.getElementById('openEMC');
+  function closeAllDrawers(){
+    radarDrawer.classList.remove('open');
+    emcDrawer.classList.remove('open');
+    overlay.classList.remove('show');
+  }
 
-function closeAllDrawers(){
-  radarDrawer.classList.remove('open');
-  emcDrawer.classList.remove('open');
-  overlay.classList.remove('show');
-}
-function afterOpenResize(which){
-  // wait for drawer transition so canvas gets real size
-  setTimeout(() => {
-    if (which === 'radar' && radarChart){
-      radarChart.resize();
-      radarChart.update('none');
-    }
-    if (which === 'emc' && emcChart){
-      emcChart.resize();
-      emcChart.update('none');
-    }
-  }, 260);
-}
-function openDrawer(which){
-  closeAllDrawers();
-  if (which === 'radar') radarDrawer.classList.add('open');
-  if (which === 'emc') emcDrawer.classList.add('open');
-  overlay.classList.add('show');
+  function afterOpenResize(which){
+    // wait drawer transition -> correct canvas sizing for Chart.js
+    setTimeout(() => {
+      if (which === 'radar' && radarChart){ radarChart.resize(); radarChart.update('none'); }
+      if (which === 'emc' && emcChart){ emcChart.resize(); emcChart.update('none'); }
+    }, 260);
+  }
 
-  if (which === 'radar'){ ensureRadar(); applyLuxChartColors(); }
-  if (which === 'emc'){ ensureEMC(); applyLuxChartColors(); }
-  afterOpenResize(which);
-}
-openRadarBtn.addEventListener('click', ()=> openDrawer('radar'));
-openEMCBtn.addEventListener('click', ()=> openDrawer('emc'));
+  function openDrawer(which){
+    closeAllDrawers();
+    if (which === 'radar') radarDrawer.classList.add('open');
+    if (which === 'emc') emcDrawer.classList.add('open');
+    overlay.classList.add('show');
 
-overlay.addEventListener('click', closeAllDrawers);
-document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeAllDrawers(); });
-document.querySelectorAll('[data-close]').forEach(btn=>{
-  btn.addEventListener('click', closeAllDrawers);
-});
+    if (which === 'radar'){ ensureRadar(); applyLuxChartColors(); }
+    if (which === 'emc'){ ensureEMC(); applyLuxChartColors(); }
+    afterOpenResize(which);
+  }
 
-/* LUX DOM */
-const radarMeta = document.getElementById('radarMeta');
-const emcMeta = document.getElementById('emcMeta');
-const tagsBox = document.getElementById('emotionTags');
+  openRadarBtn.addEventListener('click', ()=> openDrawer('radar'));
+  openEMCBtn.addEventListener('click', ()=> openDrawer('emc'));
+  overlay.addEventListener('click', closeAllDrawers);
+  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeAllDrawers(); });
+  document.querySelectorAll('[data-close]').forEach(btn=> btn.addEventListener('click', closeAllDrawers));
 
-let radarChart = null;
-let emcChart = null;
+  /* =========================
+     LUX helpers
+     ========================= */
+  function cssVar(name){
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+  function clamp(n,a,b){ return Math.max(a, Math.min(b,n)); }
+  function alphaColor(rgbLike, a){
+    return `color-mix(in oklab, ${rgbLike} ${Math.round(a*100)}%, transparent)`;
+  }
 
-function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
-function clamp(n,a,b){ return Math.max(a, Math.min(b,n)); }
-function alphaColor(rgbLike, a){ return `color-mix(in oklab, ${rgbLike} ${Math.round(a*100)}%, transparent)`; }
+  /* =========================
+     Charts
+     ========================= */
+  const radarMeta = document.getElementById('radarMeta');
+  const emcMeta = document.getElementById('emcMeta');
+  const tagsBox = document.getElementById('emotionTags');
 
-/* Charts */
-function ensureRadar(){
-  if (radarChart) return;
-  const radarCtx = document.getElementById('emotionRadar')?.getContext('2d');
-  if (!radarCtx) return;
+  let radarChart = null;
+  let emcChart = null;
 
-  radarChart = new Chart(radarCtx, {
-    type: "radar",
-    data: {
-      labels: ["—","—","—","—","—"],
-      datasets: [{
-        label: "Top emotions",
-        data: [0,0,0,0,0],
-        fill: true,
-        borderWidth: 2,
-        pointRadius: 4,
-        pointHoverRadius: 6,
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: { duration: 420 },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: "rgba(8,10,14,.92)",
-          borderColor: "rgba(255,255,255,.10)",
-          borderWidth: 1,
-          titleColor: "#fff",
-          bodyColor: "#fff",
-          callbacks: {
-            label: (ctx) => `${ctx.label}: ${(Number(ctx.raw||0)*100).toFixed(0)}%`
+  function ensureRadar(){
+    if (radarChart) return;
+    const ctx = document.getElementById('emotionRadar')?.getContext('2d');
+    if (!ctx) return;
+
+    radarChart = new Chart(ctx, {
+      type: "radar",
+      data: {
+        labels: ["—","—","—","—","—"],
+        datasets: [{
+          label: "Top emotions",
+          data: [0,0,0,0,0],
+          fill: true,
+          borderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 360 },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: "rgba(8,10,14,.92)",
+            borderColor: "rgba(255,255,255,.10)",
+            borderWidth: 1,
+            titleColor: "#fff",
+            bodyColor: "#fff",
+            callbacks: {
+              label: (c) => `${c.label}: ${(Number(c.raw||0)*100).toFixed(0)}%`
+            }
+          }
+        },
+        scales: {
+          r: {
+            min: 0, max: 1,
+            grid: { color: "rgba(255,255,255,.06)" },
+            angleLines: { color: "rgba(255,255,255,.08)" },
+            pointLabels: { color: "rgba(255,255,255,.78)", font: { size: 12, weight: "600" } },
+            ticks: { display: false }
           }
         }
-      },
-      scales: {
-        r: {
-          min: 0, max: 1,
-          grid: { color: "rgba(255,255,255,.06)" },
-          angleLines: { color: "rgba(255,255,255,.08)" },
-          pointLabels: { color: "rgba(255,255,255,.78)", font: { size: 12, weight: "600" } },
-          ticks: { display: false }
-        }
       }
-    }
-  });
-}
-
-const MAX_POINTS = 120;
-const POLL_MS = 1500;
-let t0 = performance.now();
-let emcSeries = { t:[], E:[], M:[], C:[] };
-
-function ensureEMC(){
-  if (emcChart) return;
-  const emcCtx = document.getElementById('emcChart')?.getContext('2d');
-  if (!emcCtx) return;
-
-  emcChart = new Chart(emcCtx, {
-    type: "line",
-    data: {
-      labels: [],
-      datasets: [
-        { label:"E", data: [], borderWidth: 2, pointRadius: 0, tension: 0.28 },
-        { label:"M", data: [], borderWidth: 2, pointRadius: 0, tension: 0.28 },
-        { label:"C", data: [], borderWidth: 2, pointRadius: 0, tension: 0.28 },
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: { duration: 250 },
-      plugins: {
-        legend: { labels: { color: "rgba(255,255,255,.78)", boxWidth: 10, usePointStyle: true, pointStyle:"circle" } },
-        tooltip: {
-          backgroundColor: "rgba(8,10,14,.92)",
-          borderColor: "rgba(255,255,255,.10)",
-          borderWidth: 1,
-          titleColor: "#fff",
-          bodyColor: "#fff",
-        }
-      },
-      scales: {
-        x: { grid: { color: "rgba(255,255,255,.05)" }, ticks: { color: "rgba(255,255,255,.55)", maxTicksLimit: 6 } },
-        y: { grid: { color: "rgba(255,255,255,.05)" }, ticks: { color: "rgba(255,255,255,.55)" }, suggestedMin: -1.2, suggestedMax:  1.2 }
-      }
-    }
-  });
-}
-
-function applyLuxChartColors(){
-  const accent = cssVar('--accent') || '#7AE6FF';
-  if (radarChart){
-    radarChart.data.datasets[0].borderColor = accent;
-    radarChart.data.datasets[0].backgroundColor = alphaColor(accent, 0.14);
-    radarChart.data.datasets[0].pointBackgroundColor = accent;
-    radarChart.data.datasets[0].pointBorderColor = alphaColor(accent, 0.35);
-    radarChart.update('none');
-  }
-  if (emcChart){
-    const violet = cssVar('--violet') || '#B37AFF';
-    const amber  = cssVar('--amber')  || '#FFB76B';
-    emcChart.data.datasets[0].borderColor = accent;
-    emcChart.data.datasets[1].borderColor = violet;
-    emcChart.data.datasets[2].borderColor = amber;
-    emcChart.update('none');
-  }
-}
-
-function renderEmotionTags(top5){
-  if (!tagsBox) return;
-  tagsBox.innerHTML = "";
-  (top5||[]).slice(0,5).forEach(([name, prob])=>{
-    const el = document.createElement('span');
-    el.className = 'tag';
-    const p = clamp(Number(prob||0),0,1);
-    el.textContent = `${name} ${(p*100).toFixed(0)}%`;
-    tagsBox.appendChild(el);
-  });
-}
-
-function updateRadarFromState(s){
-  ensureRadar();
-  if (!radarChart) return;
-
-  const top5 = Array.isArray(s?.top5) ? s.top5 : [];
-  const labels = top5.map(x => x?.[0] ?? "—");
-  const values = top5.map(x => clamp(Number(x?.[1] ?? 0), 0, 1));
-  while (labels.length < 5) labels.push("—");
-  while (values.length < 5) values.push(0);
-
-  radarChart.data.labels = labels.slice(0,5);
-  radarChart.data.datasets[0].data = values.slice(0,5);
-
-  renderEmotionTags(top5);
-
-  const v = Number(s?.valence ?? 0);
-  const x = Number(s?.impulse_x_ema ?? 0);
-  if (radarMeta) radarMeta.textContent = `val=${v.toFixed(2)} · x=${x.toFixed(2)}`;
-
-  applyLuxChartColors();
-  radarChart.update();
-}
-
-function pushEMCPoint(s){
-  ensureEMC();
-  if (!emcChart) return;
-
-  const now = performance.now();
-  const t = (now - t0) / 1000.0;
-  const label = t < 60 ? `${t.toFixed(0)}s` : `${(t/60).toFixed(1)}m`;
-
-  const E = Number(s?.E ?? 0);
-  const M = Number(s?.M ?? 0);
-  const C = Number(s?.C ?? 0);
-
-  emcSeries.t.push(label);
-  emcSeries.E.push(E);
-  emcSeries.M.push(M);
-  emcSeries.C.push(C);
-
-  if (emcSeries.t.length > MAX_POINTS){
-    emcSeries.t.shift(); emcSeries.E.shift(); emcSeries.M.shift(); emcSeries.C.shift();
-  }
-
-  emcChart.data.labels = emcSeries.t;
-  emcChart.data.datasets[0].data = emcSeries.E;
-  emcChart.data.datasets[1].data = emcSeries.M;
-  emcChart.data.datasets[2].data = emcSeries.C;
-
-  if (emcMeta) emcMeta.textContent = `E=${E.toFixed(2)} · M=${M.toFixed(2)} · C=${C.toFixed(2)}`;
-
-  applyLuxChartColors();
-  emcChart.update();
-}
-
-/* Chat local mirror */
-let messages = JSON.parse(localStorage.getItem('lumina_chat') || '[]');
-if (messages.length === 0) messages.push({role:'assistant', text:'ACAI: Greetings, conscious being. Synchronizing with your emotional field…'});
-renderFeed();
-
-msg.value = localStorage.getItem('lumina_draft') || '';
-msg.addEventListener('input', ()=> localStorage.setItem('lumina_draft', msg.value));
-
-function saveAndRender(){ localStorage.setItem('lumina_chat', JSON.stringify(messages)); renderFeed(); }
-function renderFeed(){
-  feed.innerHTML = '';
-  for (const m of messages){
-    const el = document.createElement('div');
-    el.className = 'bubble ' + (m.role === 'user' ? 'me' : 'acai');
-    el.textContent = (m.role === 'user' ? 'You: ' : '') + m.text;
-    feed.appendChild(el);
-  }
-  feed.scrollTop = feed.scrollHeight;
-}
-function showTyping(){
-  const el = document.createElement('div');
-  el.className = 'bubble acai';
-  el.innerHTML = `<span class="typing">ACAI is typing <span class="dots"><i></i><i></i><i></i></span></span>`;
-  el.dataset.typing='1';
-  feed.appendChild(el);
-  feed.scrollTop = feed.scrollHeight;
-  return el;
-}
-function hideTyping(el){ if(el && el.dataset.typing==='1') el.remove(); }
-
-/* Theme from state */
-const map=(v,inMin,inMax,outMin,outMax)=> outMin + (Math.max(inMin,Math.min(inMax,v))-inMin)*(outMax-outMin)/(inMax-inMin);
-function themeFromState(s){
-  const v = Number(s?.valence ?? 0);
-  const x = Number(s?.impulse_x_ema ?? 0);
-  const hue = (v >= 0) ? map(v, 0, 1, 210, 150) : map(v, -1, 0, 10, 210);
-  const sat = map(Math.abs(x), 0, 0.5, 55, 92);
-  const lig = 54;
-  const accent = `oklch(${lig}% ${sat/100} ${hue})`;
-  let mode='NEUTRAL';
-  if(v>0.28) mode='GROUND'; else if(v<-0.22) mode='STABILIZE'; else if(v<-0.08) mode='UPLIFT';
-  document.documentElement.style.setProperty('--accent', accent);
-  document.documentElement.style.setProperty('--ring','color-mix(in oklab, var(--accent) 60%, transparent)');
-  tone.textContent=mode;
-  applyLuxChartColors();
-}
-
-/* State poll */
-let currentCid = null;
-
-async function refreshState(){
-  try{
-    if (!currentCid) return;
-    const r = await fetch(API + `/state/${currentCid}`, {
-      cache:'no-store',
-      credentials:'include',
-      headers: authHeaders()
     });
-    if(!r.ok) return;
-    const j=await r.json();
-    const st = j?.last || {};
-    themeFromState(st);
-    updateRadarFromState(st);
-    pushEMCPoint(st);
-  }catch{}
-}
+  }
 
-async function ensureConversation(){
-  if (currentCid) return currentCid;
-  try{
-    const res = await apiPost('/api/conversations', {});
-    currentCid = res.id;
-    return currentCid;
-  } catch (e) {
-    if (e.message === 'AUTH') {
-      const loginUrl = API + '/login?from=' + encodeURIComponent(location.href);
-      let w = null;
-      try { w = window.open(loginUrl, '_blank', 'noopener'); } catch(_) {}
-      setTimeout(() => { if (!w || w.closed) location.href = loginUrl; }, 300);
-      alert('Please login via Telegram, then return here.');
-    } else {
-      console.error(e);
-      alert('Cannot create conversation.');
+  const MAX_POINTS = 120;
+  const POLL_MS = 1500;
+
+  // ✅ Persist buffers across reload (so not zeros)
+  const KEY_STATE = "acai_last_state";
+  const KEY_EMC   = "acai_emc_series";
+  const KEY_T0    = "acai_emc_t0";
+
+  let t0 = Number(sessionStorage.getItem(KEY_T0) || 0) || performance.now();
+  let emcSeries = (() => {
+    try { return JSON.parse(sessionStorage.getItem(KEY_EMC) || "null") || {t:[],E:[],M:[],C:[]}; }
+    catch { return {t:[],E:[],M:[],C:[]}; }
+  })();
+
+  function persistEMC(){
+    try {
+      sessionStorage.setItem(KEY_EMC, JSON.stringify(emcSeries));
+      sessionStorage.setItem(KEY_T0, String(t0));
+    } catch {}
+  }
+
+  function ensureEMC(){
+    if (emcChart) return;
+    const ctx = document.getElementById('emcChart')?.getContext('2d');
+    if (!ctx) return;
+
+    emcChart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: emcSeries.t || [],
+        datasets: [
+          { label:"E", data: emcSeries.E || [], borderWidth: 2, pointRadius: 0, tension: 0.28 },
+          { label:"M", data: emcSeries.M || [], borderWidth: 2, pointRadius: 0, tension: 0.28 },
+          { label:"C", data: emcSeries.C || [], borderWidth: 2, pointRadius: 0, tension: 0.28 },
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 220 },
+        plugins: {
+          legend: {
+            labels: { color: "rgba(255,255,255,.78)", boxWidth: 10, usePointStyle: true, pointStyle:"circle" }
+          },
+          tooltip: {
+            backgroundColor: "rgba(8,10,14,.92)",
+            borderColor: "rgba(255,255,255,.10)",
+            borderWidth: 1,
+            titleColor: "#fff",
+            bodyColor: "#fff",
+          }
+        },
+        scales: {
+          x: { grid: { color: "rgba(255,255,255,.05)" }, ticks: { color: "rgba(255,255,255,.55)", maxTicksLimit: 6 } },
+          y: { grid: { color: "rgba(255,255,255,.05)" }, ticks: { color: "rgba(255,255,255,.55)" }, suggestedMin: -1.2, suggestedMax: 1.2 }
+        }
+      }
+    });
+  }
+
+  function applyLuxChartColors(){
+    const accent = cssVar('--accent') || '#7AE6FF';
+
+    if (radarChart){
+      radarChart.data.datasets[0].borderColor = accent;
+      radarChart.data.datasets[0].backgroundColor = alphaColor(accent, 0.14);
+      radarChart.data.datasets[0].pointBackgroundColor = accent;
+      radarChart.data.datasets[0].pointBorderColor = alphaColor(accent, 0.35);
+      radarChart.update('none');
     }
-    throw e;
-  }
-}
 
-/* Send */
-form.addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  const text = msg.value.trim();
-  if(!text) return;
-
-  messages.push({role:'user', text});
-  saveAndRender();
-
-  const typingEl = showTyping();
-
-  try{
-    const cid = await ensureConversation();
-    const j = await apiPost(`/api/chat/${cid}`, { message: text });
-    hideTyping(typingEl);
-
-    messages.push({role:'assistant', text: j?.reply || '(no reply)'});
-    saveAndRender();
-
-    msg.value = '';
-    localStorage.removeItem('lumina_draft');
-    msg.style.height = '46px';
-
-    refreshState();
-
-  }catch(err){
-    hideTyping(typingEl);
-    if (err.message === 'AUTH') {
-      messages.push({role:'assistant', text:'Reauth…'});
-      saveAndRender();
-      forceReauth();
-    } else {
-      messages.push({role:'assistant', text:'Error: cannot reach backend.'});
-      saveAndRender();
+    if (emcChart){
+      const violet = cssVar('--violet') || '#B37AFF';
+      const amber  = cssVar('--amber')  || '#FFB76B';
+      emcChart.data.datasets[0].borderColor = accent;
+      emcChart.data.datasets[1].borderColor = violet;
+      emcChart.data.datasets[2].borderColor = amber;
+      emcChart.update('none');
     }
   }
-});
 
-msg.addEventListener('input', ()=>{
-  msg.style.height = 'auto';
-  msg.style.height = Math.min(msg.scrollHeight, 180) + 'px';
-});
-
-/* CLEAN */
-cleanBtn.addEventListener('click', async () => {
-  if (!confirm("Delete local chat history? (You stay logged in)")) return;
-  try { await apiDelete('/api/memory'); } catch(e){
-    if (e.message==='AUTH'){ return forceReauth(); }
+  function renderEmotionTags(top5){
+    if (!tagsBox) return;
+    tagsBox.innerHTML = "";
+    (top5||[]).slice(0,5).forEach(([name, prob])=>{
+      const el = document.createElement('span');
+      el.className = 'tag';
+      const p = clamp(Number(prob||0),0,1);
+      el.textContent = `${name} ${(p*100).toFixed(0)}%`;
+      tagsBox.appendChild(el);
+    });
   }
-  try {
-    localStorage.removeItem('lumina_chat');
-    localStorage.removeItem('lumina_draft');
-    sessionStorage.clear?.();
-  } catch {}
-  messages = [{ role:'assistant', text:'ACAI: Greetings, conscious being. Synchronizing with your emotional field…' }];
-  currentCid = null;
 
-  emcSeries = { t:[], E:[], M:[], C:[] };
-  t0 = performance.now();
+  function updateRadarFromState(s){
+    ensureRadar();
+    if (!radarChart) return;
 
-  if (emcChart){
-    emcChart.data.labels = [];
-    emcChart.data.datasets.forEach(d => d.data = []);
-    emcChart.update();
-  }
-  if (radarChart){
-    radarChart.data.labels = ["—","—","—","—","—"];
-    radarChart.data.datasets[0].data = [0,0,0,0,0];
+    const top5 = Array.isArray(s?.top5) ? s.top5 : [];
+    const labels = top5.map(x => x?.[0] ?? "—");
+    const values = top5.map(x => clamp(Number(x?.[1] ?? 0), 0, 1));
+
+    while (labels.length < 5) labels.push("—");
+    while (values.length < 5) values.push(0);
+
+    radarChart.data.labels = labels.slice(0,5);
+    radarChart.data.datasets[0].data = values.slice(0,5);
+
+    renderEmotionTags(top5);
+
+    const v = Number(s?.valence ?? 0);
+    const x = Number(s?.impulse_x_ema ?? 0);
+    if (radarMeta) radarMeta.textContent = `val=${v.toFixed(2)} · x=${x.toFixed(2)}`;
+
+    applyLuxChartColors();
     radarChart.update();
   }
-  if (tagsBox) tagsBox.innerHTML = "";
-  if (radarMeta) radarMeta.textContent = "—";
-  if (emcMeta) emcMeta.textContent = "—";
 
-  saveAndRender();
-});
+  function pushEMCPoint(s){
+    ensureEMC();
+    if (!emcChart) return;
 
-(async () => {
-  try { await ensureConversation(); } catch(_) {}
-  // charts can be lazy, but state may update them anytime
-  ensureRadar(); ensureEMC(); applyLuxChartColors();
-  refreshState();
-  setInterval(refreshState, POLL_MS);
-})();
-</script>
+    const now = performance.now();
+    const t = (now - t0) / 1000.0;
+    const label = t < 60 ? `${t.toFixed(0)}s` : `${(t/60).toFixed(1)}m`;
 
-<!-- 🎵 LUMINA THEME MUSIC -->
-<audio id="luminaMusic" loop>
-  <source src="./lumina_theme.mp3" type="audio/mpeg">
-</audio>
-<script>
-const audio = document.getElementById('luminaMusic');
-document.addEventListener('click', () => {
-  try {
-    audio.volume = 0;
-    audio.play().catch(()=>{});
-    let v = 0;
-    const fade = setInterval(() => {
-      if (v < 0.35) { v += 0.01; audio.volume = v; } else { clearInterval(fade); }
-    }, 120);
-  } catch(e) { console.warn('Audio error', e); }
-}, { once:true });
-</script>
+    const E = Number(s?.E ?? 0);
+    const M = Number(s?.M ?? 0);
+    const C = Number(s?.C ?? 0);
 
-<!-- 💎 Logout logic -->
-<script>
-document.getElementById('logout')?.addEventListener('click', async (e)=>{
-  e.preventDefault();
-  e.stopPropagation();
+    emcSeries.t.push(label);
+    emcSeries.E.push(E);
+    emcSeries.M.push(M);
+    emcSeries.C.push(C);
 
-  if (!confirm('Вы деиствительно хотите выити из аккаунта?')) return;
+    if (emcSeries.t.length > MAX_POINTS){
+      emcSeries.t.shift(); emcSeries.E.shift(); emcSeries.M.shift(); emcSeries.C.shift();
+    }
 
-  try { await fetch(API + '/logout', { method:'POST', credentials:'include', headers: authHeaders() }); } catch(e){}
+    emcChart.data.labels = emcSeries.t;
+    emcChart.data.datasets[0].data = emcSeries.E;
+    emcChart.data.datasets[1].data = emcSeries.M;
+    emcChart.data.datasets[2].data = emcSeries.C;
 
-  try {
-    localStorage.removeItem('acai_jwt');
-    localStorage.removeItem('lumina_chat');
-    localStorage.removeItem('lumina_draft');
-    sessionStorage.clear?.();
-  } catch(e){}
+    if (emcMeta) emcMeta.textContent = `E=${E.toFixed(2)} · M=${M.toFixed(2)} · C=${C.toFixed(2)}`;
 
-  try {
-    const u = new URL(location.href);
-    u.searchParams.delete('token');
-    history.replaceState({}, '', u.pathname + u.hash);
-  } catch(e){}
+    applyLuxChartColors();
+    emcChart.update();
 
-  location.href = 'https://acai-frontend.onrender.com';
-});
-</script>
+    persistEMC();
+  }
 
+  /* =========================
+     Chat local mirror (same idea)
+     ========================= */
+  let messages = (() => {
+    try { return JSON.parse(localStorage.getItem('lumina_chat') || '[]'); } catch { return []; }
+  })();
+
+  if (messages.length === 0) {
+    messages.push({role:'assistant', text:'ACAI: Greetings, conscious being. Synchronizing with your emotional field…'});
+  }
+
+  function saveAndRender(){
+    localStorage.setItem('lumina_chat', JSON.stringify(messages));
+    renderFeed();
+  }
+
+  function renderFeed(){
+    feedInner.innerHTML = '';
+    for (const m of messages){
+      const el = document.createElement('div');
+      el.className = 'bubble ' + (m.role === 'user' ? 'me' : 'acai');
+      el.textContent = (m.role === 'user' ? 'You: ' : '') + m.text;
+      feedInner.appendChild(el);
+    }
+    feed.scrollTop = feed.scrollHeight;
+  }
+
+  function showTyping(){
+    const el = document.createElement('div');
+    el.className = 'bubble acai';
+    el.innerHTML = `<span class="typing">ACAI is typing <span class="dots"><i></i><i></i><i></i></span></span>`;
+    el.dataset.typing='1';
+    feedInner.appendChild(el);
+    feed.scrollTop = feed.scrollHeight;
+    return el;
+  }
+
+  function hideTyping(el){ if (el && el.dataset.typing==='1') el.remove(); }
+
+  // Draft
+  msg.value = localStorage.getItem('lumina_draft') || '';
+  msg.addEventListener('input', ()=> localStorage.setItem('lumina_draft', msg.value));
+
+  // Auto-grow
+  msg.addEventListener('input', ()=>{
+    msg.style.height = 'auto';
+    msg.style.height = Math.min(msg.scrollHeight, 180) + 'px';
+  });
+
+  renderFeed();
+
+  /* =========================
+     Theme from state (same logic)
+     ========================= */
+  const map=(v,inMin,inMax,outMin,outMax)=> outMin + (Math.max(inMin,Math.min(inMax,v))-inMin)*(outMax-outMin)/(inMax-inMin);
+
+  function themeFromState(s){
+    const v = Number(s?.valence ?? 0);
+    const x = Number(s?.impulse_x_ema ?? 0);
+    const hue = (v >= 0) ? map(v, 0, 1, 210, 150) : map(v, -1, 0, 10, 210);
+    const sat = map(Math.abs(x), 0, 0.5, 55, 92);
+    const lig = 54;
+    const accent = `oklch(${lig}% ${sat/100} ${hue})`;
+
+    let mode='NEUTRAL';
+    if (v > 0.28) mode='GROUND';
+    else if (v < -0.22) mode='STABILIZE';
+    else if (v < -0.08) mode='UPLIFT';
+
+    document.documentElement.style.setProperty('--accent', accent);
+    document.documentElement.style.setProperty('--ring', 'color-mix(in oklab, var(--accent) 60%, transparent)');
+    tone.textContent = mode;
+
+    applyLuxChartColors();
+  }
+
+  // ✅ Warm start from persisted last state (avoids neutral/zeros blink)
+  (function warmStart(){
+    try{
+      const st = JSON.parse(sessionStorage.getItem(KEY_STATE) || "null");
+      if (st) {
+        themeFromState(st);
+        updateRadarFromState(st);
+        // NOTE: EMC already restored from emcSeries at init
+        if (emcMeta){
+          const E = Number(st?.E ?? 0), M = Number(st?.M ?? 0), C = Number(st?.C ?? 0);
+          emcMeta.textContent = `E=${E.toFixed(2)} · M=${M.toFixed(2)} · C=${C.toFixed(2)}`;
+        }
+      }
+    } catch {}
+  })();
+
+  /* =========================
+     State poll + backend session
+     ========================= */
+  let currentCid = null;
+
+  async function ensureConversation(){
+    if (currentCid) return currentCid;
+    try{
+      const res = await apiPost('/api/conversations', {});
+      currentCid = res.id;
+      return currentCid;
+    } catch (e) {
+      if (e.message === 'AUTH') {
+        const loginUrl = API + '/login?from=' + encodeURIComponent(location.href);
+        let w = null;
+        try { w = window.open(loginUrl, '_blank', 'noopener'); } catch(_) {}
+        setTimeout(() => { if (!w || w.closed) location.href = loginUrl; }, 300);
+        alert('Please login via Telegram, then return here.');
+      } else {
+        console.error(e);
+        alert('Cannot create conversation.');
+      }
+      throw e;
+    }
+  }
+
+  async function refreshState(){
+    try{
+      if (!currentCid) return;
+      const r = await fetch(API + `/state/${currentCid}`, {
+        cache:'no-store',
+        credentials:'include',
+        headers: authHeaders()
+      });
+      if(!r.ok) return;
+
+      const j = await r.json();
+      const st = j?.last || {};
+
+      // persist last state
+      try { sessionStorage.setItem(KEY_STATE, JSON.stringify(st)); } catch {}
+
+      themeFromState(st);
+      updateRadarFromState(st);
+      pushEMCPoint(st);
+    }catch{}
+  }
+
+  /* Send */
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const text = msg.value.trim();
+    if(!text) return;
+
+    messages.push({role:'user', text});
+    saveAndRender();
+
+    const typingEl = showTyping();
+
+    try{
+      const cid = await ensureConversation();
+      const j = await apiPost(`/api/chat/${cid}`, { message: text });
+      hideTyping(typingEl);
+
+      messages.push({role:'assistant', text: j?.reply || '(no reply)'});
+      saveAndRender();
+
+      msg.value = '';
+      localStorage.removeItem('lumina_draft');
+      msg.style.height = '46px';
+
+      refreshState();
+    }catch(err){
+      hideTyping(typingEl);
+      if (err.message === 'AUTH') {
+        messages.push({role:'assistant', text:'Reauth…'});
+        saveAndRender();
+        forceReauth();
+      } else {
+        messages.push({role:'assistant', text:'Error: cannot reach backend.'});
+        saveAndRender();
+      }
+    }
+  });
+
+  /* CLEAN */
+  cleanBtn.addEventListener('click', async () => {
+    if (!confirm("Delete local chat history? (You stay logged in)")) return;
+
+    try { await apiDelete('/api/memory'); } catch(e){
+      if (e.message==='AUTH'){ return forceReauth(); }
+    }
+
+    try {
+      localStorage.removeItem('lumina_chat');
+      localStorage.removeItem('lumina_draft');
+      sessionStorage.removeItem(KEY_EMC);
+      sessionStorage.removeItem(KEY_STATE);
+      sessionStorage.removeItem(KEY_T0);
+    } catch {}
+
+    messages = [{ role:'assistant', text:'ACAI: Greetings, conscious being. Synchronizing with your emotional field…' }];
+    currentCid = null;
+
+    emcSeries = { t:[], E:[], M:[], C:[] };
+    t0 = performance.now();
+    persistEMC();
+
+    if (emcChart){
+      emcChart.data.labels = [];
+      emcChart.data.datasets.forEach(d => d.data = []);
+      emcChart.update();
+    }
+    if (radarChart){
+      radarChart.data.labels = ["—","—","—","—","—"];
+      radarChart.data.datasets[0].data = [0,0,0,0,0];
+      radarChart.update();
+    }
+    if (tagsBox) tagsBox.innerHTML = "";
+    if (radarMeta) radarMeta.textContent = "—";
+    if (emcMeta) emcMeta.textContent = "—";
+
+    saveAndRender();
+  });
+
+  /* Init */
+  (async () => {
+    // charts init (state может апдейтить их хоть сразу)
+    ensureRadar();
+    ensureEMC();
+    applyLuxChartColors();
+
+    try { await ensureConversation(); } catch(_) {}
+    refreshState();
+    setInterval(refreshState, POLL_MS);
+  })();
+  </script>
+
+  <!-- Music (unchanged idea) -->
+  <audio id="luminaMusic" loop>
+    <source src="./lumina_theme.mp3" type="audio/mpeg">
+  </audio>
+  <script>
+    const audio = document.getElementById('luminaMusic');
+    document.addEventListener('click', () => {
+      try {
+        audio.volume = 0;
+        audio.play().catch(()=>{});
+        let v = 0;
+        const fade = setInterval(() => {
+          if (v < 0.35) { v += 0.01; audio.volume = v; } else { clearInterval(fade); }
+        }, 120);
+      } catch(e) {}
+    }, { once:true });
+  </script>
+
+  <!-- Logout (same logic) -->
+  <script>
+    document.getElementById('logout')?.addEventListener('click', async (e)=>{
+      e.preventDefault(); e.stopPropagation();
+      if (!confirm('Вы деиствительно хотите выити из аккаунта?')) return;
+
+      try { await fetch(API + '/logout', { method:'POST', credentials:'include', headers: authHeaders() }); } catch(e){}
+
+      try {
+        localStorage.removeItem('acai_jwt');
+        localStorage.removeItem('lumina_chat');
+        localStorage.removeItem('lumina_draft');
+        sessionStorage.clear?.();
+      } catch(e){}
+
+      try {
+        const u = new URL(location.href);
+        u.searchParams.delete('token');
+        history.replaceState({}, '', u.pathname + u.hash);
+      } catch(e){}
+
+      location.href = 'https://acai-frontend.onrender.com';
+    });
+  </script>
 </body>
 </html>
