@@ -34,7 +34,6 @@
     color:color-mix(in oklab, var(--ink) 80%, var(--accent));border:1px solid color-mix(in oklab, var(--accent) 40%, transparent);
     font-size:12px;text-transform:uppercase;letter-spacing:.16em;opacity:.9;}
 
-  /* ===== chat layout (unchanged core) ===== */
   .wrap{
     height:calc(100% - 68px);
     display:grid;
@@ -172,7 +171,7 @@
     opacity:.92;
   }
 
-  /* ===== EDGE WIDGETS (NEW) ===== */
+  /* ===== EDGE WIDGETS ===== */
   .edgeBtns{
     position:fixed;
     right:10px;
@@ -210,6 +209,7 @@
   }
   .overlay.show{ opacity:1; pointer-events:auto; }
 
+  /* ✅ FIX: drawer has strict height + flex column */
   .drawer{
     position:fixed;
     top:68px;
@@ -223,10 +223,12 @@
     display:flex;
     flex-direction:column;
     gap:12px;
+    overflow:hidden; /* ✅ prevents “infinite” */
   }
   .drawer.open{ transform: translateX(0); }
 
   .drawerHeader{
+    flex: 0 0 auto;
     display:flex;
     gap:10px;
     align-items:center;
@@ -256,16 +258,32 @@
     cursor:pointer;
     box-shadow: 0 10px 22px rgba(0,0,0,.42), inset 0 0 0 999px #ffffff06;
   }
+
+  /* ✅ FIX: body takes remaining height */
   .drawerBody{
+    flex: 1 1 auto;
+    min-height: 0;                 /* ✅ crucial for iOS flex scroll */
     overflow:auto;
     -webkit-overflow-scrolling:touch;
     padding-right: 2px;
   }
 
-  /* Mobile safety: keep edge buttons above composer */
+  /* ✅ FIX: chart boxes have strict height, canvas fills them */
+  .chartBox{
+    height: min(46vh, 420px);
+    width: 100%;
+    position: relative;
+  }
+  .chartBox.radarBox{ height: min(44vh, 380px); }
+  .chartBox.emcBox{ height: min(46vh, 420px); }
+
+  canvas{ display:block; width:100% !important; height:100% !important; }
+
   @media (max-width: 520px){
     .edgeBtns{ top: calc(68px + 10px); right: 8px; }
     .drawer{ width: 94vw; }
+    .chartBox{ height: min(52vh, 420px); }
+    .chartBox.radarBox{ height: min(48vh, 380px); }
   }
 </style>
 </head>
@@ -292,10 +310,9 @@
     </form>
   </section>
 
-  <!-- ===== Edge Buttons (NEW) ===== -->
+  <!-- Edge Buttons -->
   <div class="edgeBtns" aria-label="Widgets">
     <button class="edgeBtn" id="openRadar" type="button" title="Emotion Radar">
-      <!-- radar icon -->
       <svg viewBox="0 0 24 24" fill="none">
         <path d="M12 21a9 9 0 1 0-9-9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         <path d="M12 12l6-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -305,7 +322,6 @@
     </button>
 
     <button class="edgeBtn" id="openEMC" type="button" title="E · M · C Timeline">
-      <!-- chart icon -->
       <svg viewBox="0 0 24 24" fill="none">
         <path d="M4 19V5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         <path d="M4 19H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -317,10 +333,9 @@
     </button>
   </div>
 
-  <!-- overlay -->
   <div class="overlay" id="overlay" aria-hidden="true"></div>
 
-  <!-- ===== Drawer: RADAR ===== -->
+  <!-- Drawer: RADAR -->
   <aside class="drawer" id="radarDrawer" aria-label="Emotion Radar Widget">
     <div class="drawerHeader">
       <div class="drawerTitle"><span class="luxDot" aria-hidden="true"></span> Emotion Radar</div>
@@ -332,13 +347,15 @@
           <div class="panelTitle"><span class="luxDot" aria-hidden="true"></span> Emotion Radar</div>
           <div class="pill" id="radarMeta">—</div>
         </div>
-        <canvas id="emotionRadar" height="280"></canvas>
+        <div class="chartBox radarBox">
+          <canvas id="emotionRadar"></canvas>
+        </div>
         <div class="miniLegend" id="emotionTags"></div>
       </section>
     </div>
   </aside>
 
-  <!-- ===== Drawer: EMC ===== -->
+  <!-- Drawer: EMC -->
   <aside class="drawer" id="emcDrawer" aria-label="E M C Widget">
     <div class="drawerHeader">
       <div class="drawerTitle"><span class="luxDot" aria-hidden="true"></span> E · M · C Timeline</div>
@@ -350,16 +367,16 @@
           <div class="panelTitle"><span class="luxDot" aria-hidden="true"></span> E · M · C Timeline</div>
           <div class="pill" id="emcMeta">—</div>
         </div>
-        <canvas id="emcChart" height="220"></canvas>
+        <div class="chartBox emcBox">
+          <canvas id="emcChart"></canvas>
+        </div>
       </section>
     </div>
   </aside>
 
-<!-- ✅ Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-/* ===== 1) Берем ?token= один раз и сохраняем (оставляем как в старом) ===== */
 (function bootToken(){
   const qs = new URLSearchParams(location.search);
   const t = qs.get('token');
@@ -369,23 +386,14 @@
   }
 })();
 
-/* ===== 2) Backend URL ===== */
 const API = (localStorage.getItem('ACAI_API') || 'https://acai-backend.onrender.com').replace(/\/$/,'');
 
-/* ===== 3) Хелпер: подхват Bearer из localStorage + посыл куки ===== */
 function authHeaders(){
   let tok = null;
   try { tok = localStorage.getItem('acai_jwt'); } catch {}
   return tok ? { Authorization: 'Bearer ' + tok } : {};
 }
 
-/* ===== 4) Хелперы запросов ===== */
-async function apiGet(path){
-  const r = await fetch(API+path, {credentials:'include', headers: authHeaders()});
-  if (r.status === 401) throw new Error('AUTH');
-  if (!r.ok) throw new Error(await r.text());
-  return r.json();
-}
 async function apiPost(path, data){
   const r = await fetch(API+path, {
     method:'POST',
@@ -404,19 +412,16 @@ async function apiDelete(path){
   return r.json();
 }
 
-/* ===== 5) форс-реавторизация ===== */
-function forceReauth() {
-  location.href = API + '/auth/refresh';
-}
+function forceReauth() { location.href = API + '/auth/refresh'; }
 
-/* ===== 6) DOM ===== */
+/* DOM */
 const feed = document.getElementById('feed');
 const tone = document.getElementById('tone');
 const form = document.getElementById('form');
 const msg  = document.getElementById('msg');
 const cleanBtn = document.getElementById('clean');
 
-/* ===== 6.0) EDGE DRAWERS (NEW UI, no logic change) ===== */
+/* Drawers */
 const overlay = document.getElementById('overlay');
 const radarDrawer = document.getElementById('radarDrawer');
 const emcDrawer = document.getElementById('emcDrawer');
@@ -428,16 +433,28 @@ function closeAllDrawers(){
   emcDrawer.classList.remove('open');
   overlay.classList.remove('show');
 }
+function afterOpenResize(which){
+  // wait for drawer transition so canvas gets real size
+  setTimeout(() => {
+    if (which === 'radar' && radarChart){
+      radarChart.resize();
+      radarChart.update('none');
+    }
+    if (which === 'emc' && emcChart){
+      emcChart.resize();
+      emcChart.update('none');
+    }
+  }, 260);
+}
 function openDrawer(which){
-  // only one open at a time
   closeAllDrawers();
   if (which === 'radar') radarDrawer.classList.add('open');
   if (which === 'emc') emcDrawer.classList.add('open');
   overlay.classList.add('show');
 
-  // ensure charts exist when opened (so canvas sizes are correct)
-  if (which === 'radar'){ ensureRadar(); applyLuxChartColors(); radarChart?.resize?.(); radarChart?.update?.(); }
-  if (which === 'emc'){ ensureEMC(); applyLuxChartColors(); emcChart?.resize?.(); emcChart?.update?.(); }
+  if (which === 'radar'){ ensureRadar(); applyLuxChartColors(); }
+  if (which === 'emc'){ ensureEMC(); applyLuxChartColors(); }
+  afterOpenResize(which);
 }
 openRadarBtn.addEventListener('click', ()=> openDrawer('radar'));
 openEMCBtn.addEventListener('click', ()=> openDrawer('emc'));
@@ -448,29 +465,23 @@ document.querySelectorAll('[data-close]').forEach(btn=>{
   btn.addEventListener('click', closeAllDrawers);
 });
 
-/* ===== 6.1) LUX DOM ===== */
+/* LUX DOM */
 const radarMeta = document.getElementById('radarMeta');
 const emcMeta = document.getElementById('emcMeta');
 const tagsBox = document.getElementById('emotionTags');
 
-const radarCtx = document.getElementById('emotionRadar')?.getContext('2d');
-const emcCtx   = document.getElementById('emcChart')?.getContext('2d');
-
 let radarChart = null;
 let emcChart = null;
 
-/* ===== LUX helpers ===== */
-function cssVar(name){
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-}
+function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 function clamp(n,a,b){ return Math.max(a, Math.min(b,n)); }
-function alphaColor(rgbLike, a){
-  return `color-mix(in oklab, ${rgbLike} ${Math.round(a*100)}%, transparent)`;
-}
+function alphaColor(rgbLike, a){ return `color-mix(in oklab, ${rgbLike} ${Math.round(a*100)}%, transparent)`; }
 
-/* ===== Radar chart (lux) ===== */
+/* Charts */
 function ensureRadar(){
-  if (!radarCtx || radarChart) return;
+  if (radarChart) return;
+  const radarCtx = document.getElementById('emotionRadar')?.getContext('2d');
+  if (!radarCtx) return;
 
   radarChart = new Chart(radarCtx, {
     type: "radar",
@@ -515,14 +526,15 @@ function ensureRadar(){
   });
 }
 
-/* ===== EMC line chart (lux) ===== */
 const MAX_POINTS = 120;
 const POLL_MS = 1500;
 let t0 = performance.now();
 let emcSeries = { t:[], E:[], M:[], C:[] };
 
 function ensureEMC(){
-  if (!emcCtx || emcChart) return;
+  if (emcChart) return;
+  const emcCtx = document.getElementById('emcChart')?.getContext('2d');
+  if (!emcCtx) return;
 
   emcChart = new Chart(emcCtx, {
     type: "line",
@@ -539,9 +551,7 @@ function ensureEMC(){
       maintainAspectRatio: false,
       animation: { duration: 250 },
       plugins: {
-        legend: {
-          labels: { color: "rgba(255,255,255,.78)", boxWidth: 10, usePointStyle: true, pointStyle:"circle" }
-        },
+        legend: { labels: { color: "rgba(255,255,255,.78)", boxWidth: 10, usePointStyle: true, pointStyle:"circle" } },
         tooltip: {
           backgroundColor: "rgba(8,10,14,.92)",
           borderColor: "rgba(255,255,255,.10)",
@@ -551,25 +561,15 @@ function ensureEMC(){
         }
       },
       scales: {
-        x: {
-          grid: { color: "rgba(255,255,255,.05)" },
-          ticks: { color: "rgba(255,255,255,.55)", maxTicksLimit: 6 }
-        },
-        y: {
-          grid: { color: "rgba(255,255,255,.05)" },
-          ticks: { color: "rgba(255,255,255,.55)" },
-          suggestedMin: -1.2,
-          suggestedMax:  1.2
-        }
+        x: { grid: { color: "rgba(255,255,255,.05)" }, ticks: { color: "rgba(255,255,255,.55)", maxTicksLimit: 6 } },
+        y: { grid: { color: "rgba(255,255,255,.05)" }, ticks: { color: "rgba(255,255,255,.55)" }, suggestedMin: -1.2, suggestedMax:  1.2 }
       }
     }
   });
 }
 
-/* ===== Apply accent styling to charts ===== */
 function applyLuxChartColors(){
   const accent = cssVar('--accent') || '#7AE6FF';
-
   if (radarChart){
     radarChart.data.datasets[0].borderColor = accent;
     radarChart.data.datasets[0].backgroundColor = alphaColor(accent, 0.14);
@@ -577,20 +577,16 @@ function applyLuxChartColors(){
     radarChart.data.datasets[0].pointBorderColor = alphaColor(accent, 0.35);
     radarChart.update('none');
   }
-
   if (emcChart){
     const violet = cssVar('--violet') || '#B37AFF';
     const amber  = cssVar('--amber')  || '#FFB76B';
-
     emcChart.data.datasets[0].borderColor = accent;
     emcChart.data.datasets[1].borderColor = violet;
     emcChart.data.datasets[2].borderColor = amber;
-
     emcChart.update('none');
   }
 }
 
-/* ===== Update charts from /state ===== */
 function renderEmotionTags(top5){
   if (!tagsBox) return;
   tagsBox.innerHTML = "";
@@ -610,7 +606,6 @@ function updateRadarFromState(s){
   const top5 = Array.isArray(s?.top5) ? s.top5 : [];
   const labels = top5.map(x => x?.[0] ?? "—");
   const values = top5.map(x => clamp(Number(x?.[1] ?? 0), 0, 1));
-
   while (labels.length < 5) labels.push("—");
   while (values.length < 5) values.push(0);
 
@@ -659,24 +654,15 @@ function pushEMCPoint(s){
   emcChart.update();
 }
 
-/* ===== 7) Локальное зеркало ленты ===== */
+/* Chat local mirror */
 let messages = JSON.parse(localStorage.getItem('lumina_chat') || '[]');
-if (messages.length === 0) {
-  messages.push({role:'assistant', text:'ACAI: Greetings, conscious being. Synchronizing with your emotional field…'});
-}
+if (messages.length === 0) messages.push({role:'assistant', text:'ACAI: Greetings, conscious being. Synchronizing with your emotional field…'});
 renderFeed();
 
-/* Черновик */
 msg.value = localStorage.getItem('lumina_draft') || '';
-msg.addEventListener('input', ()=>{
-  localStorage.setItem('lumina_draft', msg.value);
-});
+msg.addEventListener('input', ()=> localStorage.setItem('lumina_draft', msg.value));
 
-/* Рендер */
-function saveAndRender(){
-  localStorage.setItem('lumina_chat', JSON.stringify(messages));
-  renderFeed();
-}
+function saveAndRender(){ localStorage.setItem('lumina_chat', JSON.stringify(messages)); renderFeed(); }
 function renderFeed(){
   feed.innerHTML = '';
   for (const m of messages){
@@ -690,9 +676,7 @@ function renderFeed(){
 function showTyping(){
   const el = document.createElement('div');
   el.className = 'bubble acai';
-  el.innerHTML = `<span class="typing">
-    ACAI is typing <span class="dots"><i></i><i></i><i></i></span>
-  </span>`;
+  el.innerHTML = `<span class="typing">ACAI is typing <span class="dots"><i></i><i></i><i></i></span></span>`;
   el.dataset.typing='1';
   feed.appendChild(el);
   feed.scrollTop = feed.scrollHeight;
@@ -700,7 +684,7 @@ function showTyping(){
 }
 function hideTyping(el){ if(el && el.dataset.typing==='1') el.remove(); }
 
-/* ===== 8) Тема из /state/{cid} (FIX) ===== */
+/* Theme from state */
 const map=(v,inMin,inMax,outMin,outMax)=> outMin + (Math.max(inMin,Math.min(inMax,v))-inMin)*(outMax-outMin)/(inMax-inMin);
 function themeFromState(s){
   const v = Number(s?.valence ?? 0);
@@ -714,9 +698,11 @@ function themeFromState(s){
   document.documentElement.style.setProperty('--accent', accent);
   document.documentElement.style.setProperty('--ring','color-mix(in oklab, var(--accent) 60%, transparent)');
   tone.textContent=mode;
-
   applyLuxChartColors();
 }
+
+/* State poll */
+let currentCid = null;
 
 async function refreshState(){
   try{
@@ -728,17 +714,13 @@ async function refreshState(){
     });
     if(!r.ok) return;
     const j=await r.json();
-
     const st = j?.last || {};
     themeFromState(st);
     updateRadarFromState(st);
     pushEMCPoint(st);
-
   }catch{}
 }
 
-/* ===== 9) Сессия/диалог на бэке ===== */
-let currentCid = null;
 async function ensureConversation(){
   if (currentCid) return currentCid;
   try{
@@ -748,14 +730,9 @@ async function ensureConversation(){
   } catch (e) {
     if (e.message === 'AUTH') {
       const loginUrl = API + '/login?from=' + encodeURIComponent(location.href);
-
       let w = null;
       try { w = window.open(loginUrl, '_blank', 'noopener'); } catch(_) {}
-
-      setTimeout(() => {
-        if (!w || w.closed) location.href = loginUrl;
-      }, 300);
-
+      setTimeout(() => { if (!w || w.closed) location.href = loginUrl; }, 300);
       alert('Please login via Telegram, then return here.');
     } else {
       console.error(e);
@@ -765,7 +742,7 @@ async function ensureConversation(){
   }
 }
 
-/* ===== 10) Отправка ===== */
+/* Send */
 form.addEventListener('submit', async (e)=>{
   e.preventDefault();
   const text = msg.value.trim();
@@ -803,13 +780,12 @@ form.addEventListener('submit', async (e)=>{
   }
 });
 
-/* авто-рост (без Enter=send) */
 msg.addEventListener('input', ()=>{
   msg.style.height = 'auto';
   msg.style.height = Math.min(msg.scrollHeight, 180) + 'px';
 });
 
-/* ===== 11) CLEAN ===== */
+/* CLEAN */
 cleanBtn.addEventListener('click', async () => {
   if (!confirm("Delete local chat history? (You stay logged in)")) return;
   try { await apiDelete('/api/memory'); } catch(e){
@@ -820,14 +796,12 @@ cleanBtn.addEventListener('click', async () => {
     localStorage.removeItem('lumina_draft');
     sessionStorage.clear?.();
   } catch {}
-  messages = [{
-    role:'assistant',
-    text:'ACAI: Greetings, conscious being. Synchronizing with your emotional field…'
-  }];
+  messages = [{ role:'assistant', text:'ACAI: Greetings, conscious being. Synchronizing with your emotional field…' }];
   currentCid = null;
 
   emcSeries = { t:[], E:[], M:[], C:[] };
   t0 = performance.now();
+
   if (emcChart){
     emcChart.data.labels = [];
     emcChart.data.datasets.forEach(d => d.data = []);
@@ -845,10 +819,9 @@ cleanBtn.addEventListener('click', async () => {
   saveAndRender();
 });
 
-/* ===== 12) init + poll ===== */
 (async () => {
   try { await ensureConversation(); } catch(_) {}
-  // IMPORTANT: charts can stay lazy; but we init for state updates anyway
+  // charts can be lazy, but state may update them anytime
   ensureRadar(); ensureEMC(); applyLuxChartColors();
   refreshState();
   setInterval(refreshState, POLL_MS);
