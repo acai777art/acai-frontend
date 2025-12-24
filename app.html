@@ -10,8 +10,15 @@
     --accent:#7AE6FF; --ring:#7AE6FF60; --violet:#B37AFF; --amber:#FFB76B;
     --bg-image:url("./bg_lumina.jpg");
   }
-  *{box-sizing:border-box} html,body{height:100%}
-  body{margin:0;color:var(--ink);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,"SF Pro Text",Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial;background:#000;overflow:hidden;}
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;color:var(--ink);
+    font:16px/1.5 ui-sans-serif,system-ui,-apple-system,"SF Pro Text",Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial;
+    background:#000;
+    overflow:hidden;
+  }
+
   .bg{position:fixed;inset:0;z-index:-3;background-image:var(--bg-image);background-size:cover;background-position:center;background-repeat:no-repeat;filter:saturate(1.05) brightness(.95);}
   .bg::after{content:"";position:absolute;inset:0;background:
       radial-gradient(1300px 800px at 80% -10%, color-mix(in oklab, var(--accent) 16%, #000) 0%, transparent 62%),
@@ -22,8 +29,12 @@
       radial-gradient(1px 1px at 70% 60%, #fff 50%, transparent 51%),
       radial-gradient(1px 1px at 30% 80%, #fff 50%, transparent 51%);
     background-size:26px 26px,32px 32px,42px 42px;mix-blend-mode:screen;}
-  .bar{height:68px;padding:0 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid color-mix(in oklab, var(--accent) 18%, transparent);
-    background:linear-gradient(180deg, color-mix(in oklab, var(--accent) 9%, #000) 0%, transparent 100%);position:sticky;top:0;z-index:5;backdrop-filter:blur(6px);}
+  .bar{
+    height:68px;padding:0 16px;display:flex;align-items:center;gap:12px;
+    border-bottom:1px solid color-mix(in oklab, var(--accent) 18%, transparent);
+    background:linear-gradient(180deg, color-mix(in oklab, var(--accent) 9%, #000) 0%, transparent 100%);
+    position:sticky;top:0;z-index:5;backdrop-filter:blur(6px);
+  }
   .spark{width:28px;height:28px;border-radius:10px;background:conic-gradient(from 210deg, var(--accent), var(--violet), var(--amber), var(--accent));
     box-shadow:0 0 0 2px #0a0d14,0 0 22px var(--ring) inset,0 8px 22px #0008;animation:orbit 8s linear infinite;}
   @keyframes orbit{from{filter:hue-rotate(0)}to{filter:hue-rotate(360deg)}}
@@ -34,9 +45,9 @@
     color:color-mix(in oklab, var(--ink) 80%, var(--accent));border:1px solid color-mix(in oklab, var(--accent) 40%, transparent);
     font-size:12px;text-transform:uppercase;letter-spacing:.16em;opacity:.9;}
 
-  /* ===== OLD kept, but extended layout for radar panel ===== */
+  /* ✅ iOS FIX: 100dvh gives correct viewport with Safari bars */
   .wrap{
-    height:calc(100% - 68px);
+    height:calc(100dvh - 68px);
     display:grid;
     grid-template-rows:1fr auto;
     grid-template-columns: 1fr 360px;
@@ -45,9 +56,15 @@
       "composer composer";
     gap:14px;
     padding-right:10px;
+
+    /* ✅ FIX: grid container should clip, children scroll */
+    overflow:hidden;
+    min-height:0;
   }
 
-  .feed{grid-area:feed; overflow:auto;padding:24px 16px 8px 16px;scroll-behavior:smooth;}
+  /* ✅ FIX: allow grid children to shrink */
+  .feed{grid-area:feed; overflow:auto; padding:24px 16px 8px 16px; scroll-behavior:smooth; min-height:0; -webkit-overflow-scrolling:touch;}
+  .dash{grid-area: dash; align-self:start; margin-top:18px; margin-right:8px; display:flex; flex-direction:column; gap:12px; min-height:0;}
 
   .bubble{max-width:min(860px,92vw);margin:10px 0;padding:14px 16px;white-space:pre-wrap;border-radius:14px;position:relative;
     background:linear-gradient(180deg,#0b0f18 0%,#0a0e15 100%);border:1px solid color-mix(in oklab, var(--accent) 18%, #1a2230);
@@ -88,17 +105,6 @@
   .btn.ghost:hover{filter:brightness(1.08);box-shadow:0 4px 18px rgba(122,230,255,.2);}
   .btn.sm{min-width:92px;padding:8px 12px;height:36px;font-size:12px;letter-spacing:.12em;}
 
-  /* ===== DASHBOARD (lux) ===== */
-  .dash{
-    grid-area: dash;
-    align-self: start;
-    margin-top: 18px;
-    margin-right: 8px;
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-  }
-
   .panel{
     position:relative;
     padding:14px 14px 12px;
@@ -108,8 +114,6 @@
     box-shadow: 0 1px 0 #0008, inset 0 0 0 999px #ffffff03, 0 14px 36px #000b;
     overflow:hidden;
   }
-
-  /* glow frame */
   .panel::before{
     content:"";
     position:absolute; inset:-2px;
@@ -120,8 +124,6 @@
     opacity:.9;
     pointer-events:none;
   }
-
-  /* shimmer line */
   .panel::after{
     content:"";
     position:absolute; inset:-40% -40%;
@@ -141,7 +143,6 @@
     margin-bottom:10px;
     gap:10px;
   }
-
   .panelTitle{
     font-weight: 900;
     letter-spacing: .14em;
@@ -153,7 +154,6 @@
     align-items:center;
     gap:10px;
   }
-
   .pill{
     position:relative;
     font-size: 11px;
@@ -166,7 +166,6 @@
     white-space:nowrap;
     box-shadow: 0 8px 20px rgba(0,0,0,.35);
   }
-
   .luxDot{
     width:10px;height:10px;border-radius:50%;
     background: var(--accent);
@@ -177,7 +176,6 @@
     0%,100%{ transform: scale(.92); filter:saturate(1.0); opacity:.75; }
     50%{ transform: scale(1.14); filter:saturate(1.2); opacity:1; }
   }
-
   .miniLegend{
     position:relative;
     display:flex; flex-wrap:wrap; gap:6px;
@@ -193,17 +191,27 @@
     opacity:.92;
   }
 
+  /* ✅ Mobile: keep your layout, BUT prevent dash from killing feed */
   @media (max-width: 980px){
-    body{overflow:auto;}
+    body{overflow:hidden;} /* keep app-feel */
     .wrap{
+      height:calc(100dvh - 68px);
       grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr auto;
       grid-template-areas:
         "dash"
         "feed"
         "composer";
       padding-right: 0;
+      overflow:hidden;
     }
-    .dash{ margin: 10px 12px 0; }
+    .dash{
+      margin: 10px 12px 0;
+      max-height: 38dvh;          /* ✅ key fix */
+      overflow:auto;              /* ✅ dash scrolls, chat stays */
+      -webkit-overflow-scrolling:touch;
+    }
+    .feed{min-height:0;}
     .bubble{max-width: 92vw;}
   }
 </style>
@@ -224,10 +232,7 @@
   <section class="wrap">
     <div class="feed" id="feed"></div>
 
-    <!-- ✅ LUX DASH -->
     <aside class="dash">
-
-      <!-- LUX RADAR -->
       <section class="panel">
         <div class="panelHead">
           <div class="panelTitle"><span class="luxDot" aria-hidden="true"></span> Emotion Radar</div>
@@ -237,7 +242,6 @@
         <div class="miniLegend" id="emotionTags"></div>
       </section>
 
-      <!-- LIVE E/M/C -->
       <section class="panel">
         <div class="panelHead">
           <div class="panelTitle"><span class="luxDot" aria-hidden="true"></span> E · M · C Timeline</div>
@@ -245,7 +249,6 @@
         </div>
         <canvas id="emcChart" height="220"></canvas>
       </section>
-
     </aside>
 
     <form class="composer" id="form" novalidate>
@@ -255,7 +258,6 @@
     </form>
   </section>
 
-<!-- ✅ Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
@@ -305,9 +307,7 @@ async function apiDelete(path){
 }
 
 /* ===== 5) NEW: форс-реавторизация в том же табе ===== */
-function forceReauth() {
-  location.href = API + '/auth/refresh';
-}
+function forceReauth() { location.href = API + '/auth/refresh'; }
 
 /* ===== 6) DOM ===== */
 const feed = document.getElementById('feed');
@@ -327,118 +327,58 @@ const emcCtx   = document.getElementById('emcChart')?.getContext('2d');
 let radarChart = null;
 let emcChart = null;
 
-/* ===== LUX helpers ===== */
-function cssVar(name){
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-}
+/* ===== helpers ===== */
+function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 function clamp(n,a,b){ return Math.max(a, Math.min(b,n)); }
-function alphaColor(rgbLike, a){
-  // accepts: "rgb(...)" or "rgba(...)" or "#..." or "oklch(...)" (we fallback)
-  // simplest reliable: if already rgba -> replace alpha; else use with CSS color-mix (works modern)
-  return `color-mix(in oklab, ${rgbLike} ${Math.round(a*100)}%, transparent)`;
-}
+function alphaColor(rgbLike, a){ return `color-mix(in oklab, ${rgbLike} ${Math.round(a*100)}%, transparent)`; }
 
-/* ===== Radar chart (lux) ===== */
+/* ===== Radar chart ===== */
 function ensureRadar(){
   if (!radarCtx || radarChart) return;
-
   radarChart = new Chart(radarCtx, {
     type: "radar",
-    data: {
-      labels: ["—","—","—","—","—"],
-      datasets: [{
-        label: "Top emotions",
-        data: [0,0,0,0,0],
-        fill: true,
-        borderWidth: 2,
-        pointRadius: 4,
-        pointHoverRadius: 6,
-      }]
-    },
+    data: { labels: ["—","—","—","—","—"], datasets: [{ label:"Top emotions", data:[0,0,0,0,0], fill:true, borderWidth:2, pointRadius:4, pointHoverRadius:6 }] },
     options: {
-      responsive: true,
-      animation: { duration: 420 },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: "rgba(8,10,14,.92)",
-          borderColor: "rgba(255,255,255,.10)",
-          borderWidth: 1,
-          titleColor: "#fff",
-          bodyColor: "#fff",
-          callbacks: {
-            label: (ctx) => `${ctx.label}: ${(Number(ctx.raw||0)*100).toFixed(0)}%`
-          }
-        }
-      },
-      scales: {
-        r: {
-          min: 0, max: 1,
-          grid: { color: "rgba(255,255,255,.06)" },
-          angleLines: { color: "rgba(255,255,255,.08)" },
-          pointLabels: { color: "rgba(255,255,255,.78)", font: { size: 12, weight: "600" } },
-          ticks: { display: false }
-        }
-      }
+      responsive:true,
+      animation:{ duration:420 },
+      plugins:{ legend:{display:false}, tooltip:{ backgroundColor:"rgba(8,10,14,.92)", borderColor:"rgba(255,255,255,.10)", borderWidth:1, titleColor:"#fff", bodyColor:"#fff",
+        callbacks:{ label:(ctx)=>`${ctx.label}: ${(Number(ctx.raw||0)*100).toFixed(0)}%` } } },
+      scales:{ r:{ min:0, max:1, grid:{color:"rgba(255,255,255,.06)"}, angleLines:{color:"rgba(255,255,255,.08)"}, pointLabels:{color:"rgba(255,255,255,.78)", font:{size:12, weight:"600"}}, ticks:{display:false} } }
     }
   });
 }
 
-/* ===== EMC line chart (lux) ===== */
-const MAX_POINTS = 120;           // ~ 120 points in history buffer
-const POLL_MS = 1500;             // keep your old polling cadence
+/* ===== EMC line chart ===== */
+const MAX_POINTS = 120;
 let t0 = performance.now();
 let emcSeries = { t:[], E:[], M:[], C:[] };
 
 function ensureEMC(){
   if (!emcCtx || emcChart) return;
-
   emcChart = new Chart(emcCtx, {
-    type: "line",
-    data: {
-      labels: [],
-      datasets: [
-        { label:"E", data: [], borderWidth: 2, pointRadius: 0, tension: 0.28 },
-        { label:"M", data: [], borderWidth: 2, pointRadius: 0, tension: 0.28 },
-        { label:"C", data: [], borderWidth: 2, pointRadius: 0, tension: 0.28 },
-      ]
-    },
-    options: {
-      responsive: true,
-      animation: { duration: 250 },
-      plugins: {
-        legend: {
-          labels: { color: "rgba(255,255,255,.78)", boxWidth: 10, usePointStyle: true, pointStyle:"circle" }
-        },
-        tooltip: {
-          backgroundColor: "rgba(8,10,14,.92)",
-          borderColor: "rgba(255,255,255,.10)",
-          borderWidth: 1,
-          titleColor: "#fff",
-          bodyColor: "#fff",
-        }
+    type:"line",
+    data:{ labels:[], datasets:[
+      {label:"E", data:[], borderWidth:2, pointRadius:0, tension:.28},
+      {label:"M", data:[], borderWidth:2, pointRadius:0, tension:.28},
+      {label:"C", data:[], borderWidth:2, pointRadius:0, tension:.28},
+    ]},
+    options:{
+      responsive:true,
+      animation:{ duration:250 },
+      plugins:{
+        legend:{ labels:{ color:"rgba(255,255,255,.78)", boxWidth:10, usePointStyle:true, pointStyle:"circle" } },
+        tooltip:{ backgroundColor:"rgba(8,10,14,.92)", borderColor:"rgba(255,255,255,.10)", borderWidth:1, titleColor:"#fff", bodyColor:"#fff" }
       },
-      scales: {
-        x: {
-          grid: { color: "rgba(255,255,255,.05)" },
-          ticks: { color: "rgba(255,255,255,.55)", maxTicksLimit: 6 }
-        },
-        y: {
-          grid: { color: "rgba(255,255,255,.05)" },
-          ticks: { color: "rgba(255,255,255,.55)" },
-          suggestedMin: -1.2,
-          suggestedMax:  1.2
-        }
+      scales:{
+        x:{ grid:{color:"rgba(255,255,255,.05)"}, ticks:{color:"rgba(255,255,255,.55)", maxTicksLimit:6} },
+        y:{ grid:{color:"rgba(255,255,255,.05)"}, ticks:{color:"rgba(255,255,255,.55)"}, suggestedMin:-1.2, suggestedMax:1.2 }
       }
     }
   });
 }
 
-/* ===== Apply accent styling to charts ===== */
 function applyLuxChartColors(){
   const accent = cssVar('--accent') || '#7AE6FF';
-
-  // Radar
   if (radarChart){
     radarChart.data.datasets[0].borderColor = accent;
     radarChart.data.datasets[0].backgroundColor = alphaColor(accent, 0.14);
@@ -446,26 +386,16 @@ function applyLuxChartColors(){
     radarChart.data.datasets[0].pointBorderColor = alphaColor(accent, 0.35);
     radarChart.update('none');
   }
-
-  // EMC: E uses accent, M violet-ish mix, C amber-ish mix
   if (emcChart){
     const violet = cssVar('--violet') || '#B37AFF';
     const amber  = cssVar('--amber')  || '#FFB76B';
-
     emcChart.data.datasets[0].borderColor = accent;
-    emcChart.data.datasets[0].backgroundColor = "transparent";
-
     emcChart.data.datasets[1].borderColor = violet;
-    emcChart.data.datasets[1].backgroundColor = "transparent";
-
     emcChart.data.datasets[2].borderColor = amber;
-    emcChart.data.datasets[2].backgroundColor = "transparent";
-
     emcChart.update('none');
   }
 }
 
-/* ===== Update charts from /state ===== */
 function renderEmotionTags(top5){
   if (!tagsBox) return;
   tagsBox.innerHTML = "";
@@ -485,7 +415,6 @@ function updateRadarFromState(s){
   const top5 = Array.isArray(s?.top5) ? s.top5 : [];
   const labels = top5.map(x => x?.[0] ?? "—");
   const values = top5.map(x => clamp(Number(x?.[1] ?? 0), 0, 1));
-
   while (labels.length < 5) labels.push("—");
   while (values.length < 5) values.push(0);
 
@@ -507,18 +436,14 @@ function pushEMCPoint(s){
   if (!emcChart) return;
 
   const now = performance.now();
-  const t = (now - t0) / 1000.0; // seconds since load
+  const t = (now - t0) / 1000.0;
   const label = t < 60 ? `${t.toFixed(0)}s` : `${(t/60).toFixed(1)}m`;
 
   const E = Number(s?.E ?? 0);
   const M = Number(s?.M ?? 0);
   const C = Number(s?.C ?? 0);
 
-  emcSeries.t.push(label);
-  emcSeries.E.push(E);
-  emcSeries.M.push(M);
-  emcSeries.C.push(C);
-
+  emcSeries.t.push(label); emcSeries.E.push(E); emcSeries.M.push(M); emcSeries.C.push(C);
   if (emcSeries.t.length > MAX_POINTS){
     emcSeries.t.shift(); emcSeries.E.shift(); emcSeries.M.shift(); emcSeries.C.shift();
   }
@@ -534,24 +459,15 @@ function pushEMCPoint(s){
   emcChart.update();
 }
 
-/* ===== 7) Локальное зеркало ленты ===== */
+/* ===== Chat UI ===== */
 let messages = JSON.parse(localStorage.getItem('lumina_chat') || '[]');
-if (messages.length === 0) {
-  messages.push({role:'assistant', text:'ACAI: Greetings, conscious being. Synchronizing with your emotional field…'});
-}
+if (messages.length === 0) messages.push({role:'assistant', text:'ACAI: Greetings, conscious being. Synchronizing with your emotional field…'});
 renderFeed();
 
-/* Черновик */
 msg.value = localStorage.getItem('lumina_draft') || '';
-msg.addEventListener('input', ()=>{
-  localStorage.setItem('lumina_draft', msg.value);
-});
+msg.addEventListener('input', ()=> localStorage.setItem('lumina_draft', msg.value));
 
-/* Рендер */
-function saveAndRender(){
-  localStorage.setItem('lumina_chat', JSON.stringify(messages));
-  renderFeed();
-}
+function saveAndRender(){ localStorage.setItem('lumina_chat', JSON.stringify(messages)); renderFeed(); }
 function renderFeed(){
   feed.innerHTML = '';
   for (const m of messages){
@@ -565,9 +481,7 @@ function renderFeed(){
 function showTyping(){
   const el = document.createElement('div');
   el.className = 'bubble acai';
-  el.innerHTML = `<span class="typing">
-    ACAI is typing <span class="dots"><i></i><i></i><i></i></span>
-  </span>`;
+  el.innerHTML = `<span class="typing">ACAI is typing <span class="dots"><i></i><i></i><i></i></span></span>`;
   el.dataset.typing='1';
   feed.appendChild(el);
   feed.scrollTop = feed.scrollHeight;
@@ -575,7 +489,7 @@ function showTyping(){
 }
 function hideTyping(el){ if(el && el.dataset.typing==='1') el.remove(); }
 
-/* ===== 8) Тема из /state/{cid} (FIX) ===== */
+/* ===== Theme from /state ===== */
 const map=(v,inMin,inMax,outMin,outMax)=> outMin + (Math.max(inMin,Math.min(inMax,v))-inMin)*(outMax-outMin)/(inMax-inMin);
 function themeFromState(s){
   const v = Number(s?.valence ?? 0);
@@ -589,33 +503,9 @@ function themeFromState(s){
   document.documentElement.style.setProperty('--accent', accent);
   document.documentElement.style.setProperty('--ring','color-mix(in oklab, var(--accent) 60%, transparent)');
   tone.textContent=mode;
-
-  // ✅ Keep charts synced with new accent
   applyLuxChartColors();
 }
 
-async function refreshState(){
-  try{
-    if (!currentCid) return;
-    const r = await fetch(API + `/state/${currentCid}`, {
-      cache:'no-store',
-      credentials:'include',
-      headers: authHeaders()
-    });
-    if(!r.ok) return;
-    const j=await r.json();
-
-    const st = j?.last || {};
-    themeFromState(st);
-
-    // ✅ lux updates
-    updateRadarFromState(st);
-    pushEMCPoint(st);
-
-  }catch{}
-}
-
-/* ===== 9) Сессия/диалог на бэке ===== */
 let currentCid = null;
 async function ensureConversation(){
   if (currentCid) return currentCid;
@@ -623,17 +513,11 @@ async function ensureConversation(){
     const res = await apiPost('/api/conversations', {});
     currentCid = res.id;
     return currentCid;
-  } catch (e) {
+  }catch(e){
     if (e.message === 'AUTH') {
       const loginUrl = API + '/login?from=' + encodeURIComponent(location.href);
-
-      let w = null;
-      try { w = window.open(loginUrl, '_blank', 'noopener'); } catch(_) {}
-
-      setTimeout(() => {
-        if (!w || w.closed) location.href = loginUrl;
-      }, 300);
-
+      let w=null; try { w = window.open(loginUrl, '_blank', 'noopener'); } catch(_) {}
+      setTimeout(()=>{ if(!w || w.closed) location.href = loginUrl; }, 300);
       alert('Please login via Telegram, then return here.');
     } else {
       console.error(e);
@@ -643,7 +527,19 @@ async function ensureConversation(){
   }
 }
 
-/* ===== 10) Отправка ===== */
+async function refreshState(){
+  try{
+    if (!currentCid) return;
+    const r = await fetch(API + `/state/${currentCid}`, { cache:'no-store', credentials:'include', headers: authHeaders() });
+    if(!r.ok) return;
+    const j=await r.json();
+    const st = j?.last || {};
+    themeFromState(st);
+    updateRadarFromState(st);
+    pushEMCPoint(st);
+  }catch{}
+}
+
 form.addEventListener('submit', async (e)=>{
   e.preventDefault();
   const text = msg.value.trim();
@@ -653,7 +549,6 @@ form.addEventListener('submit', async (e)=>{
   saveAndRender();
 
   const typingEl = showTyping();
-
   try{
     const cid = await ensureConversation();
     const j = await apiPost(`/api/chat/${cid}`, { message: text });
@@ -667,56 +562,29 @@ form.addEventListener('submit', async (e)=>{
     msg.style.height = '46px';
 
     refreshState();
-
   }catch(err){
     hideTyping(typingEl);
-    if (err.message === 'AUTH') {
-      messages.push({role:'assistant', text:'Reauth…'});
-      saveAndRender();
-      forceReauth();
-    } else {
-      messages.push({role:'assistant', text:'Error: cannot reach backend.'});
-      saveAndRender();
-    }
+    if (err.message === 'AUTH') { messages.push({role:'assistant', text:'Reauth…'}); saveAndRender(); forceReauth(); }
+    else { messages.push({role:'assistant', text:'Error: cannot reach backend.'}); saveAndRender(); }
   }
 });
 
-/* авто-рост (без Enter=send) */
 msg.addEventListener('input', ()=>{
   msg.style.height = 'auto';
   msg.style.height = Math.min(msg.scrollHeight, 180) + 'px';
 });
 
-/* ===== 11) CLEAN: больше не чистим весь localStorage ===== */
 cleanBtn.addEventListener('click', async () => {
   if (!confirm("Delete local chat history? (You stay logged in)")) return;
-  try { await apiDelete('/api/memory'); } catch(e){
-    if (e.message==='AUTH'){ return forceReauth(); }
-  }
-  try {
-    localStorage.removeItem('lumina_chat');
-    localStorage.removeItem('lumina_draft');
-    sessionStorage.clear?.();
-  } catch {}
-  messages = [{
-    role:'assistant',
-    text:'ACAI: Greetings, conscious being. Synchronizing with your emotional field…'
-  }];
+  try { await apiDelete('/api/memory'); } catch(e){ if (e.message==='AUTH'){ return forceReauth(); } }
+  try { localStorage.removeItem('lumina_chat'); localStorage.removeItem('lumina_draft'); sessionStorage.clear?.(); } catch {}
+  messages = [{ role:'assistant', text:'ACAI: Greetings, conscious being. Synchronizing with your emotional field…' }];
   currentCid = null;
 
-  // reset timeline buffer (lux)
   emcSeries = { t:[], E:[], M:[], C:[] };
   t0 = performance.now();
-  if (emcChart){
-    emcChart.data.labels = [];
-    emcChart.data.datasets.forEach(d => d.data = []);
-    emcChart.update();
-  }
-  if (radarChart){
-    radarChart.data.labels = ["—","—","—","—","—"];
-    radarChart.data.datasets[0].data = [0,0,0,0,0];
-    radarChart.update();
-  }
+  if (emcChart){ emcChart.data.labels = []; emcChart.data.datasets.forEach(d => d.data = []); emcChart.update(); }
+  if (radarChart){ radarChart.data.labels = ["—","—","—","—","—"]; radarChart.data.datasets[0].data = [0,0,0,0,0]; radarChart.update(); }
   if (tagsBox) tagsBox.innerHTML = "";
   if (radarMeta) radarMeta.textContent = "—";
   if (emcMeta) emcMeta.textContent = "—";
@@ -724,23 +592,18 @@ cleanBtn.addEventListener('click', async () => {
   saveAndRender();
 });
 
-/* ===== 12) Пытаемся создать беседу сразу + запускаем state-poll ===== */
 (async () => {
   try { await ensureConversation(); } catch(_) {}
-  // init charts once, even before first state
   ensureRadar(); ensureEMC(); applyLuxChartColors();
-
   refreshState();
-  setInterval(refreshState,1500); // keep your old cadence
+  setInterval(refreshState,1500);
 })();
 </script>
 
-<!-- 🎵 LUMINA THEME MUSIC -->
 <audio id="luminaMusic" loop>
   <source src="./lumina_theme.mp3" type="audio/mpeg">
 </audio>
 <script>
-/* Smooth fade-in bg music on first interaction */
 const audio = document.getElementById('luminaMusic');
 document.addEventListener('click', () => {
   try {
@@ -754,33 +617,15 @@ document.addEventListener('click', () => {
 }, { once:true });
 </script>
 
-<!-- 💎 Logout logic -->
 <script>
 document.getElementById('logout')?.addEventListener('click', async (e)=>{
   e.preventDefault();
   e.stopPropagation();
-
   if (!confirm('Вы деиствительно хотите выити из аккаунта?')) return;
 
-  // 1) снимаем cookie-сессию на бэке
   try { await fetch(API + '/logout', { method:'POST', credentials:'include', headers: authHeaders() }); } catch(e){}
-
-  // 2) чистим локальные ключи
-  try {
-    localStorage.removeItem('acai_jwt');
-    localStorage.removeItem('lumina_chat');
-    localStorage.removeItem('lumina_draft');
-    sessionStorage.clear?.();
-  } catch(e){}
-
-  // 3) уберем ?token= если вдруг остался
-  try {
-    const u = new URL(location.href);
-    u.searchParams.delete('token');
-    history.replaceState({}, '', u.pathname + u.hash);
-  } catch(e){}
-
-  // 4) Перенаправляем обратно на фронт
+  try { localStorage.removeItem('acai_jwt'); localStorage.removeItem('lumina_chat'); localStorage.removeItem('lumina_draft'); sessionStorage.clear?.(); } catch(e){}
+  try { const u = new URL(location.href); u.searchParams.delete('token'); history.replaceState({}, '', u.pathname + u.hash); } catch(e){}
   location.href = 'https://acai-frontend.onrender.com';
 });
 </script>
