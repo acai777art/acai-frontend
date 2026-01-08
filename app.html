@@ -1302,23 +1302,6 @@
   })();
   </script>
 
-  <!-- Music (unchanged idea) -->
-  <audio id="luminaMusic" loop>
-    <source src="./lumina_theme.mp3" type="audio/mpeg">
-  </audio>
-  <script>
-    const audio = document.getElementById('luminaMusic');
-    document.addEventListener('click', () => {
-      try {
-        audio.volume = 0;
-        audio.play().catch(()=>{});
-        let v = 0;
-        const fade = setInterval(() => {
-          if (v < 0.35) { v += 0.01; audio.volume = v; } else { clearInterval(fade); }
-        }, 120);
-      } catch(e) {}
-    }, { once:true });
-  </script>
 
   <!-- Logout (same logic) -->
   <script>
