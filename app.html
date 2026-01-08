@@ -6,14 +6,12 @@
 <meta name="color-scheme" content="dark" />
 <title>ACAI — LUMINA Console</title>
 
-<!-- Premium typography (CDN). If you want полностью оффлайн — уберём. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
   :root{
-    /* Core */
     --bg0:#05060a;
     --bg1:#07090f;
     --card0:#0b0f18;
@@ -21,19 +19,16 @@
     --ink:#e9eef8;
     --muted:#9aa3af;
 
-    /* Accent (dynamic by state) */
     --accent:#7AE6FF;
     --ring: color-mix(in oklab, var(--accent) 60%, transparent);
     --violet:#B37AFF;
     --amber:#FFB76B;
 
-    /* Visual materials */
     --stroke: color-mix(in oklab, var(--accent) 18%, #1a2230);
     --strokeStrong: color-mix(in oklab, var(--accent) 28%, #1a2230);
     --glass: color-mix(in oklab, #0b0f18 86%, transparent);
     --glass2: color-mix(in oklab, #0b0f18 72%, transparent);
 
-    /* Background */
     --bg-image:url("./bg_lumina.jpg");
   }
 
@@ -49,7 +44,6 @@
     text-rendering:optimizeLegibility;
   }
 
-  /* Premium background stack */
   .bg{
     position:fixed; inset:0; z-index:-5;
     background-image: var(--bg-image);
@@ -84,7 +78,6 @@
     mix-blend-mode:screen;
   }
 
-  /* Top bar */
   .bar{
     height:68px;
     padding:0 16px;
@@ -108,13 +101,10 @@
   }
   @keyframes hue{from{filter:hue-rotate(0)}to{filter:hue-rotate(360deg)}}
 
-  .brandText{
-    display:flex; flex-direction:column; gap:2px;
-    min-width: 160px;
-  }
+  .brandText{display:flex; flex-direction:column; gap:2px; min-width:160px;}
   .brandText .top{
-    font-family: "Space Grotesk", Inter, system-ui;
-    font-weight: 800;
+    font-family:"Space Grotesk", Inter, system-ui;
+    font-weight:800;
     letter-spacing:.18em;
     text-transform:uppercase;
     font-size:12px;
@@ -133,12 +123,7 @@
   }
   @keyframes titleFlow{from{background-position:0% 50%}to{background-position:200% 50%}}
 
-  .right{
-    margin-left:auto;
-    display:flex;
-    align-items:center;
-    gap:10px;
-  }
+  .right{margin-left:auto; display:flex; align-items:center; gap:10px;}
 
   .tonePill{
     padding:7px 12px;
@@ -206,7 +191,6 @@
   }
   .btn.sm{ height:36px; border-radius:12px; letter-spacing:.12em; font-size:12px; padding:0 12px; }
 
-  /* Layout */
   .wrap{
     height:calc(100% - 68px);
     display:grid;
@@ -217,7 +201,6 @@
       "composer";
   }
 
-  /* Feed */
   .feed{
     grid-area:feed;
     overflow:auto;
@@ -225,12 +208,8 @@
     scroll-behavior:smooth;
     -webkit-overflow-scrolling:touch;
   }
-  .feedInner{
-    max-width: 980px;
-    margin: 0 auto;
-  }
+  .feedInner{max-width:980px; margin:0 auto;}
 
-  /* Bubbles premium */
   .bubble{
     max-width:min(900px,92vw);
     margin:10px 0;
@@ -238,7 +217,6 @@
     white-space:pre-wrap;
     border-radius:16px;
     position:relative;
-
     background:
       linear-gradient(180deg, var(--glass) 0%, color-mix(in oklab, #0a0e15 88%, transparent) 100%);
     border:1px solid var(--stroke);
@@ -279,7 +257,6 @@
     border-color: color-mix(in oklab, var(--accent) 34%, #1a2230);
   }
 
-  /* Typing */
   .typing{ display:inline-flex; align-items:center; gap:8px;
     color: color-mix(in oklab, var(--ink) 74%, var(--accent));
     font-weight:600; letter-spacing:.06em;
@@ -295,7 +272,6 @@
   .dots i:nth-child(3){animation-delay:.4s}
   @keyframes blink{0%,100%{opacity:.22;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}
 
-  /* Composer premium */
   .composer{
     grid-area: composer;
     padding: 12px 16px 16px;
@@ -330,7 +306,6 @@
     box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 18%, transparent);
   }
 
-  /* Edge widgets */
   .edgeBtns{
     position:fixed;
     right:12px;
@@ -356,7 +331,6 @@
   .edgeBtn:active{ transform: scale(.985); }
   .edgeBtn svg{ width:22px;height:22px; opacity:.92; }
 
-  /* Overlay */
   .overlay{
     position:fixed; inset:0;
     background: rgba(0,0,0,.46);
@@ -368,7 +342,6 @@
   }
   .overlay.show{ opacity:1; pointer-events:auto; }
 
-  /* Drawer (strict) */
   .drawer{
     position:fixed;
     top:68px;
@@ -382,7 +355,7 @@
     display:flex;
     flex-direction:column;
     gap:12px;
-    overflow:hidden; /* critical */
+    overflow:hidden;
   }
   .drawer.open{ transform: translateX(0); }
 
@@ -434,13 +407,12 @@
 
   .drawerBody{
     flex: 1 1 auto;
-    min-height: 0; /* iOS critical */
+    min-height: 0;
     overflow:auto;
     -webkit-overflow-scrolling:touch;
     padding-right: 2px;
   }
 
-  /* Panel */
   .panel{
     position:relative;
     padding:14px 14px 12px;
@@ -507,21 +479,13 @@
     opacity:.92;
   }
 
-  /* Chart boxes strict sizes */
-  .chartBox{
-    height: min(46vh, 440px);
-    width: 100%;
-    position: relative;
-  }
+  .chartBox{ height: min(46vh, 440px); width:100%; position:relative; }
   .chartBox.radarBox{ height: min(44vh, 390px); }
-
   canvas{ display:block; width:100% !important; height:100% !important; }
 
-  /* Reduced motion */
   @media (prefers-reduced-motion: reduce){
     *{ animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior:auto !important; }
   }
-
   @media (max-width: 520px){
     body{ overflow:hidden; }
     .edgeBtns{ right: 10px; top: calc(68px + 10px); }
@@ -566,7 +530,6 @@
     </form>
   </section>
 
-  <!-- Edge Buttons -->
   <div class="edgeBtns" aria-label="Widgets">
     <button class="edgeBtn" id="openRadar" type="button" title="Emotion Radar">
       <svg viewBox="0 0 24 24" fill="none">
@@ -591,7 +554,6 @@
 
   <div class="overlay" id="overlay" aria-hidden="true"></div>
 
-  <!-- Drawer: RADAR -->
   <aside class="drawer" id="radarDrawer" aria-label="Emotion Radar Widget">
     <div class="drawerHeader">
       <div class="drawerTitle"><span class="luxDot" aria-hidden="true"></span> Emotion Radar</div>
@@ -611,7 +573,6 @@
     </div>
   </aside>
 
-  <!-- Drawer: EMC -->
   <aside class="drawer" id="emcDrawer" aria-label="E M C Widget">
     <div class="drawerHeader">
       <div class="drawerTitle"><span class="luxDot" aria-hidden="true"></span> E · M · C Timeline</div>
@@ -630,7 +591,6 @@
     </div>
   </aside>
 
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script>
@@ -669,6 +629,13 @@
     return r.json();
   }
 
+  async function apiGet(path){
+    const r = await fetch(API+path, { method:'GET', credentials:'include', headers: authHeaders(), cache:'no-store' });
+    if (r.status === 401) throw new Error('AUTH');
+    if (!r.ok) throw new Error(await r.text());
+    return r.json();
+  }
+
   async function apiDelete(path){
     const r = await fetch(API+path, { method:'DELETE', credentials:'include', headers: authHeaders() });
     if (r.status === 401) throw new Error('AUTH');
@@ -677,6 +644,34 @@
   }
 
   function forceReauth(){ location.href = API + '/auth/refresh'; }
+
+  /* =========================
+     ✅ iOS/Safari AUDIO UNLOCK (FIX)
+     ========================= */
+  let audioCtx = null;
+  let audioUnlocked = false;
+
+  async function unlockAudio(){
+    if (audioUnlocked) return true;
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return false;
+
+    try{
+      audioCtx = audioCtx || new Ctx();
+      await audioCtx.resume();
+
+      // prime: tiny silent buffer (helps some iOS versions)
+      const buf = audioCtx.createBuffer(1, 1, 22050);
+      const src = audioCtx.createBufferSource();
+      src.buffer = buf;
+      src.connect(audioCtx.destination);
+      try { src.start(0); } catch {}
+      audioUnlocked = (audioCtx.state === 'running');
+      return audioUnlocked;
+    }catch(e){
+      return false;
+    }
+  }
 
   /* =========================
      DOM
@@ -702,10 +697,17 @@
   }
   renderVoiceBtn();
 
-  voiceBtn?.addEventListener('click', () => {
+  // ✅ voice toggle + iOS unlock (must be user gesture)
+  voiceBtn?.addEventListener('click', async () => {
     VOICE_ON = !VOICE_ON;
     try { localStorage.setItem('lumina_voice_on', JSON.stringify(VOICE_ON)); } catch {}
     renderVoiceBtn();
+
+    if (VOICE_ON) {
+      await unlockAudio(); // 👈 ключ для iPhone
+    } else {
+      try { if (currentAudio) { currentAudio.pause(); currentAudio = null; } } catch {}
+    }
   });
 
   let currentAudio = null;
@@ -714,6 +716,9 @@
     if (!VOICE_ON) return;
     const t = (text || '').trim();
     if (!t) return;
+
+    // iOS safety: try to keep audio unlocked
+    await unlockAudio();
 
     // stop previous
     try { if (currentAudio) { currentAudio.pause(); currentAudio = null; } } catch {}
@@ -735,12 +740,19 @@
 
     const a = new Audio(obj);
     a.preload = 'auto';
+    a.playsInline = true;          // iOS
+    a.crossOrigin = 'anonymous';   // safe
     a.volume = 1.0;
 
     currentAudio = a;
 
-    // iOS/Safari: play must be user-gesture friendly; but после SEND обычно ок
-    a.play().catch(() => { /* silent fail if autoplay blocked */ });
+    try {
+      await a.play();
+    } catch (e) {
+      // если Safari снова заблокировал — пробуем разлочить ещё раз (на всякий)
+      await unlockAudio();
+      try { await a.play(); } catch(_) {}
+    }
 
     a.addEventListener('ended', () => {
       try { URL.revokeObjectURL(obj); } catch {}
@@ -762,7 +774,6 @@
   }
 
   function afterOpenResize(which){
-    // wait drawer transition -> correct canvas sizing for Chart.js
     setTimeout(() => {
       if (which === 'radar' && radarChart){ radarChart.resize(); radarChart.update('none'); }
       if (which === 'emc' && emcChart){ emcChart.resize(); emcChart.update('none'); }
@@ -786,20 +797,12 @@
   document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeAllDrawers(); });
   document.querySelectorAll('[data-close]').forEach(btn=> btn.addEventListener('click', closeAllDrawers));
 
-  /* =========================
-     LUX helpers
-     ========================= */
-  function cssVar(name){
-    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  }
+  /* LUX helpers */
+  function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
   function clamp(n,a,b){ return Math.max(a, Math.min(b,n)); }
-  function alphaColor(rgbLike, a){
-    return `color-mix(in oklab, ${rgbLike} ${Math.round(a*100)}%, transparent)`;
-  }
+  function alphaColor(rgbLike, a){ return `color-mix(in oklab, ${rgbLike} ${Math.round(a*100)}%, transparent)`; }
 
-  /* =========================
-     Charts
-     ========================= */
+  /* Charts */
   const radarMeta = document.getElementById('radarMeta');
   const emcMeta = document.getElementById('emcMeta');
   const tagsBox = document.getElementById('emotionTags');
@@ -837,9 +840,7 @@
             borderWidth: 1,
             titleColor: "#fff",
             bodyColor: "#fff",
-            callbacks: {
-              label: (c) => `${c.label}: ${(Number(c.raw||0)*100).toFixed(0)}%`
-            }
+            callbacks: { label: (c) => `${c.label}: ${(Number(c.raw||0)*100).toFixed(0)}%` }
           }
         },
         scales: {
@@ -858,7 +859,6 @@
   const MAX_POINTS = 120;
   const POLL_MS = 1500;
 
-  // ✅ Persist buffers across reload (so not zeros)
   const KEY_STATE = "acai_last_state";
   const KEY_EMC   = "acai_emc_series";
   const KEY_T0    = "acai_emc_t0";
@@ -896,9 +896,7 @@
         maintainAspectRatio: false,
         animation: { duration: 220 },
         plugins: {
-          legend: {
-            labels: { color: "rgba(255,255,255,.78)", boxWidth: 10, usePointStyle: true, pointStyle:"circle" }
-          },
+          legend: { labels: { color: "rgba(255,255,255,.78)", boxWidth: 10, usePointStyle: true, pointStyle:"circle" } },
           tooltip: {
             backgroundColor: "rgba(8,10,14,.92)",
             borderColor: "rgba(255,255,255,.10)",
@@ -1006,9 +1004,7 @@
     persistEMC();
   }
 
-  /* =========================
-     Chat local mirror (same idea)
-     ========================= */
+  /* Chat local mirror */
   let messages = (() => {
     try { return JSON.parse(localStorage.getItem('lumina_chat') || '[]'); } catch { return []; }
   })();
@@ -1045,11 +1041,9 @@
 
   function hideTyping(el){ if (el && el.dataset.typing==='1') el.remove(); }
 
-  // Draft
   msg.value = localStorage.getItem('lumina_draft') || '';
   msg.addEventListener('input', ()=> localStorage.setItem('lumina_draft', msg.value));
 
-  // Auto-grow
   msg.addEventListener('input', ()=>{
     msg.style.height = 'auto';
     msg.style.height = Math.min(msg.scrollHeight, 180) + 'px';
@@ -1057,9 +1051,7 @@
 
   renderFeed();
 
-  /* =========================
-     Theme from state (same logic)
-     ========================= */
+  /* Theme */
   const map=(v,inMin,inMax,outMin,outMax)=> outMin + (Math.max(inMin,Math.min(inMax,v))-inMin)*(outMax-outMin)/(inMax-inMin);
 
   function themeFromState(s){
@@ -1082,14 +1074,12 @@
     applyLuxChartColors();
   }
 
-  // ✅ Warm start from persisted last state (avoids neutral/zeros blink)
   (function warmStart(){
     try{
       const st = JSON.parse(sessionStorage.getItem(KEY_STATE) || "null");
       if (st) {
         themeFromState(st);
         updateRadarFromState(st);
-        // NOTE: EMC already restored from emcSeries at init
         if (emcMeta){
           const E = Number(st?.E ?? 0), M = Number(st?.M ?? 0), C = Number(st?.C ?? 0);
           emcMeta.textContent = `E=${E.toFixed(2)} · M=${M.toFixed(2)} · C=${C.toFixed(2)}`;
@@ -1103,11 +1093,14 @@
      ========================= */
   let currentCid = null;
 
+  // ✅ FIX: correctly create conversation via POST /api/conversations
   async function ensureConversation(){
     if (currentCid) return currentCid;
+
     try{
-      const res = await apiPost('/api/conversations', {});
-      currentCid = res.id;
+      const created = await apiPost('/api/conversations', {}); // {ok:true, id: "..."}
+      currentCid = created?.id || null;
+      if (!currentCid) throw new Error('NO_CID');
       return currentCid;
     } catch (e) {
       if (e.message === 'AUTH') {
@@ -1137,7 +1130,6 @@
       const j = await r.json();
       const st = j?.last || {};
 
-      // persist last state
       try { sessionStorage.setItem(KEY_STATE, JSON.stringify(st)); } catch {}
 
       themeFromState(st);
@@ -1149,6 +1141,10 @@
   /* Send */
   form.addEventListener('submit', async (e)=>{
     e.preventDefault();
+
+    // ✅ iPhone FIX: unlock audio inside user gesture (SEND click)
+    if (VOICE_ON) { try { await unlockAudio(); } catch {} }
+
     const text = msg.value.trim();
     if(!text) return;
 
@@ -1235,7 +1231,6 @@
 
   /* Init */
   (async () => {
-    // charts init (state может апдейтить их хоть сразу)
     ensureRadar();
     ensureEMC();
     applyLuxChartColors();
