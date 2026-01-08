@@ -712,6 +712,26 @@
 
   let currentAudio = null;
 
+  async function fetchTTSObjectUrl(text){
+    const t = (text || '').trim();
+    if (!t) return null;
+
+    const url = API + '/api/tts?text=' + encodeURIComponent(t.slice(0, 1400));
+
+    const r = await fetch(url, {
+      method: 'GET',
+      credentials: 'include',
+      headers: { ...authHeaders() },
+      cache: 'no-store'
+    });
+
+    if (r.status === 401) throw new Error('AUTH');
+    if (!r.ok) throw new Error('TTS_FAIL');
+
+    const blob = await r.blob();
+    return URL.createObjectURL(blob); // ✅ audio/mp3 as blob url
+  }
+
   async function speak(text){
     if (!VOICE_ON) return;
     const t = (text || '').trim();
@@ -1020,12 +1040,48 @@
 
   function renderFeed(){
     feedInner.innerHTML = '';
+
     for (const m of messages){
       const el = document.createElement('div');
       el.className = 'bubble ' + (m.role === 'user' ? 'me' : 'acai');
-      el.textContent = (m.role === 'user' ? 'You: ' : '') + m.text;
+
+      // ✅ Voice bubble
+      if (m.audioUrl) {
+        const title = document.createElement('div');
+        title.style.fontWeight = '700';
+        title.style.opacity = '0.9';
+        title.style.marginBottom = '8px';
+        title.textContent = (m.role === 'user' ? 'You (voice):' : 'ACAI (voice):');
+
+        const audio = document.createElement('audio');
+        audio.controls = true;
+        audio.preload = 'metadata';
+        audio.playsInline = true;
+        audio.src = m.audioUrl;
+
+        // optional: show text under audio (if you want)
+        if (m.text) {
+          const txt = document.createElement('div');
+          txt.style.marginTop = '10px';
+          txt.style.opacity = '0.85';
+          txt.textContent = m.text;
+          el.appendChild(title);
+          el.appendChild(audio);
+          el.appendChild(txt);
+        } else {
+          el.appendChild(title);
+          el.appendChild(audio);
+        }
+
+        feedInner.appendChild(el);
+        continue;
+      }
+
+      // ✅ Text bubble
+      el.textContent = (m.role === 'user' ? 'You: ' : '') + (m.text || '');
       feedInner.appendChild(el);
     }
+
     feed.scrollTop = feed.scrollHeight;
   }
 
@@ -1159,15 +1215,31 @@
       hideTyping(typingEl);
 
       const replyText = j?.reply || '(no reply)';
-      messages.push({ role:'assistant', text: replyText });
-      saveAndRender();
 
-      // если бек сказал force_text=true — НЕ озвучиваем
-      if (!j?.force_text) {
+      // ✅ если force_text=true ИЛИ voice выключен → обычный текст
+      if (j?.force_text || !VOICE_ON) {
+        messages.push({ role:'assistant', text: replyText });
+        saveAndRender();
+      } else {
+        // ✅ VOICE_ON → голосовое сообщение
         try {
-          await speak(replyText);
+          const audioUrl = await fetchTTSObjectUrl(replyText);
+
+          if (audioUrl) {
+            messages.push({
+              role: 'assistant',
+              audioUrl,      // 👈 ключевое
+              text: replyText // можно оставить как подпись
+            });
+            saveAndRender();
+          } else {
+            messages.push({ role:'assistant', text: replyText });
+            saveAndRender();
+          }
         } catch (e) {
           if (e?.message === 'AUTH') forceReauth();
+          messages.push({ role:'assistant', text: replyText });
+          saveAndRender();
         }
       }
 
