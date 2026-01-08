@@ -547,6 +547,7 @@
 
     <div class="right">
       <div class="tonePill" id="tone">NEUTRAL</div>
+      <button class="btn ghost sm" id="voice" type="button"><span class="label">VOICE:ON</span></button>
       <button class="btn ghost sm" id="logout" type="button"><span class="label">LOGOUT</span></button>
     </div>
   </header>
@@ -686,6 +687,66 @@
   const form = document.getElementById('form');
   const msg  = document.getElementById('msg');
   const cleanBtn = document.getElementById('clean');
+  const voiceBtn = document.getElementById('voice');
+
+  let VOICE_ON = (() => {
+    try { return JSON.parse(localStorage.getItem('lumina_voice_on') || 'true'); }
+    catch { return true; }
+  })();
+
+  function renderVoiceBtn(){
+    if (!voiceBtn) return;
+    const lab = voiceBtn.querySelector('.label');
+    if (lab) lab.textContent = VOICE_ON ? 'VOICE:ON' : 'VOICE:OFF';
+    voiceBtn.style.opacity = VOICE_ON ? '1' : '.78';
+  }
+  renderVoiceBtn();
+
+  voiceBtn?.addEventListener('click', () => {
+    VOICE_ON = !VOICE_ON;
+    try { localStorage.setItem('lumina_voice_on', JSON.stringify(VOICE_ON)); } catch {}
+    renderVoiceBtn();
+  });
+
+  let currentAudio = null;
+
+  async function speak(text){
+    if (!VOICE_ON) return;
+    const t = (text || '').trim();
+    if (!t) return;
+
+    // stop previous
+    try { if (currentAudio) { currentAudio.pause(); currentAudio = null; } } catch {}
+
+    const url = API + '/api/tts?text=' + encodeURIComponent(t.slice(0, 1400));
+
+    const r = await fetch(url, {
+      method: 'GET',
+      credentials: 'include',
+      headers: { ...authHeaders() },
+      cache: 'no-store'
+    });
+
+    if (r.status === 401) throw new Error('AUTH');
+    if (!r.ok) throw new Error('TTS_FAIL');
+
+    const blob = await r.blob();
+    const obj = URL.createObjectURL(blob);
+
+    const a = new Audio(obj);
+    a.preload = 'auto';
+    a.volume = 1.0;
+
+    currentAudio = a;
+
+    // iOS/Safari: play must be user-gesture friendly; but после SEND обычно ок
+    a.play().catch(() => { /* silent fail if autoplay blocked */ });
+
+    a.addEventListener('ended', () => {
+      try { URL.revokeObjectURL(obj); } catch {}
+      if (currentAudio === a) currentAudio = null;
+    });
+  }
 
   /* Drawers */
   const overlay = document.getElementById('overlay');
@@ -1101,8 +1162,18 @@
       const j = await apiPost(`/api/chat/${cid}`, { message: text });
       hideTyping(typingEl);
 
-      messages.push({role:'assistant', text: j?.reply || '(no reply)'});
+      const replyText = j?.reply || '(no reply)';
+      messages.push({ role:'assistant', text: replyText });
       saveAndRender();
+
+      // если бек сказал force_text=true — НЕ озвучиваем
+      if (!j?.force_text) {
+        try {
+          await speak(replyText);
+        } catch (e) {
+          if (e?.message === 'AUTH') forceReauth();
+        }
+      }
 
       msg.value = '';
       localStorage.removeItem('lumina_draft');
